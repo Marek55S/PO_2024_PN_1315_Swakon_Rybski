@@ -3,6 +3,7 @@ package agh.ics.oop.model;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -182,6 +183,7 @@ class GrassFieldTest {
         assertEquals(new Vector2d(0,-1),secondMapBounds.LowerLeft());
 
     }
+
 
 
 }

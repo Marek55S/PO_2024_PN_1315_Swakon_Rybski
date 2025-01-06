@@ -29,7 +29,7 @@ public class Simulation implements Runnable {
         return animalsList;
     }
 
-    //zastanow sie czy nie lapac tego w innym miejscu
+
     @Override
     public void run() {
         int numberOfAnimals = animalsList.size();
