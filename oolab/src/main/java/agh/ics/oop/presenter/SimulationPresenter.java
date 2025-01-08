@@ -1,150 +1,138 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.OptionsParser;
-import agh.ics.oop.Simulation;
-import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.stage.Stage;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class SimulationPresenter implements MapChangeListener {
-    private WorldMap map;
-    public static double CELL_WIDTH = 20;
-    public static double CELL_HEIGHT = 30;
-
+    private AbstractWorldMap worldMap;
     @FXML
-    private Label moveDescription;
-    @FXML
-    private Button startButton;
+    private Label infolabel;
     @FXML
     private GridPane mapGrid;
-    @FXML
-    private Label infoLabel;
-    @FXML
-    private TextField arguments;
 
-    public void setWorldMap(WorldMap map) {
-        this.map = map;
+    private int minY;
+    private int maxY;
+    private int minX;
+    private int maxX;
+    private int width;
+    private int height;
+    private int cellHeight;
+    private int cellWidth;
+
+
+    public void setWorldMap(AbstractWorldMap map) {
+        if (worldMap != null) {
+            worldMap.removeObserver(this);
+        }
+
+        map.addObserver(this);
+        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            System.out.println(dtf.format(now) + " " + message);
+        }));
+
+        worldMap = map;
     }
 
-    private String[] getArguments(){
-        return arguments.getText().split(" ");
+    private void updateStoredConstraints() {
+        var boundaries = worldMap.getCurrentBounds();
+        minY = boundaries.lowerLeft().getY();
+        minX = boundaries.lowerLeft().getX();
+        maxY = boundaries.upperRight().getY();
+        maxX = boundaries.upperRight().getX();
+
+        width = maxX - minX;
+        height = maxY - minY;
+
+        cellWidth = Math.round((float) 300 / (width + 2));
+        cellHeight = Math.round((float) 300 / (height + 2));
+
+
     }
 
     private void clearGrid() {
-        mapGrid.getChildren().retainAll(mapGrid.getChildren().getFirst()); // hack to retain visible grid lines
+        mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
         mapGrid.getColumnConstraints().clear();
         mapGrid.getRowConstraints().clear();
     }
 
-    private void drawIndices(int minWidth, int minHeight, int mapWidth, int mapHeight) {
-        for(int i=0;i<mapWidth;i++){
-            Label index = new Label(String.valueOf(i+minWidth));
-            mapGrid.add(index,i+1,0);
-            GridPane.setHalignment(index, HPos.CENTER);
-
-        }
-        for(int i=0;i<=mapHeight;i++){
-            Label index = new Label(String.valueOf(mapHeight - i + minHeight));
-            mapGrid.add(index,0,i+1);
-            GridPane.setHalignment(index, HPos.CENTER);
-        }
-
-        Label axisDsc = new Label("y/x");
-        mapGrid.add(axisDsc,0,0);
-        GridPane.setHalignment(axisDsc, HPos.CENTER);
+    private void setXYLabel() {
+        var label = new Label("y/x");
+        mapGrid.add(label, 0, 0);
+        GridPane.setHalignment(label, HPos.CENTER);
+        mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
+        mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
     }
 
-    private void alignCells(int mapWidth, int mapHeight) {
-        for (int i = 0; i <= mapWidth; i++) {
-            mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
-        }
-        for (int i = 0; i <= mapHeight+1; i++) {
-            mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
+    private void setLabelsOx() {
+        for (int i = 0; i < width + 1; ++i) {
+            var label = new Label(String.format("%d", (minX + i)));
+            mapGrid.add(label, i + 1, 0);
+            GridPane.setHalignment(label, HPos.CENTER);
+            mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
         }
     }
 
-    private void drawElements(int minWidth, int minHeight, int mapHeight) {
-        for(WorldElement element : map.getElements()){
-            WorldElement correctObject = map.objectAt(element.getPosition());
-            Label elem = new Label(correctObject.toString());
-            mapGrid.add(elem,correctObject.getPosition().getX()-minWidth+1,mapHeight-(correctObject.getPosition().getY()-minHeight-1));
-            GridPane.setHalignment(elem, HPos.CENTER);
+    private void setLabelsOy() {
+        for (int i = 0; i < height + 1; ++i) {
+            var label = new Label(String.format("%d", (maxY - i)));
+            mapGrid.add(label, 0, i + 1);
+            GridPane.setHalignment(label, HPos.CENTER);
+            mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
         }
     }
 
+    private void addElementsToMap() {
+//        for (var element : worldMap.getElements()) {
+//            if (worldMap.isOccupied(element.getPosition())) {
+//                var label = new Label(element.toString());
+//                var pos = element.getPosition();
+//                mapGrid.add(label, pos.getX() - minX + 1, maxY - pos.getY() + 1);
+//                GridPane.setHalignment(label, HPos.CENTER);
+//            }
+//        }
+        for (int i = 0; i <= width; ++i) {
+            for (int j = 0; j <= height; ++j) {
+                Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
+                if (worldMap.isOccupied(positionToCheck)) {
+                    WorldElement element = worldMap.objectAt(positionToCheck).get();
+                    var label = new Label(element.toString());
+                    System.out.println(label);
+                    //mapGrid.add(label, positionToCheck.getX() - minX + 1, maxY - positionToCheck.getY() + 1);
+                    mapGrid.add(new WorldElementBox(element), i + 1, height - j + 1);
+                    GridPane.setHalignment(label, HPos.CENTER);
+                }
+            }
+        }
+    }
 
-    private void drawMap(){
-        mapGrid.setAlignment(Pos.CENTER);
+    public void drawMap(String input) {
         clearGrid();
-
-        int minWidth = map.getCurrentBounds().LowerLeft().getX();
-        int minHeight = map.getCurrentBounds().LowerLeft().getY();
-        int mapWidth = map.getCurrentBounds().UpperRight().getX()-minWidth+1;
-        int mapHeight = map.getCurrentBounds().UpperRight().getY()-minHeight;
-
-
-        drawIndices(minWidth,minHeight,mapWidth,mapHeight);
-
-        drawElements(minWidth,minHeight,mapHeight);
-
-        alignCells(mapWidth,mapHeight);
-
+        updateStoredConstraints();
+        setXYLabel();
+        setLabelsOx();
+        setLabelsOy();
+        addElementsToMap();
+        mapGrid.setPrefSize(300, 300);
+        infolabel.setText(input);
     }
-
 
     @Override
-    public void mapChanged(WorldMap map, String message) {
+    public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {
-            drawMap();
-            moveDescription.setText(message);
+            drawMap(message);
         });
-    }
 
-
-    public void onSimulationStartClicked() throws Exception {
-        List<Vector2d> startingPositions = List.of(new Vector2d(0, 0), new Vector2d(10, 1));
-        String[] arguments = getArguments();
-        Simulation simulation = new Simulation(startingPositions, OptionsParser.parseDirection(arguments), map);
-        SimulationEngine engine = new SimulationEngine(List.of(simulation));
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-        BorderPane viewRoot = loader.load();
-        SimulationPresenter presenter = loader.getController();
-
-        Stage simulationStage = new Stage();
-        configureStage(simulationStage,viewRoot);
-
-        GrassField newMap = new GrassField(10);
-        presenter.setWorldMap(newMap);
-        newMap.addObserver(presenter);
-
-        simulationStage.show();
-
-        engine.runAsyncInThreadPool();
-    }
-
-    private void configureStage(Stage primaryStage, BorderPane viewRoot) {
-        var scene = new Scene(viewRoot);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Simulation");
-        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
-        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }
 
 }

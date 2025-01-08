@@ -1,74 +1,112 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
 
 public abstract class AbstractWorldMap implements WorldMap {
-    protected final Map <Vector2d,Animal> animals =  new HashMap<Vector2d,Animal>();
-    protected final MapVisualizer mapVisualizer = new MapVisualizer(this);
-    protected final List<MapChangeListener>observersList = new ArrayList<>();
-    private final UUID mapId = UUID.randomUUID();
+    protected final MapVisualizer visualizer;
+    private final int mapId;
+    protected HashMap<Vector2d, Animal> animals;
+    protected List<MapChangeListener> observers;
 
+    public AbstractWorldMap(int mapId) {
 
-    public boolean canMoveTo(Vector2d position){
-        return !animals.containsKey(position);
+        visualizer = new MapVisualizer(this);
+        animals = new HashMap<>();
+
+        observers = new ArrayList();
+
+        this.mapId = mapId;
+
     }
 
-    public void place(Animal animal) throws IncorrectPositionException {
-        if (this.canMoveTo(animal.getPosition())){
-            animals.put(animal.getPosition(), animal);
-            this.notifyAllObservers("animal was placed in position %s".formatted(animal.getPosition()));
+    public void addObserver(MapChangeListener observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(MapChangeListener observer) {
+        observers.remove(observer);
+    }
+
+    protected void notifyObservers(String message) {
+        for (MapChangeListener observer : observers) {
+            observer.mapChanged(this, message);
         }
-        else{throw new IncorrectPositionException(animal.getPosition());
-        }
     }
 
-    public boolean isOccupied(Vector2d position){
-        return animals.containsKey(position);
-    }
 
+    @Override
     public void move(Animal animal, MoveDirection direction) {
-        if (this.isOccupied(animal.getPosition())){
-            animals.remove(animal.getPosition());
-            Vector2d oldPosition = animal.getPosition();
-            animal.move(direction,this);
-            animals.put(animal.getPosition(), animal);
-            this.notifyAllObservers("animal was moved from position %s to position %s".formatted(oldPosition, animal.getPosition()));
+        var oldPosition = animal.getLocalizationOnMap();
+        var oldOrientation = animal.getFacingDirection();
+        animal.move(direction, this);
+        var newPosition = animal.getLocalizationOnMap();
+        var newOrientation = animal.getFacingDirection();
+
+        if (oldPosition != newPosition) {
+            animals.remove(oldPosition);
+            animals.put(newPosition, animal);
+            notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
+        } else if (oldOrientation != newOrientation) {
+            notifyObservers(String.format("Animal changed direction from %s to %s", oldOrientation, newOrientation));
         }
-    }
-
-    public WorldElement objectAt(Vector2d position){
-        return animals.get(position);
-    }
-
-    public  String toString(){
-        return mapVisualizer.draw(this.getCurrentBounds().LowerLeft(), this.getCurrentBounds().UpperRight());
     }
 
     @Override
-    public Collection<WorldElement> getElements() {
-        return new ArrayList<>(animals.values());
+    public void place(Animal animal) throws IncorrectPositionException {
+        var animalProposedLocalisation = animal.getLocalizationOnMap();
+        if (canMoveTo(animalProposedLocalisation)) {
+            animals.put(animalProposedLocalisation, animal);
+            notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
+        } else {
+            throw new IncorrectPositionException((animal.getPosition()));
+        }
+    }
+
+    @Override
+    public Optional<WorldElement> objectAt(Vector2d position) {
+        return Optional.ofNullable(animals.get(position));
+    }
+
+    @Override
+    public boolean isOccupied(Vector2d position) {
+        return objectAt(position).isPresent();
+    }
+
+    @Override
+    //move to be abstract
+    public boolean canMoveTo(Vector2d position) {
+        return (animals.get(position) == null);
+    }
+
+
+    //this getter is safe, because we are returning new list - modification of it won't directly impact object state
+
+    @Override
+    public List<WorldElement> getElements() {
+        List<WorldElement> elements = new ArrayList<>(animals.values());
+        return elements;
     }
 
     public abstract Boundary getCurrentBounds();
 
-    public void addObserver(MapChangeListener observer) {
-        observersList.add(observer);
-    }
-
-    public void removeObserver(MapChangeListener observer) {
-        observersList.remove(observer);
+    @Override
+    public String toString() {
+        Boundary bounds = getCurrentBounds();
+        return visualizer.draw(bounds.lowerLeft(), bounds.upperRight());
     }
 
     @Override
-    public UUID getID() {
+    public int getId() {
         return mapId;
     }
 
-    protected void notifyAllObservers(String message) {
-        for(MapChangeListener observer : observersList){
-             observer.mapChanged(this,message);
-        }
+    @Override
+    public List<Animal> getOrderedAnimals() {
+        return animals.values().stream().sorted(Comparator.comparing((Animal animal) -> animal.getPosition().getX()
+        ).thenComparing((Animal animal) -> animal.getPosition().getY())).toList();
     }
 }

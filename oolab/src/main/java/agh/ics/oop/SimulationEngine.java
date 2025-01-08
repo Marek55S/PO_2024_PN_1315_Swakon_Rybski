@@ -7,47 +7,46 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class SimulationEngine {
-    private final List<Simulation> simulationsList;
-    private final List<Thread> threadList = new ArrayList<>();
+
+    private final List<Simulation> simulations;
     private final ExecutorService threadPool = Executors.newFixedThreadPool(4);
+    private List<Thread> threads = new ArrayList<>();
 
     public SimulationEngine(List<Simulation> simulations) {
-        simulationsList = simulations;
+        this.simulations = simulations;
     }
 
-    public void runSync(){
-
-        for(Simulation simulation : simulationsList){
+    public void runSync() {
+        for (Simulation simulation : simulations) {
             simulation.run();
         }
     }
 
-    public void runAsync(){
-        for (Simulation simulation : simulationsList) {
-            Thread newThread = new Thread(simulation);
-            threadList.add(newThread);
-            newThread.start();
+    public void runAsync() {
+        for (Simulation simulation : simulations) {
+            Thread thread = new Thread(simulation);
+            threads.add(thread);
+            thread.start();
         }
     }
 
-    public void awaitSimulationsEndForRunAsync() throws InterruptedException {
-        for(int i=0;i<simulationsList.size();i++){
-            threadList.get(i).join();
+    public void runAsyncInThreadPool() {
+        for (Simulation simulation : simulations) {
+            threadPool.submit(new Thread(simulation));
         }
     }
 
-    public void awaitSimulationsEndForThreadPool() throws InterruptedException{
-        if(!threadPool.awaitTermination(60, TimeUnit.SECONDS)){
-            System.out.println("Wątki zostały zakończone przed wykonaniem wszystkich zadań");
+    public void addToThreadPool(Simulation simulation) {
+        threadPool.submit(new Thread(simulation));
+    }
+
+    public void awaitSimulationEnd() throws InterruptedException {
+        for (Thread thread : threads) {
+            thread.join();
+        }
+        threadPool.shutdown();
+        if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
             threadPool.shutdownNow();
         }
     }
-
-    public void runAsyncInThreadPool(){
-        for(Simulation simulation: simulationsList){
-            threadPool.submit(simulation);
-        }
-        threadPool.shutdown();
-    }
-
 }

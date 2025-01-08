@@ -1,157 +1,213 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.IncorrectPositionException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
-class RectangularMapTest {
+public class RectangularMapTest {
 
     @Test
-    void firstBasicTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal = new Animal();
-        Boundary mapBounds = defaultMap.getCurrentBounds();
-        //when
+    void animalIsPlacedOnValidCoordinates() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var properPosition = new Vector2d(1, 1);
+        var testAnimal = new Animal(properPosition);
+
         try {
-            defaultMap.place(animal);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(testAnimal);
+            Assertions.assertEquals(testAnimal, testMap.objectAt(properPosition).get());
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
         }
-        defaultMap.move(animal,MoveDirection.FORWARD);
-        //then
-        assertEquals(new Vector2d(2,3),animal.getPosition());
-        assertEquals(MapDirection.NORTH,animal.getOrientation());
-        assertEquals(new Vector2d(0,0),mapBounds.LowerLeft());
-        assertEquals(new Vector2d(4,4),mapBounds.UpperRight());
+
     }
 
     @Test
-    void CanMoveToTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Vector2d offTheMap = new Vector2d(7,8);
-        Vector2d occupiedCell = new Vector2d(2,2);
-        Vector2d freeCell = new Vector2d(1,0);
-        Animal animal = new Animal();
-        //when
-        try {
-            defaultMap.place(animal);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
-        }
-        //then
-        assertFalse(defaultMap.canMoveTo(offTheMap));
-        assertFalse(defaultMap.canMoveTo(occupiedCell));
-        assertTrue(defaultMap.canMoveTo(freeCell));
+    void animalIsNotPlacedOutsideMap() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var properPosition = new Vector2d(10, 10);
+        var testAnimal = new Animal(properPosition);
+
+        Assertions.assertThrows(IncorrectPositionException.class, () -> {
+            testMap.place(testAnimal);
+        });
+
     }
 
     @Test
-    void placeTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal1 = new Animal();
-        Animal animal2 = new Animal(new Vector2d(3,3));
-        Animal animal3 = new Animal(new Vector2d(8,8));
-        Animal animal4 = new Animal();
-        //then
+    void animalIsNotPlacedOnOtherAnimal() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var properPosition = new Vector2d(1, 1);
+        var exampleAnimal = new Animal(properPosition);
+        var testAnimal = new Animal(properPosition);
+
         try {
-            defaultMap.place(animal1);
-            defaultMap.place(animal2);
-        }catch(IncorrectPositionException e){
-                fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(exampleAnimal);
+            Assertions.assertThrows(IncorrectPositionException.class, () -> {
+                testMap.place(testAnimal);
+            });
+        } catch (Exception ex) {
+            Assertions.fail("Exception was thrown" + ex.getMessage());
         }
-        assertThrows(IncorrectPositionException.class, () -> defaultMap.place(animal3));
-        assertThrows(IncorrectPositionException.class, () -> defaultMap.place(animal4));
     }
 
     @Test
-    void moveTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal1 = new Animal();
-        Animal animal2 = new Animal(new Vector2d(2,3));
-        //when
+    void animalMovesIfPositionValid() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var testPosition = new Vector2d(1, 1);
+        var testAnimal = new Animal(testPosition);
+
         try {
-            defaultMap.place(animal1);
-            defaultMap.place(animal2);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
         }
-        defaultMap.move(animal1,MoveDirection.FORWARD);
-        defaultMap.move(animal1,MoveDirection.RIGHT);
-        defaultMap.move(animal2,MoveDirection.LEFT);
-        defaultMap.move(animal2,MoveDirection.FORWARD);
-        //then
-        assertEquals(new Vector2d(2,2),animal1.getPosition());
-        assertEquals(MapDirection.EAST,animal1.getOrientation());
-        assertEquals(new Vector2d(1,3),animal2.getPosition());
-        assertEquals(MapDirection.WEST,animal2.getOrientation());
+        testMap.move(testAnimal, MoveDirection.FORWARD);
+
+        var expectedPosition = new Vector2d(1, 2);
+
+        Assertions.assertFalse(testMap.isOccupied(testPosition));
+        Assertions.assertEquals(testAnimal, testMap.objectAt(expectedPosition).get());
     }
 
     @Test
-    void isOccupiedTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal1 = new Animal();
-        //when
+    void animalWontMoveIfPositionInvalid() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var testPosition = new Vector2d(0, 0);
+        var testAnimal = new Animal(testPosition);
+
         try {
-            defaultMap.place(animal1);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
         }
-        //then
-        assertTrue(defaultMap.isOccupied(new Vector2d(2,2)));
-        assertFalse(defaultMap.isOccupied(new Vector2d(3,3)));
+        testMap.move(testAnimal, MoveDirection.BACKWARD);
+
+        Assertions.assertTrue(testMap.isOccupied(testPosition));
+        Assertions.assertEquals(testAnimal, testMap.objectAt(testPosition).get());
     }
 
     @Test
-    void objectAtTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal1 = new Animal();
-        Animal animal2 = new Animal(new Vector2d(3,3));
-        //when
-        animal2.move(MoveDirection.RIGHT,defaultMap);
+    void occupiedPlaceIsOccupied() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var testPosition = new Vector2d(1, 1);
+        var testAnimal = new Animal(testPosition);
+
         try {
-            defaultMap.place(animal1);
-            defaultMap.place(animal2);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
         }
-        //then
-        assertEquals(animal1,defaultMap.objectAt(new Vector2d(2,2)));
-        assertEquals(animal2,defaultMap.objectAt(new Vector2d(3,3)));
-    }
 
-    //ufam, że MapVisualizer działa poprawnie
-
-    @Test
-    void isInMapBoundsTest(){
-        //given
-        RectangularMap otherMap = new RectangularMap(10,5);
-        //then
-        assertTrue(otherMap.isInMapBounds(new Vector2d(2,2)));
-        assertFalse(otherMap.isInMapBounds(new Vector2d(11,-2)));
-        assertFalse(otherMap.isInMapBounds(new Vector2d(7,7)));
+        Assertions.assertTrue(testMap.isOccupied(testPosition));
     }
 
     @Test
-    void getElementsTest(){
-        //given
-        RectangularMap defaultMap = new RectangularMap(5,5);
-        Animal animal1 = new Animal();
-        Animal animal2 = new Animal(new Vector2d(3,3));
-        Animal animal3 = new Animal(new Vector2d(1,2));
-        //when
+    void unoccupiedPlaceIsNotOccupied() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var occupiedPosition = new Vector2d(1, 1);
+        var unoccupiedPosition = new Vector2d(2, 2);
+        var testAnimal = new Animal(occupiedPosition);
+
         try {
-            defaultMap.place(animal1);
-            defaultMap.place(animal2);
-            defaultMap.place(animal3);
-        } catch(IncorrectPositionException e){
-            fail(e.getMessage() + " exception should not be thrown");
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
         }
-        //then
-        assertEquals(3,defaultMap.getElements().size());
+
+        Assertions.assertFalse(testMap.isOccupied(unoccupiedPosition));
+    }
+
+    @Test
+    void objectThatIsOnPositionIsReturned() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var occupiedPosition = new Vector2d(1, 1);
+        var testAnimal = new Animal(occupiedPosition);
+
+        try {
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
+        }
+
+        Assertions.assertEquals(testAnimal, testMap.objectAt(occupiedPosition).get());
+    }
+
+    @Test
+    void canMoveToValidPosition() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var testPosition = new Vector2d(1, 1);
+
+
+        Assertions.assertTrue(testMap.canMoveTo(testPosition));
+    }
+
+    @Test
+    void cantMoveToPositionOutsideMap() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var testPosition = new Vector2d(10, 10);
+
+
+        Assertions.assertFalse(testMap.canMoveTo(testPosition));
+    }
+
+    @Test
+    void cantMoveToOccupiedPosition() {
+        var testMap = new RectangularMap(4, 5, 0);
+        var occupiedPosition = new Vector2d(1, 1);
+        var testAnimal = new Animal(occupiedPosition);
+
+        try {
+            testMap.place(testAnimal);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
+        }
+
+        Assertions.assertFalse(testMap.canMoveTo(occupiedPosition));
+    }
+
+    @Test
+    void rectangularMapReturnsProperAmountOfElements() {
+        RectangularMap testMap = new RectangularMap(10, 10, 0);
+        Animal animal1 = new Animal(new Vector2d(0, 0));
+        Animal animal2 = new Animal(new Vector2d(1, 1));
+        try {
+            testMap.place(animal1);
+            testMap.place(animal2);
+            Assertions.assertEquals(2, testMap.getElements().size());
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
+        }
+    }
+
+    @Test
+    void animalsAreSortedByX() {
+        RectangularMap testMap = new RectangularMap(10, 10, 0);
+        Animal animal1 = new Animal(new Vector2d(0, 1));
+        Animal animal2 = new Animal(new Vector2d(1, 1));
+        List<Animal> expectedAnimals = List.of(animal1, animal2);
+        try {
+            testMap.place(animal1);
+            testMap.place(animal2);
+            Assertions.assertEquals(expectedAnimals, testMap.getOrderedAnimals());
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
+        }
+    }
+
+    @Test
+    void animalsAreSortedByY() {
+        RectangularMap testMap = new RectangularMap(10, 10, 0);
+        Animal animal1 = new Animal(new Vector2d(1, 0));
+        Animal animal2 = new Animal(new Vector2d(1, 1));
+        List<Animal> expectedAnimals = List.of(animal1, animal2);
+        try {
+            testMap.place(animal1);
+            testMap.place(animal2);
+            Assertions.assertEquals(expectedAnimals, testMap.getOrderedAnimals());
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown" + e.getMessage());
+        }
     }
 }

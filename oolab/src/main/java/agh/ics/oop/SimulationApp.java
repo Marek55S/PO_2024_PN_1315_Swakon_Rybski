@@ -1,28 +1,21 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.GrassField;
-import agh.ics.oop.presenter.SimulationPresenter;
-
+import agh.ics.oop.presenter.MainWindowPresenter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 
 public class SimulationApp extends Application {
-    @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+        loader.setLocation(getClass().getClassLoader().getResource("mainWindow.fxml"));
         BorderPane viewRoot = loader.load();
-        SimulationPresenter presenter = loader.getController();
+        MainWindowPresenter presenter = loader.getController();
         configureStage(primaryStage, viewRoot);
-
-        GrassField map = new GrassField(10);
-        presenter.setWorldMap(map);
-        map.addObserver(presenter);
-
         primaryStage.show();
     }
 
@@ -33,5 +26,4 @@ public class SimulationApp extends Application {
         primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
         primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
     }
-
 }

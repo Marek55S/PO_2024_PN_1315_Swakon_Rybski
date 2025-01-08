@@ -12,6 +12,11 @@ public class Grass implements WorldElement {
     }
 
     @Override
+    public String getResourceString() {
+        return "grass.png";
+    }
+
+    @Override
     public String toString() {
         return "*";
     }

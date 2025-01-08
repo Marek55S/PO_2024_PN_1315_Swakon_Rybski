@@ -1,156 +1,208 @@
 package agh.ics.oop.model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class Vector2dTest {
-
+public class Vector2dTest {
     @Test
-    void equalsFourCases(){
-        //when
-        Vector2d v1 = new Vector2d(1,2);
-        Vector2d v2 = new Vector2d(1,2);
-        Vector2d v3 = new Vector2d(2,2);
-
-        //then
-        assertEquals(v1, v1);
-        assertEquals(v1, v2);
-        assertNotEquals(v1, v3);
-        assertNotEquals(v1,v1.toString());
+    public void vectorEualToItself() {
+        var orginalVector = new Vector2d(0, 0);
+        Assertions.assertEquals(orginalVector, orginalVector);
 
     }
 
     @Test
-    void toStringPositiveAndNegative(){
-        //when
-        Vector2d positive = new Vector2d(1,2);
-        Vector2d negative = new Vector2d(-1,-2);
-        Vector2d zero = new Vector2d(0,0);
+    public void vectorEqualsToDiffrentVectorSameValues() {
+        var orginalVector = new Vector2d(0, 0);
+        var diffrentVectorOfClassSameValues = new Vector2d(0, 0);
+        Assertions.assertEquals(orginalVector, diffrentVectorOfClassSameValues);
+    }
 
-        //then
-        assertEquals("(1,2)",positive.toString());
-        assertEquals("(-1,-2)",negative.toString());
-        assertEquals("(0,0)",zero.toString());
+    @Test
+    public void vectorNotEqualsToDiffrentVectorDiffrentValues() {
+        var orginalVector = new Vector2d(0, 0);
+        var diffrentVectorOfClassDiffrentValues = new Vector2d(1, 1);
+        Assertions.assertNotEquals(orginalVector, diffrentVectorOfClassDiffrentValues);
+    }
+
+    @Test
+    public void vectorNotEqualsToGenericObject() {
+        var orginalVector = new Vector2d(0, 0);
+        var genericVector = new Object();
+        Assertions.assertNotEquals(orginalVector, genericVector);
+    }
+
+    @Test
+    public void vectorParsesToStringWithNonNegativeCoordinates() {
+        var orginalVector = new Vector2d(0, 0);
+        Assertions.assertEquals("(0,0)", orginalVector.toString());
+    }
+
+    @Test
+    public void vectorParsesToStringWithNegativeCoordinates() {
+        var negativeVector = new Vector2d(-1, -1);
+        Assertions.assertEquals("(-1,-1)", negativeVector.toString());
+    }
+
+    @Test
+    public void vectorPreceeds() {
+        //Basic tests - test basic cases
+        var orginalVector = new Vector2d(0, 0);
+        //Self preceding test
+        Assertions.assertTrue(orginalVector.precedes(orginalVector));
+
+        var twoSmallerCoordsVector = new Vector2d(-1, -1);
+
+        Assertions.assertFalse(orginalVector.precedes(twoSmallerCoordsVector));
+
+        var xSmallerYEqualVector = new Vector2d(-1, 0);
+
+        Assertions.assertFalse(orginalVector.precedes(xSmallerYEqualVector));
+
+        var xSmallerYBigger = new Vector2d(-1, 1);
+
+        Assertions.assertFalse(orginalVector.precedes(xSmallerYBigger));
+
+        var xEqualYSmaller = new Vector2d(0, -1);
+
+        Assertions.assertFalse(orginalVector.precedes(xEqualYSmaller));
+
+        var xEqualYBigger = new Vector2d(0, 1);
+        Assertions.assertTrue(orginalVector.precedes(xEqualYBigger));
+
+        var xBiggerYsmaller = new Vector2d(1, -1);
+        Assertions.assertFalse(orginalVector.precedes(xBiggerYsmaller));
+        var xBiggerYEqual = new Vector2d(1, 0);
+        Assertions.assertTrue(orginalVector.precedes(xBiggerYEqual));
+        var xBiggerYBigger = new Vector2d(1, 1);
+        Assertions.assertTrue(orginalVector.precedes(xBiggerYBigger));
 
     }
 
     @Test
-    void precedesBiggerSmallerEqual(){
-        //when
-        Vector2d v1 = new Vector2d(1,1);
-        Vector2d v2 = new Vector2d(2,2);
-        Vector2d v3 = new Vector2d(2,3);
+    public void vectorFollows() {
+        //Basic tests - test basic cases
+        var orginalVector = new Vector2d(0, 0);
+        //Self preceding test
+        Assertions.assertTrue(orginalVector.follows(orginalVector));
 
-        //then
-        assertTrue(v1.precedes(v2));
-        assertTrue(v1.precedes(v1));
-        assertTrue(v2.precedes(v3));
-        assertFalse(v2.precedes(v1));
-        assertFalse(v3.precedes(v2));
+        var twoSmallerCoordsVector = new Vector2d(-1, -1);
+
+        Assertions.assertTrue(orginalVector.follows(twoSmallerCoordsVector));
+
+        var xSmallerYEqualVector = new Vector2d(-1, 0);
+
+        Assertions.assertTrue(orginalVector.follows(xSmallerYEqualVector));
+
+        var xSmallerYBigger = new Vector2d(-1, 1);
+
+        Assertions.assertFalse(orginalVector.follows(xSmallerYBigger));
+
+        var xEqualYSmaller = new Vector2d(0, -1);
+
+        Assertions.assertTrue(orginalVector.follows(xEqualYSmaller));
+
+        var xEqualYBigger = new Vector2d(0, 1);
+        Assertions.assertFalse(orginalVector.follows(xEqualYBigger));
+
+        var xBiggerYsmaller = new Vector2d(1, -1);
+        Assertions.assertFalse(orginalVector.follows(xBiggerYsmaller));
+        var xBiggerYEqual = new Vector2d(1, 0);
+        Assertions.assertFalse(orginalVector.follows(xBiggerYEqual));
+        var xBiggerYBigger = new Vector2d(1, 1);
+        Assertions.assertFalse(orginalVector.follows(xBiggerYBigger));
     }
 
     @Test
-    void followsBiggerSmallerEqual(){
-        //when
-        Vector2d v1 = new Vector2d(1,1);
-        Vector2d v2 = new Vector2d(2,2);
-        Vector2d v3 = new Vector2d(2,3);
+    public void vectorReturnsUpperRightBasicTests() {
+        //Basic tests - test basic cases
+        var orginalVector = new Vector2d(0, 0);
 
-        //then
-        assertTrue(v3.follows(v1));
-        assertTrue(v3.follows(v2));
-        assertTrue(v3.follows(v3));
-        assertFalse(v2.follows(v3));
-        assertFalse(v1.follows(v2));
-    }
+        var twoSmallerCoordsVector = new Vector2d(-1, -1);
 
-    @Test
-    void addPositiveNegativeMixedAndZero(){
-        //given
-        Vector2d v1 = new Vector2d(-1,2);
+        Assertions.assertEquals(orginalVector, orginalVector.upperRight(twoSmallerCoordsVector));
 
-        //when
-        Vector2d positive = v1.add(new Vector2d(2,3));
-        Vector2d negative = v1.add(new Vector2d(-2,-1));
-        Vector2d zero = v1.add(new Vector2d(0,0));
-        Vector2d mixed = v1.add(new Vector2d(1,-2));
+        var twoBiggerCoordsVector = new Vector2d(1, 1);
 
-        //then
-        assertEquals(new Vector2d(1,5),positive);
-        assertEquals(new Vector2d(-3,1),negative);
-        assertEquals(new Vector2d(-1,2),zero);
-        assertEquals(new Vector2d(0,0),mixed);
+        Assertions.assertEquals(twoBiggerCoordsVector, orginalVector.upperRight(twoBiggerCoordsVector));
+
+        var oneBigerOneLower = new Vector2d(-1, 1);
+
+        Assertions.assertEquals(new Vector2d(0, 1), orginalVector.upperRight(oneBigerOneLower));
 
     }
 
+
     @Test
-    void subtractPositiveNegativeMixedAndZero(){
-        //given
-        Vector2d v1 = new Vector2d(-1,2);
+    public void vectorReturnsLowerLeftBasicTests() {
+        //Basic tests - test basic cases
+        var orginalVector = new Vector2d(0, 0);
 
-        //when
-        Vector2d positive = v1.subtract(new Vector2d(2,3));
-        Vector2d negative = v1.subtract(new Vector2d(-2,-1));
-        Vector2d zero = v1.subtract(new Vector2d(0,0));
-        Vector2d mixed = v1.subtract(new Vector2d(1,-2));
+        var twoSmallerCoordsVector = new Vector2d(-1, -1);
 
-        //then
-        assertEquals(new Vector2d(-3,-1),positive);
-        assertEquals(new Vector2d(1,3),negative);
-        assertEquals(new Vector2d(-1,2),zero);
-        assertEquals(new Vector2d(-2,4),mixed);
+        Assertions.assertEquals(twoSmallerCoordsVector, orginalVector.lowerLeft(twoSmallerCoordsVector));
+
+        var twoBiggerCoordsVector = new Vector2d(1, 1);
+
+        Assertions.assertEquals(orginalVector, orginalVector.lowerLeft(twoBiggerCoordsVector));
+
+        var oneBigerOneLower = new Vector2d(-1, 1);
+
+        Assertions.assertEquals(new Vector2d(-1, 0), orginalVector.lowerLeft(oneBigerOneLower));
+    }
+
+
+    @Test
+    public void vectorReturnsAdditionOfSuppliedVectorBasicTests() {
+        //Basic tests - test basic cases
+        var twoZeros = new Vector2d(0, 0);
+
+        var twoMinusOnes = new Vector2d(-1, -1);
+
+        Assertions.assertEquals(twoMinusOnes, twoZeros.add(twoMinusOnes));
+
+        var twoOnes = new Vector2d(1, 1);
+
+        Assertions.assertEquals(twoZeros, twoMinusOnes.add(twoOnes));
+
+        var minusOneOne = new Vector2d(-1, 1);
+
+        Assertions.assertEquals(new Vector2d(0, 2), minusOneOne.add(twoOnes));
+    }
+
+
+    @Test
+    public void vectorReturnsSubstractionOfSuppliedVectorBasicTests() {
+        //Basic tests - test basic cases
+        var twoZeros = new Vector2d(0, 0);
+
+        var twoMinusOnes = new Vector2d(-1, -1);
+
+        var twoOnes = new Vector2d(1, 1);
+
+        var minusOneOne = new Vector2d(-1, 1);
+
+        Assertions.assertEquals(twoOnes, twoZeros.subtract(twoMinusOnes));
+
+        Assertions.assertEquals(new Vector2d(-2, -2), twoMinusOnes.subtract(twoOnes));
+
+        Assertions.assertEquals(new Vector2d(0, -2), twoMinusOnes.subtract(minusOneOne));
     }
 
     @Test
-    void upperRightBiggerSmallerEqualAndMixed(){
-        //given
-        Vector2d v1 = new Vector2d(2,1);
+    public void vectorReturnsOppositeVectorSimpleTests() {
+        //Basic tests - test basic cases
+        var twoZeros = new Vector2d(0, 0);
 
-        //when
-        Vector2d bigger = v1.upperRight(new Vector2d(3,3));
-        Vector2d smaller = v1.upperRight(new Vector2d(-2,-1));
-        Vector2d equal = v1.upperRight(v1);
-        Vector2d mixed = v1.upperRight(new Vector2d(3,-2));
+        var twoMinusOnes = new Vector2d(-1, -1);
 
-        //then
-        assertEquals(new Vector2d(3,3),bigger);
-        assertEquals(new Vector2d(2,1),smaller);
-        assertEquals(new Vector2d(2,1),equal);
-        assertEquals(new Vector2d(3,1),mixed);
-    }
+        var twoOnes = new Vector2d(1, 1);
 
-    @Test
-    void lowerLeftBiggerSmallerEqualAndMixed(){
-        //given
-        Vector2d v1 = new Vector2d(2,1);
+        var minusOneOne = new Vector2d(-1, 1);
 
-        //when
-        Vector2d bigger = v1.lowerLeft(new Vector2d(3,3));
-        Vector2d smaller = v1.lowerLeft(new Vector2d(-2,-1));
-        Vector2d equal = v1.lowerLeft(v1);
-        Vector2d mixed = v1.lowerLeft(new Vector2d(3,-2));
-
-        //then
-        assertEquals(new Vector2d(2,1),bigger);
-        assertEquals(new Vector2d(-2,-1),smaller);
-        assertEquals(new Vector2d(2,1),equal);
-        assertEquals(new Vector2d(2,-2),mixed);
-    }
-
-    @Test
-    void oppositePositiveNegativeZeroAndMixed(){
-        //when
-        Vector2d positive = new Vector2d(1,2);
-        Vector2d negative = new Vector2d(-1,-2);
-        Vector2d zero = new Vector2d(0,0);
-        Vector2d mixed = new Vector2d(1,-2);
-
-        //then
-        assertEquals(negative,positive.opposite());
-        assertEquals(positive,negative.opposite());
-        assertEquals(zero,zero.opposite());
-        assertEquals(new Vector2d(-1,2),mixed.opposite());
+        Assertions.assertEquals(twoZeros, twoZeros.opposite());
+        Assertions.assertEquals(twoMinusOnes, twoOnes.opposite());
+        Assertions.assertEquals(new Vector2d(1, -1), minusOneOne.opposite());
     }
 
 

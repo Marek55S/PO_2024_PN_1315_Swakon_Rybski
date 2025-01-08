@@ -1,7 +1,10 @@
 package agh.ics.oop.model;
 
-import java.util.Collection;
-import java.util.UUID;
+import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.util.IncorrectPositionException;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * The interface responsible for interacting with the map of the world.
@@ -9,13 +12,12 @@ import java.util.UUID;
  *
  * @author apohllo, idzik
  */
-public interface WorldMap extends MoveValidator {
+public interface WorldMap extends agh.ics.oop.model.MoveValidator {
 
     /**
-     * Place an animal on the map.
+     * Place a animal on the map.
      *
      * @param animal The animal to place on the map.
-     *  The animal cannot be placed if the move is not valid.
      */
     void place(Animal animal) throws IncorrectPositionException;
 
@@ -41,11 +43,15 @@ public interface WorldMap extends MoveValidator {
      * @param position The position of the animal.
      * @return animal or null if the position is not occupied.
      */
-    WorldElement objectAt(Vector2d position);
+    Optional<WorldElement> objectAt(Vector2d position);
 
-    Collection<WorldElement> getElements();
+    boolean canMoveTo(Vector2d position);
 
-    UUID getID();
+    List<WorldElement> getElements();
 
     Boundary getCurrentBounds();
+
+    int getId();
+
+    List<Animal> getOrderedAnimals();
 }

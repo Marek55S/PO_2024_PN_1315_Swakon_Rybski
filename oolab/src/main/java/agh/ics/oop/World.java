@@ -1,39 +1,56 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.*;
-import javafx.application.Application;
+import agh.ics.oop.model.GrassField;
+import agh.ics.oop.model.MoveDirection;
+import agh.ics.oop.model.RectangularMap;
+import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.model.util.ConsoleMapDisplay;
+import agh.ics.oop.model.util.FileMapDisplay;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class World {
     public static void main(String[] args) {
         try {
-            List<MoveDirection> directions = OptionsParser.parseDirection(args);
-            List<Simulation> simulations = new ArrayList<>();
-            for(int i=0;i<30;i++) {
-                List<Vector2d> positions = List.of(new Vector2d(1, 1), new Vector2d(3, 1));
-                AbstractWorldMap map1 = new GrassField(10);
-                AbstractWorldMap map2 = new RectangularMap(7, 7);
-                map1.addObserver(new ConsoleMapDisplay());
-                map2.addObserver(new ConsoleMapDisplay());
-                simulations.add(new Simulation(positions, directions, map1));
-                simulations.add(new Simulation(positions, directions, map2));
+            List<MoveDirection> moves = OptionsParser.parseOptions("f b r l f f r r f f f f f f f f".split(" "));
+            List<Vector2d> positions = List.of(new Vector2d(1, 1));
+            var grassField = new GrassField(10, 0);
+            var rectangularMap = new RectangularMap(10, 10, 1);
+            var observer = new ConsoleMapDisplay();
+            grassField.addObserver(observer);
+            grassField.addObserver((worldMap, message) -> {
+                System.out.println(String.format("%s %s", LocalDateTime.now(), message));
+            });
+            FileMapDisplay fileMapDisplay = new FileMapDisplay();
+            grassField.addObserver(fileMapDisplay);
+            rectangularMap.addObserver(observer);
+            var simulation = new Simulation(positions, moves, grassField);
+            var simulation2 = new Simulation(positions, moves, rectangularMap);
+            var simulationEngine = new SimulationEngine(List.of(simulation, simulation2));
+            simulationEngine.runAsync();
+            try {
+                simulationEngine.awaitSimulationEnd();
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
             }
-            /*SimulationEngine engine = new SimulationEngine(simulations);
-            engine.runAsyncInThreadPool();
-            try{
-                engine.awaitSimulationsEndForThreadPool();
-            }catch(InterruptedException e){
-                System.out.println("wątki zostały przerwane przed wykonaniem");
-            }*/
-            simulations.getFirst().run();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            System.out.println("System zakończył działanie");
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            return;
         }
-        System.out.println("system zakończył działanie");
-        //Application.launch(SimulationApp.class,args);
+
 
     }
 
+    public static void run(MoveDirection[] args) {
+        for (var move : args) {
+            switch (move) {
+                case MoveDirection.FORWARD -> System.out.println("Zwierzak idzie do przodu");
+                case MoveDirection.BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
+                case MoveDirection.RIGHT -> System.out.println("Zwierzak skręca w prawo");
+                case MoveDirection.LEFT -> System.out.println("Zwierzak skręca w lewo");
+            }
+        }
+    }
 }

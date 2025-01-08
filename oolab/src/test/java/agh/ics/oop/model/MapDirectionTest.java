@@ -1,71 +1,23 @@
 package agh.ics.oop.model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class MapDirectionTest {
-
+public class MapDirectionTest {
     @Test
-    void toStringForAllCases(){
-        //when
-        MapDirection directionNorth = MapDirection.NORTH;
-        MapDirection directionEast = MapDirection.EAST;
-        MapDirection directionSouth = MapDirection.SOUTH;
-        MapDirection directionWest = MapDirection.WEST;
-
-        //then
-        assertEquals("N", directionNorth.toString());
-        assertEquals("E", directionEast.toString());
-        assertEquals("S", directionSouth.toString());
-        assertEquals("W", directionWest.toString());
+    public void directionReturnsNextDirection() {
+        Assertions.assertEquals(MapDirection.EAST, MapDirection.NORTH.next());
+        Assertions.assertEquals(MapDirection.SOUTH, MapDirection.EAST.next());
+        Assertions.assertEquals(MapDirection.WEST, MapDirection.SOUTH.next());
+        Assertions.assertEquals(MapDirection.NORTH, MapDirection.WEST.next());
     }
 
     @Test
-    void nextForAllCases(){
-        //when
-        MapDirection directionNorth = MapDirection.NORTH;
-        MapDirection directionEast = MapDirection.EAST;
-        MapDirection directionSouth = MapDirection.SOUTH;
-        MapDirection directionWest = MapDirection.WEST;
-
-        //then
-        assertEquals(MapDirection.EAST, directionNorth.next());
-        assertEquals(MapDirection.SOUTH, directionEast.next());
-        assertEquals(MapDirection.WEST, directionSouth.next());
-        assertEquals(MapDirection.NORTH, directionWest.next());
-
-    }
-
-    @Test
-    void previousForAllCases(){
-        //when
-        MapDirection directionNorth = MapDirection.NORTH;
-        MapDirection directionEast = MapDirection.EAST;
-        MapDirection directionSouth = MapDirection.SOUTH;
-        MapDirection directionWest = MapDirection.WEST;
-
-        //then
-        assertEquals(MapDirection.WEST, directionNorth.previous());
-        assertEquals(MapDirection.NORTH, directionEast.previous());
-        assertEquals(MapDirection.EAST, directionSouth.previous());
-        assertEquals(MapDirection.SOUTH, directionWest.previous());
-    }
-
-    @Test
-    void toUnitVectorAllCases(){
-        //when
-        MapDirection directionNorth = MapDirection.NORTH;
-        MapDirection directionEast = MapDirection.EAST;
-        MapDirection directionSouth = MapDirection.SOUTH;
-        MapDirection directionWest = MapDirection.WEST;
-
-        //then
-        assertEquals(new Vector2d(0,1), directionNorth.toUnitVector());
-        assertEquals(new Vector2d(1,0), directionEast.toUnitVector());
-        assertEquals(new Vector2d(0,-1), directionSouth.toUnitVector());
-        assertEquals(new Vector2d(-1,0), directionWest.toUnitVector());
-
+    public void directionReturnsPreviousDirection() {
+        Assertions.assertEquals(MapDirection.NORTH, MapDirection.EAST.previous());
+        Assertions.assertEquals(MapDirection.WEST, MapDirection.NORTH.previous());
+        Assertions.assertEquals(MapDirection.SOUTH, MapDirection.WEST.previous());
+        Assertions.assertEquals(MapDirection.EAST, MapDirection.SOUTH.previous());
     }
 
 
