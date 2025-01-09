@@ -44,9 +44,13 @@ public class Animal implements WorldElement {
     public String toString() {
         return String.format(switch (facingDirection) {
             case NORTH -> "^";
+            case NORTH_EAST -> "↗";
             case EAST -> ">";
+            case NORTH_WEST -> "↖";
             case WEST -> "<";
+            case SOUTH_EAST -> "↘";
             case SOUTH -> "v";
+            case SOUTH_WEST -> "↙";
         });
     }
 
@@ -79,6 +83,11 @@ public class Animal implements WorldElement {
             case EAST -> "right.png";
             case SOUTH -> "down.png";
             case WEST -> "left.png";
+            //below are temporary values that need to be changed
+            case NORTH_EAST -> "up.png";
+            case SOUTH_WEST -> "up.png";
+            case NORTH_WEST -> "up.png";
+            case SOUTH_EAST ->  "up.png";
         };
     }
 }

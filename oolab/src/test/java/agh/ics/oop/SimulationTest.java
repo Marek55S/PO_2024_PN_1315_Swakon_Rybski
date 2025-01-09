@@ -33,7 +33,7 @@ public class SimulationTest {
         Simulation simulation = new Simulation(positions, directions, map);
         simulation.run();
 
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(0));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class SimulationTest {
         Simulation simulation = new Simulation(positions, directions, map);
         simulation.run();
 
-        Assertions.assertEquals(MapDirection.EAST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_EAST, simulation.getAnimalFacingDirection(0));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class SimulationTest {
     void animalMovesAfterRotation() {
         List<MoveDirection> directions = new ArrayList<>();
         List<Vector2d> positions = List.of(new Vector2d(2, 2));
-        var finalPosition = new Vector2d(1, 2);
+        var finalPosition = new Vector2d(1, 3);
         directions.add(MoveDirection.LEFT);
         directions.add(MoveDirection.FORWARD);
         WorldMap map = new RectangularMap(5, 5, 0);
@@ -181,10 +181,10 @@ public class SimulationTest {
         simulation.run();
 
 
-        Assertions.assertEquals(new Vector2d(3, 3), simulation.getAnimalLocalisation(0));
-        Assertions.assertEquals(new Vector2d(4, 4), simulation.getAnimalLocalisation(1));
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(0));
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(1));
+        Assertions.assertEquals(new Vector2d(3, 2), simulation.getAnimalLocalisation(0));
+        Assertions.assertEquals(new Vector2d(4, 3), simulation.getAnimalLocalisation(1));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(1));
     }
 
     @Test
@@ -197,10 +197,10 @@ public class SimulationTest {
         simulation.run();
 
 
-        Assertions.assertEquals(new Vector2d(3, 4), simulation.getAnimalLocalisation(0));
-        Assertions.assertEquals(new Vector2d(4, 4), simulation.getAnimalLocalisation(1));
-        Assertions.assertEquals(MapDirection.EAST, simulation.getAnimalFacingDirection(0));
-        Assertions.assertEquals(MapDirection.EAST, simulation.getAnimalFacingDirection(1));
+        Assertions.assertEquals(new Vector2d(2, 4), simulation.getAnimalLocalisation(0));
+        Assertions.assertEquals(new Vector2d(3, 4), simulation.getAnimalLocalisation(1));
+        Assertions.assertEquals(MapDirection.NORTH_EAST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_EAST, simulation.getAnimalFacingDirection(1));
     }
 
     @Test
@@ -213,10 +213,10 @@ public class SimulationTest {
         simulation.run();
 
 
-        Assertions.assertEquals(new Vector2d(3, 3), simulation.getAnimalLocalisation(0));
-        Assertions.assertEquals(new Vector2d(4, 4), simulation.getAnimalLocalisation(1));
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(0));
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(1));
+        Assertions.assertEquals(new Vector2d(3, 2), simulation.getAnimalLocalisation(0));
+        Assertions.assertEquals(new Vector2d(4, 3), simulation.getAnimalLocalisation(1));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(1));
     }
 
     //This test becomes hard to use with new specification, will be removed after pr
