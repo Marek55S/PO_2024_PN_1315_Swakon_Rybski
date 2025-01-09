@@ -33,7 +33,7 @@ public class SimulationTest {
         Simulation simulation = new Simulation(positions, directions, map);
         simulation.run();
 
-        Assertions.assertEquals(MapDirection.WEST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_WEST, simulation.getAnimalFacingDirection(0));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class SimulationTest {
         Simulation simulation = new Simulation(positions, directions, map);
         simulation.run();
 
-        Assertions.assertEquals(MapDirection.EAST, simulation.getAnimalFacingDirection(0));
+        Assertions.assertEquals(MapDirection.NORTH_EAST, simulation.getAnimalFacingDirection(0));
     }
 
     @Test
