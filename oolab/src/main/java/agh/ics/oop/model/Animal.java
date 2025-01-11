@@ -1,9 +1,6 @@
 package agh.ics.oop.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Animal implements WorldElement {
     private MapDirection facingDirection;
@@ -27,9 +24,10 @@ public class Animal implements WorldElement {
 
 
     //temporary constructor
-    public Animal(Vector2d localizationOnMap, List<Integer> genom) {
+    public Animal(Vector2d localizationOnMap, List<Integer> genome) {
         this.localizationOnMap = localizationOnMap;
-        this.genome.addAll(genom);
+        this.genome.addAll(genome);
+        facingDirection = MapDirection.NORTH;
     }
 
 
@@ -58,6 +56,7 @@ public class Animal implements WorldElement {
         }
     }
 
+    // method should be changed to move all 8 directions
     public void move(MoveValidator validator) {
         this.move(MoveDirection.values()[genome.get(currentGenomeIndex)], validator);
         currentGenomeIndex = (currentGenomeIndex + 1) % genome.size();
@@ -129,25 +128,28 @@ public class Animal implements WorldElement {
         return energy >= ENERGY_TO_REPRODUCE;
     }
 
+    public List<Integer> getGenome(){
+        return Collections.unmodifiableList(genome);
+    }
+
     // method for mutation of the genome, each gene can be mutated more than once
-    private List<Integer> randomMutation(List<Integer> genomeToMutate){
+    private void randomMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < RANDOM.nextInt(GENOM_LENGTH); i++){
             if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), RANDOM.nextInt(8));
         }
-        return genomeToMutate;
     }
 
     // method for mutation of the genome, each gene can be slightly mutated only once
-    private List<Integer> slightMutation(List<Integer> genomeToMutate){
+    void slightMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < GENOM_LENGTH; i++){
             if(RANDOM.nextBoolean()){
                 int index = RANDOM.nextInt(GENOM_LENGTH);
-                genomeToMutate.set(index, genomeToMutate.get(index) + (RANDOM.nextBoolean()? 1 : -1));
+                genomeToMutate.set(index, (genomeToMutate.get(index) + (RANDOM.nextBoolean()? 1 : -1))%8);
             }
         }
-        return genomeToMutate;
     }
 
+    // should be another method for different types of mutations
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
         double energyFactor = (double) this.energy /(this.energy + partner.energy);
@@ -163,6 +165,8 @@ public class Animal implements WorldElement {
         }
         this.subtractEnergy(reproduceEnergy);
         partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);
+        //randomMutation(newGenome);
+        slightMutation(newGenome);
 
         return new Animal(this.localizationOnMap, newGenome);
     }
