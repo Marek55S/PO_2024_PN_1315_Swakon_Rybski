@@ -12,7 +12,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
     private final Vector2d upperBoundary;
     private final Vector2d lowerBoundary;
-    private final Boundary bounds;
+    private final Boundary mapBounds;
+    private final Boundary preferedGrassArea;
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -21,7 +22,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         lowerBoundary = new Vector2d(0, 0);
         upperBoundary = new Vector2d(width - 1, height - 1);
 
-        bounds = new Boundary(lowerBoundary, upperBoundary);
+        mapBounds = new Boundary(lowerBoundary, upperBoundary);
         animals = new HashMap<>();
     }
 
