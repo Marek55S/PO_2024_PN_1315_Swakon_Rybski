@@ -181,14 +181,14 @@ public class AnimalTest {
     @Test
     void animalMovesByGenome(){
         //given
-        List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
+        List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7,0);
         Animal testAnimal = new Animal(new Vector2d(2, 2), genome);
-        RectangularMap map = new RectangularMap(8, 8, 0);
+        GrassField map = new GrassField(10,0);
         Vector2d currentPosition = testAnimal.getLocalizationOnMap();
         //when
         for (int gene : genome) {
             currentPosition = currentPosition.add(MapDirection.values()[gene].toUnitVector());
-            testAnimal.move(validator); // wykonaj ruch
+            testAnimal.moveByGenome(map);
             Assertions.assertEquals(currentPosition, testAnimal.getLocalizationOnMap(),
                     "Animal moved incorrectly for gene: " + gene);
         }

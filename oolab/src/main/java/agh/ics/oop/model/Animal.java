@@ -57,9 +57,12 @@ public class Animal implements WorldElement {
     }
 
     // method should be changed to move all 8 directions
-    public void move(MoveValidator validator) {
-        this.move(MoveDirection.values()[genome.get(currentGenomeIndex)], validator);
-        currentGenomeIndex = (currentGenomeIndex + 1) % genome.size();
+    public void moveByGenome(MoveValidator validator) {
+        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
+        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
+        if (validator.canMoveTo(newLoc))
+            localizationOnMap = newLoc;
+        currentGenomeIndex++;
     }
 
     @Override
