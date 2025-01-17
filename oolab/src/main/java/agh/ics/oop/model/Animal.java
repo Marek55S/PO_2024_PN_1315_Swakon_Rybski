@@ -31,9 +31,6 @@ public class Animal implements WorldElement {
     }
 
 
-    public Vector2d getLocalizationOnMap() {
-        return localizationOnMap;
-    }
 
     public MapDirection getFacingDirection() {
         return facingDirection;
@@ -138,7 +135,7 @@ public class Animal implements WorldElement {
     // method for mutation of the genome, each gene can be mutated more than once
     private void randomMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < RANDOM.nextInt(GENOM_LENGTH); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), RANDOM.nextInt(8));
+            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), Integer.valueOf(RANDOM.nextInt(8)));
         }
     }
 
@@ -147,7 +144,7 @@ public class Animal implements WorldElement {
         for (int i = 0; i < GENOM_LENGTH; i++){
             if(RANDOM.nextBoolean()){
                 int index = RANDOM.nextInt(GENOM_LENGTH);
-                genomeToMutate.set(index, (genomeToMutate.get(index) + (RANDOM.nextBoolean()? 1 : -1))%8);
+                genomeToMutate.set(index, Integer.valueOf((genomeToMutate.get(index) + (RANDOM.nextBoolean() ? 1 : -1)) % 8));
             }
         }
     }

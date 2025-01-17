@@ -3,27 +3,49 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.RandomPositionGenerator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
-    private final Vector2d upperBoundary;
-    private final Vector2d lowerBoundary;
     private final Boundary mapBounds;
-    private final Boundary preferedGrassArea;
+    private final Set<Vector2d> equatorFreePositions = new HashSet<>();
+    private final Set<Vector2d> otherFreePositions = new HashSet<>();
+    public static final Random GENERATOR = new Random();
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
         super(mapId);
         grasses = new HashMap<>();
-        lowerBoundary = new Vector2d(0, 0);
-        upperBoundary = new Vector2d(width - 1, height - 1);
 
-        mapBounds = new Boundary(lowerBoundary, upperBoundary);
+        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
         animals = new HashMap<>();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)) {
+                    equatorFreePositions.add(new Vector2d(i, j));
+                } else {
+                    otherFreePositions.add(new Vector2d(i, j));
+                }
+            }
+        }
+    }
+
+    private void growGrass(){
+        equatorFreePositions.stream()
+                .filter(position -> GENERATOR.nextDouble() < 0.8)
+                .forEach(position -> {
+                    grasses.put(position, new Grass(position));
+                    equatorFreePositions.remove(position);
+                });
+        otherFreePositions.stream()
+                .filter(position -> GENERATOR.nextDouble() < 0.2)
+                .forEach(position -> {
+                    grasses.put(position, new Grass(position));
+                    otherFreePositions.remove(position);
+                });
     }
 
 
@@ -44,12 +66,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
 
     @Override
     public Boundary getCurrentBounds() {
-        var drawingLowerBoundary = lowerBoundary;
-        var drawingUpperBoundary = upperBoundary;
-        for (var animal : animals.values()) {
-            drawingLowerBoundary = drawingLowerBoundary.lowerLeft(animal.getPosition());
-            drawingUpperBoundary = drawingUpperBoundary.upperRight(animal.getPosition());
-        }
-        return new Boundary(drawingLowerBoundary, drawingUpperBoundary);
+        return mapBounds;
     }
+
 }
