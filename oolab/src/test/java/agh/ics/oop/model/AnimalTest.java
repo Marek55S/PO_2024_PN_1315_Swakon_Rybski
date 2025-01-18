@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 public class AnimalTest {
-    MoveValidator validator = new RectangularMap(4, 4, 0);
+    AbstractWorldMap validator = new DarwinSimulationMap(4, 4, 0);
 
     @Test
     void animalIsProperlyOrientedWhenCreated() {
@@ -34,7 +34,7 @@ public class AnimalTest {
         var testAnimal = new Animal();
         var finalPosition = new Vector2d(2, 3);
         testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
+        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class AnimalTest {
         var testAnimal = new Animal();
         var finalPosition = new Vector2d(2, 1);
         testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
+        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
     }
 
     @Test
@@ -51,56 +51,58 @@ public class AnimalTest {
         var finalPosition = new Vector2d(1, 3);
         testAnimal.move(MoveDirection.LEFT, validator);
         testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
+        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
     }
 
     @Test
-    void animalWontGoOutOfTheMap() {
+    void animalTeleportsOnXAxis() {
+        var startingPositionX = new Vector2d(3, 2);
+        var animalX = new Animal(startingPositionX);
 
-        //upper and right boundary
-        var startingPosition = new Vector2d(4, 4);
-        var testAnimal = new Animal(startingPosition);
-        var finalPosition = new Vector2d(4, 4);
+        animalX.move(MoveDirection.RIGHT, validator);
+        animalX.move(MoveDirection.RIGHT, validator);
+        Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
 
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
+        animalX.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
 
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        startingPosition = new Vector2d(0, 0);
-        testAnimal = new Animal(startingPosition);
-        finalPosition = new Vector2d(0, 0);
-
-        //new position - (0, -1)
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        //new
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getLocalizationOnMap());
+        animalX.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
     }
+
+    @Test
+    void animalTeleportsAndMoves(){
+        var startingPositionX = new Vector2d(3, 1);
+        var animalX = new Animal(startingPositionX);
+
+        animalX.move(MoveDirection.RIGHT, validator);
+        Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
+
+        animalX.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
+
+        animalX.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
+    }
+
+    @Test
+    void animalRotatesOnUpperYAxis() {
+        var startingPositionY = new Vector2d(2, 3);
+        var animalY = new Animal(startingPositionY);
+        animalY.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(2, 3), animalY.getPosition());
+        Assertions.assertEquals(MapDirection.SOUTH, animalY.getFacingDirection());
+    }
+
+    @Test
+    void animalRotatesOnLowerYAxis() {
+        var bottomPosition = new Vector2d(2, 0);
+        var animalBottom = new Animal(bottomPosition);
+        animalBottom.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(2, 0), animalBottom.getPosition());
+    }
+
+
 
     @Test
     void childGenomeCorrectRange(){
@@ -184,12 +186,12 @@ public class AnimalTest {
         List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7,0);
         Animal testAnimal = new Animal(new Vector2d(2, 2), genome);
         GrassField map = new GrassField(10,0);
-        Vector2d currentPosition = testAnimal.getLocalizationOnMap();
+        Vector2d currentPosition = testAnimal.getPosition();
         //when
         for (int gene : genome) {
             currentPosition = currentPosition.add(MapDirection.values()[gene].toUnitVector());
             testAnimal.moveByGenome(map);
-            Assertions.assertEquals(currentPosition, testAnimal.getLocalizationOnMap(),
+            Assertions.assertEquals(currentPosition, testAnimal.getPosition(),
                     "Animal moved incorrectly for gene: " + gene);
         }
     }

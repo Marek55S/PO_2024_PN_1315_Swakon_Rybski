@@ -30,7 +30,7 @@ public class Simulation implements Runnable {
     }
 
     Vector2d getAnimalLocalisation(int i) {
-        return animals.get(i).getLocalizationOnMap();
+        return animals.get(i).getPosition();
     }
 
     MapDirection getAnimalFacingDirection(int i) {

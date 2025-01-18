@@ -31,29 +31,43 @@ public class Animal implements WorldElement {
     }
 
 
-    public Vector2d getLocalizationOnMap() {
-        return localizationOnMap;
-    }
 
     public MapDirection getFacingDirection() {
         return facingDirection;
     }
 
-    public void move(MoveDirection direction, MoveValidator validator) {
+    public void move(MoveDirection direction, AbstractWorldMap validator) {
         switch (direction) {
             case LEFT -> facingDirection = facingDirection.previous();
             case RIGHT -> facingDirection = facingDirection.next();
             case FORWARD -> {
-                var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
-                if (validator.canMoveTo(newLoc))
+                var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
+                if ( validator.canMoveTo(newLoc)) {
                     localizationOnMap = newLoc;
+                }
             }
             case BACKWARD -> {
-                var newLoc = localizationOnMap.subtract(this.facingDirection.toUnitVector());
-                if (validator.canMoveTo(newLoc))
+                var newLoc = moveOnBorders(facingDirection.toUnitVector().opposite(), validator);
+                if (validator.canMoveTo(newLoc)) {
                     localizationOnMap = newLoc;
+                }
             }
         }
+    }
+
+    private Vector2d moveOnBorders(Vector2d unitMove,AbstractWorldMap map){
+        var newLoc = localizationOnMap.add(unitMove);
+        if(newLoc.getX()<0){
+            newLoc = new Vector2d(map.getCurrentBounds().upperRight().getX(), newLoc.getY());
+        }
+        else if(newLoc.getX()>map.getCurrentBounds().upperRight().getX()){
+            newLoc = new Vector2d(0, newLoc.getY());
+        }
+        if (!newLoc.precedes(map.getCurrentBounds().upperRight()) || !newLoc.follows(map.getCurrentBounds().lowerLeft())) {
+        facingDirection = facingDirection.next().next().next().next();
+        newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
+        }
+        return newLoc;
     }
 
     // method should be changed to move all 8 directions
@@ -145,9 +159,8 @@ public class Animal implements WorldElement {
     // method for mutation of the genome, each gene can be slightly mutated only once
     void slightMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < GENOM_LENGTH; i++){
-            if(RANDOM.nextBoolean()){
-                int index = RANDOM.nextInt(GENOM_LENGTH);
-                genomeToMutate.set(index, (genomeToMutate.get(index) + (RANDOM.nextBoolean()? 1 : -1))%8);
+            if(RANDOM.nextBoolean()){;
+                genomeToMutate.set(i, (genomeToMutate.get(i) + (RANDOM.nextBoolean() ? 1 : -1)+8) % 8);
             }
         }
     }

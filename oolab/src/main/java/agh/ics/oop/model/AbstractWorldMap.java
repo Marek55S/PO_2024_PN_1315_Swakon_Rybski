@@ -11,11 +11,21 @@ public abstract class AbstractWorldMap implements WorldMap {
     private final int mapId;
     protected HashMap<Vector2d, Animal> animals;
     protected List<MapChangeListener> observers;
+    public final Boundary mapBounds;
 
-    public AbstractWorldMap(int mapId) {
+    AbstractWorldMap(int mapId){
+        visualizer = new MapVisualizer(this);
+        animals = new HashMap<>();
+        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(0, 0));
+        observers = new ArrayList();
+        this.mapId = mapId;
+    }
+
+    public AbstractWorldMap(int width,int height,int mapId) {
 
         visualizer = new MapVisualizer(this);
         animals = new HashMap<>();
+        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
 
         observers = new ArrayList();
 
@@ -40,10 +50,10 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public void move(Animal animal, MoveDirection direction) {
-        var oldPosition = animal.getLocalizationOnMap();
+        var oldPosition = animal.getPosition();
         var oldOrientation = animal.getFacingDirection();
         animal.move(direction, this);
-        var newPosition = animal.getLocalizationOnMap();
+        var newPosition = animal.getPosition();
         var newOrientation = animal.getFacingDirection();
 
         if (oldPosition != newPosition) {
@@ -57,7 +67,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
-        var animalProposedLocalisation = animal.getLocalizationOnMap();
+        var animalProposedLocalisation = animal.getPosition();
         if (canMoveTo(animalProposedLocalisation)) {
             animals.put(animalProposedLocalisation, animal);
             notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
@@ -87,8 +97,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public List<WorldElement> getElements() {
-        List<WorldElement> elements = new ArrayList<>(animals.values());
-        return elements;
+        return new ArrayList<>(animals.values());
     }
 
     public abstract Boundary getCurrentBounds();
@@ -106,7 +115,8 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public List<Animal> getOrderedAnimals() {
-        return animals.values().stream().sorted(Comparator.comparing((Animal animal) -> animal.getPosition().getX()
-        ).thenComparing((Animal animal) -> animal.getPosition().getY())).toList();
+        return animals.values().stream()
+                .sorted(Comparator.comparing((Animal animal) -> animal.getPosition().getX())
+                .thenComparing(animal -> animal.getPosition().getY())).toList();
     }
 }
