@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -26,6 +27,10 @@ public class MainWindowPresenter {
     private TextField moveslisttextfield;
     @FXML
     private Label infolabel;
+    @FXML
+    private Spinner<Integer> widthSpinner;
+    @FXML
+    private Spinner<Integer> heigthSpinner;
     private int ids = 0;
 
     public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
@@ -45,12 +50,12 @@ public class MainWindowPresenter {
                 configureStage(stage, viewRoot);
                 stage.show();
 
-                var grassField = new GrassField(2, ids);
-                ids += 1;
-                presenter.setWorldMap(grassField);
-                Simulation simulation = new Simulation(positions, moves, grassField);
-                simulations.add(simulation);
-                simulationEngine.addToThreadPool(simulation);
+//                var grassField = new GrassField(2, ids);
+//                ids += 1;
+//                presenter.setWorldMap(grassField);
+//                Simulation simulation = new Simulation(positions, moves, grassField);
+//                simulations.add(simulation);
+//                simulationEngine.addToThreadPool(simulation);
             } catch (IllegalArgumentException e) {
                 infolabel.setText("This moves combination is invalid");
             }
