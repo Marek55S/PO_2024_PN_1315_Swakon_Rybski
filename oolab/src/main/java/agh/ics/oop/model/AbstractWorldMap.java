@@ -9,7 +9,7 @@ import java.util.*;
 public abstract class AbstractWorldMap implements WorldMap {
     protected final MapVisualizer visualizer;
     private final int mapId;
-    protected HashMap<Vector2d, Animal> animals;
+    protected HashMap<Vector2d, List<Animal>> animals;
     protected List<MapChangeListener> observers;
     public final Boundary mapBounds;
 
@@ -57,28 +57,49 @@ public abstract class AbstractWorldMap implements WorldMap {
         var newOrientation = animal.getFacingDirection();
 
         if (oldPosition != newPosition) {
-            animals.remove(oldPosition);
-            animals.put(newPosition, animal);
+            animals.get(oldPosition).remove(animal);
+            animals.get(newPosition).add(animal);
             notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
         } else if (oldOrientation != newOrientation) {
             notifyObservers(String.format("Animal changed direction from %s to %s", oldOrientation, newOrientation));
         }
     }
 
+    public void moveAllAnimals() {
+        for (var animal : getOrderedByEnergyAnimals()) {
+            var oldPosition = animal.getPosition();
+            var oldOrientation = animal.getFacingDirection();
+            animal.moveByGenome(this);
+            var newPosition = animal.getPosition();
+            var newOrientation = animal.getFacingDirection();
+
+            if (oldPosition != newPosition) {
+                animals.get(oldPosition).remove(animal);
+                animals.get(newPosition).add(animal);
+                notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
+            } else if (oldOrientation != newOrientation) {
+                notifyObservers(String.format("Animal changed direction from %s to %s", oldOrientation, newOrientation));
+            }
+        }
+    }
+
+
+
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
         var animalProposedLocalisation = animal.getPosition();
         if (canMoveTo(animalProposedLocalisation)) {
-            animals.put(animalProposedLocalisation, animal);
+            animals.get(animalProposedLocalisation).add(animal);
             notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
         } else {
             throw new IncorrectPositionException((animal.getPosition()));
         }
     }
 
+    // temporary solution
     @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
-        return Optional.ofNullable(animals.get(position));
+        return Optional.ofNullable(animals.get(position).get(0));
     }
 
     @Override
@@ -97,7 +118,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public List<WorldElement> getElements() {
-        return new ArrayList<>(animals.values());
+        return animals.values().stream().flatMap(List::stream).map(animal -> (WorldElement) animal).toList();
     }
 
     public abstract Boundary getCurrentBounds();
@@ -116,7 +137,15 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public List<Animal> getOrderedAnimals() {
         return animals.values().stream()
+                .flatMap(List::stream)
                 .sorted(Comparator.comparing((Animal animal) -> animal.getPosition().getX())
                 .thenComparing(animal -> animal.getPosition().getY())).toList();
     }
+
+    public List<Animal> getOrderedByEnergyAnimals() {
+        return animals.values().stream()
+                .flatMap(List::stream)
+                .sorted(Comparator.comparing(Animal::getEnergy).reversed()).toList();
+    }
+
 }

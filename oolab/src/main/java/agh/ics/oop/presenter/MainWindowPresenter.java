@@ -3,7 +3,7 @@ package agh.ics.oop.presenter;
 import agh.ics.oop.OptionsParser;
 import agh.ics.oop.Simulation;
 import agh.ics.oop.SimulationEngine;
-import agh.ics.oop.model.GrassField;
+import agh.ics.oop.model.DarwinSimulationMap;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
 import javafx.event.ActionEvent;
@@ -46,10 +46,10 @@ public class MainWindowPresenter {
                 configureStage(stage, viewRoot);
                 stage.show();
 
-                var grassField = new GrassField(2, ids);
+                var simulationMap = new DarwinSimulationMap(10,10, ids);
                 ids += 1;
-                presenter.setWorldMap(grassField);
-                Simulation simulation = new Simulation(positions, moves, grassField);
+                presenter.setWorldMap(simulationMap);
+                Simulation simulation = new Simulation(positions, simulationMap);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
             } catch (IllegalArgumentException e) {

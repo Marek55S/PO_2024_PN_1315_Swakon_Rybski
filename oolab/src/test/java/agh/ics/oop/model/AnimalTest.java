@@ -185,7 +185,7 @@ public class AnimalTest {
         //given
         List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7,0);
         Animal testAnimal = new Animal(new Vector2d(2, 2), genome);
-        GrassField map = new GrassField(10,0);
+        DarwinSimulationMap map = new DarwinSimulationMap(10,10,0);
         Vector2d currentPosition = testAnimal.getPosition();
         //when
         for (int gene : genome) {

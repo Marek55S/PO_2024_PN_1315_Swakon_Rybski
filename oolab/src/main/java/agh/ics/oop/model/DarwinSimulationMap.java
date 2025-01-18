@@ -1,7 +1,6 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.Boundary;
-import agh.ics.oop.model.util.RandomPositionGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return grasses.size();
     }
 
-    private void growGrass(){
+    public void growGrass(){
         Set<Vector2d> toRemoveEquator = equatorFreePositions.stream()
                 .filter(position -> GENERATOR.nextDouble() < 0.8)
                 .collect(Collectors.toSet());
@@ -79,5 +78,59 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return mapBounds;
     }
 
+
+    public void removeDeadAnimals(){
+        List<Animal> deadAnimals = animals.values().stream()
+                .flatMap(Collection::stream)
+                .filter(animal -> animal.getEnergy() <= 0)
+                .toList();
+
+        deadAnimals.forEach(animal -> {
+            List<Animal> animalsAtPosition = animals.get(animal.getPosition());
+            if (animalsAtPosition != null) {
+                animalsAtPosition.remove(animal);
+                if (animalsAtPosition.isEmpty()) {
+                    animals.remove(animal.getPosition());
+                }
+            }
+            super.notifyObservers("Animal died at position " + animal.getPosition());
+        });
+    }
+
+    public void eatGrass(int grassEnergy){
+        for(Animal animal: super.getOrderedByEnergyAnimals()){
+            if(grasses.containsKey(animal.getPosition())){
+                animal.addEnergy(grassEnergy);
+                grasses.remove(animal.getPosition());
+                super.notifyObservers("Animal ate grass at position " + animal.getPosition());
+            }
+        }
+    }
+
+
+    public void reproduceAnimals(){
+        for(List<Animal> animalsAtPosition : animals.values()) {
+            if (animalsAtPosition.size() >= 2) {
+                animalsAtPosition.sort(Comparator.comparing(Animal::getEnergy).reversed());
+                int i = 0;
+                while (i < animalsAtPosition.size() - 1) {
+                    Animal parent1 = animalsAtPosition.get(0);
+                    Animal parent2 = animalsAtPosition.get(1);
+                    if (parent1.canReproduce() && parent2.canReproduce()) {
+                        Animal child = parent1.reproduce(parent2);
+                        if (canMoveTo(child.getPosition())) {
+                            animals.get(child.getPosition()).add(child);
+                            notifyObservers("Animal was born at position " + child.getPosition());
+                        }
+                    }
+                }
+            }
+        }}
+
+    public void takeEnergyFromAnimals(int energy){
+        for (Animal animal : getOrderedByEnergyAnimals()) {
+            animal.subtractEnergy(energy);
+        }
+    }
 
 }

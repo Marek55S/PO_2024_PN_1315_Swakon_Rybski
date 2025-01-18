@@ -9,6 +9,8 @@ public class Animal implements WorldElement {
     private final List<Integer> genome = new ArrayList<>();
     private int currentGenomeIndex = 0;
     public static final Random RANDOM = new Random();
+
+    // all this static values should be moved to the configuration file
     public static final int NEWBORNS_ENERGY = 100;
     public static final int ENERGY_TO_REPRODUCE = 100;
     public static final int GENOM_LENGTH = 8;
