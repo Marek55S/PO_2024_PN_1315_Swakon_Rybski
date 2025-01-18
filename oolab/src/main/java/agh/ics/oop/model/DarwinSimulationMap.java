@@ -22,6 +22,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
         animals = new HashMap<>();
 
+        // not exacly 20% of the map
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)) {
@@ -31,21 +32,32 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                 }
             }
         }
+        this.growGrass();
+    }
+
+    public int getGrassCount(){
+        return grasses.size();
     }
 
     private void growGrass(){
-        equatorFreePositions.stream()
+        Set<Vector2d> toRemoveEquator = equatorFreePositions.stream()
                 .filter(position -> GENERATOR.nextDouble() < 0.8)
-                .forEach(position -> {
-                    grasses.put(position, new Grass(position));
-                    equatorFreePositions.remove(position);
-                });
-        otherFreePositions.stream()
+                .collect(Collectors.toSet());
+
+        toRemoveEquator.forEach(position -> {
+            grasses.put(position, new Grass(position));
+            equatorFreePositions.remove(position);
+        });
+
+        Set<Vector2d> toRemoveOther = otherFreePositions.stream()
                 .filter(position -> GENERATOR.nextDouble() < 0.2)
-                .forEach(position -> {
-                    grasses.put(position, new Grass(position));
-                    otherFreePositions.remove(position);
-                });
+                .collect(Collectors.toSet());
+
+        toRemoveOther.forEach(position -> {
+            grasses.put(position, new Grass(position));
+            otherFreePositions.remove(position);
+        });
+
     }
 
 

@@ -1,9 +1,6 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.GrassField;
-import agh.ics.oop.model.MoveDirection;
-import agh.ics.oop.model.RectangularMap;
-import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.ConsoleMapDisplay;
 import agh.ics.oop.model.util.FileMapDisplay;
 
@@ -39,18 +36,7 @@ public class World {
             System.out.println("Error: " + ex.getMessage());
             return;
         }
-
-
     }
 
-    public static void run(MoveDirection[] args) {
-        for (var move : args) {
-            switch (move) {
-                case MoveDirection.FORWARD -> System.out.println("Zwierzak idzie do przodu");
-                case MoveDirection.BACKWARD -> System.out.println("Zwierzak idzie do tyłu");
-                case MoveDirection.RIGHT -> System.out.println("Zwierzak skręca w prawo");
-                case MoveDirection.LEFT -> System.out.println("Zwierzak skręca w lewo");
-            }
-        }
-    }
+
 }
