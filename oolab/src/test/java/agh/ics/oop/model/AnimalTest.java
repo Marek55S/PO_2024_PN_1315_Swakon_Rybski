@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 public class AnimalTest {
-    MoveValidator validator = new RectangularMap(4, 4, 0);
+    AbstractWorldMap validator = new DarwinSimulationMap(4, 4, 0);
 
     @Test
     void animalIsProperlyOrientedWhenCreated() {
@@ -55,52 +55,54 @@ public class AnimalTest {
     }
 
     @Test
-    void animalWontGoOutOfTheMap() {
+    void animalTeleportsOnXAxis() {
+        var startingPositionX = new Vector2d(3, 2);
+        var animalX = new Animal(startingPositionX);
 
-        //upper and right boundary
-        var startingPosition = new Vector2d(4, 4);
-        var testAnimal = new Animal(startingPosition);
-        var finalPosition = new Vector2d(4, 4);
+        animalX.move(MoveDirection.RIGHT, validator);
+        animalX.move(MoveDirection.RIGHT, validator);
+        Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
 
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
+        animalX.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
 
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        startingPosition = new Vector2d(0, 0);
-        testAnimal = new Animal(startingPosition);
-        finalPosition = new Vector2d(0, 0);
-
-        //new position - (0, -1)
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        //new
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
+        animalX.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
     }
+
+    @Test
+    void animalTeleportsAndMoves(){
+        var startingPositionX = new Vector2d(3, 1);
+        var animalX = new Animal(startingPositionX);
+
+        animalX.move(MoveDirection.RIGHT, validator);
+        Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
+
+        animalX.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
+
+        animalX.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
+    }
+
+    @Test
+    void animalRotatesOnUpperYAxis() {
+        var startingPositionY = new Vector2d(2, 3);
+        var animalY = new Animal(startingPositionY);
+        animalY.move(MoveDirection.FORWARD, validator);
+        Assertions.assertEquals(new Vector2d(2, 3), animalY.getPosition());
+        Assertions.assertEquals(MapDirection.SOUTH, animalY.getFacingDirection());
+    }
+
+    @Test
+    void animalRotatesOnLowerYAxis() {
+        var bottomPosition = new Vector2d(2, 0);
+        var animalBottom = new Animal(bottomPosition);
+        animalBottom.move(MoveDirection.BACKWARD, validator);
+        Assertions.assertEquals(new Vector2d(2, 0), animalBottom.getPosition());
+    }
+
+
 
     @Test
     void childGenomeCorrectRange(){

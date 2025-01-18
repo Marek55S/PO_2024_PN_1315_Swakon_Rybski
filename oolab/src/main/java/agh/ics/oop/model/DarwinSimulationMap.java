@@ -9,17 +9,15 @@ import java.util.stream.Stream;
 
 public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
-    public final Boundary mapBounds;
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
     public static final Random GENERATOR = new Random();
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
-        super(mapId);
+        super(width, height, mapId);
         grasses = new HashMap<>();
 
-        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
         animals = new HashMap<>();
 
         // not exacly 20% of the map

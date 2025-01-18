@@ -11,11 +11,21 @@ public abstract class AbstractWorldMap implements WorldMap {
     private final int mapId;
     protected HashMap<Vector2d, Animal> animals;
     protected List<MapChangeListener> observers;
+    public final Boundary mapBounds;
 
-    public AbstractWorldMap(int mapId) {
+    AbstractWorldMap(int mapId){
+        visualizer = new MapVisualizer(this);
+        animals = new HashMap<>();
+        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(0, 0));
+        observers = new ArrayList();
+        this.mapId = mapId;
+    }
+
+    public AbstractWorldMap(int width,int height,int mapId) {
 
         visualizer = new MapVisualizer(this);
         animals = new HashMap<>();
+        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
 
         observers = new ArrayList();
 

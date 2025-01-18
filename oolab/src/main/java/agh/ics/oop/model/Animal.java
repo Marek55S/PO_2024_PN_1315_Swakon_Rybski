@@ -36,44 +36,38 @@ public class Animal implements WorldElement {
         return facingDirection;
     }
 
-    public void move(MoveDirection direction, MoveValidator validator) {
+    public void move(MoveDirection direction, AbstractWorldMap validator) {
         switch (direction) {
             case LEFT -> facingDirection = facingDirection.previous();
             case RIGHT -> facingDirection = facingDirection.next();
             case FORWARD -> {
-                var newLoc = moveOnBorders(direction, validator);
-                if (newLoc.isPresent() && validator.canMoveTo(newLoc.get())) {
-                    localizationOnMap = newLoc.get();
+                var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
+                if ( validator.canMoveTo(newLoc)) {
+                    localizationOnMap = newLoc;
                 }
             }
-            var newLoc = moveOnBorders(direction, validator);
-            if (newLoc.isPresent() && validator.canMoveTo(newLoc.get())) {
-                localizationOnMap = newLoc.get();
+            case BACKWARD -> {
+                var newLoc = moveOnBorders(facingDirection.toUnitVector().opposite(), validator);
+                if (validator.canMoveTo(newLoc)) {
+                    localizationOnMap = newLoc;
+                }
             }
         }
     }
 
-    private Optional<Vector2d> moveOnBorders(MoveDirection direction,DarwinSimulationMap map){
-        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
+    private Vector2d moveOnBorders(Vector2d unitMove,AbstractWorldMap map){
+        var newLoc = localizationOnMap.add(unitMove);
         if(newLoc.getX()<0){
-            Vector2d changedLoc = new Vector2d(map.getCurrentBounds().upperRight().getX(), localizationOnMap.getY());
-            return Optional.of(changedLoc);
+            newLoc = new Vector2d(map.getCurrentBounds().upperRight().getX(), newLoc.getY());
         }
         else if(newLoc.getX()>map.getCurrentBounds().upperRight().getX()){
-            Vector2d changedLoc = new Vector2d(0, localizationOnMap.getY());
-            return Optional.of(changedLoc);
+            newLoc = new Vector2d(0, newLoc.getY());
         }
-        else if(map.getCurrentBounds().upperRight().precedes(newLoc)){
-            facingDirection = facingDirection.next().next().next().next();
-            return Optional.empty();
+        if (!newLoc.precedes(map.getCurrentBounds().upperRight()) || !newLoc.follows(map.getCurrentBounds().lowerLeft())) {
+        facingDirection = facingDirection.next().next().next().next();
+        newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
         }
-        else if(newLoc.precedes(map.getCurrentBounds().lowerLeft())){
-            facingDirection = facingDirection.next().next().next().next();
-            return Optional.empty();
-        }
-        else{
-            return Optional.of(newLoc);
-        }
+        return newLoc;
     }
 
     // method should be changed to move all 8 directions
@@ -158,16 +152,15 @@ public class Animal implements WorldElement {
     // method for mutation of the genome, each gene can be mutated more than once
     private void randomMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < RANDOM.nextInt(GENOM_LENGTH); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), Integer.valueOf(RANDOM.nextInt(8)));
+            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), RANDOM.nextInt(8));
         }
     }
 
     // method for mutation of the genome, each gene can be slightly mutated only once
     void slightMutation(List<Integer> genomeToMutate){
         for (int i = 0; i < GENOM_LENGTH; i++){
-            if(RANDOM.nextBoolean()){
-                int index = RANDOM.nextInt(GENOM_LENGTH);
-                genomeToMutate.set(index, Integer.valueOf((genomeToMutate.get(index) + (RANDOM.nextBoolean() ? 1 : -1)) % 8));
+            if(RANDOM.nextBoolean()){;
+                genomeToMutate.set(i, (genomeToMutate.get(i) + (RANDOM.nextBoolean() ? 1 : -1)+8) % 8);
             }
         }
     }
