@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
-    private final Boundary mapBounds;
+    public final Boundary mapBounds;
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
     public static final Random GENERATOR = new Random();
@@ -80,5 +80,6 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     public Boundary getCurrentBounds() {
         return mapBounds;
     }
+
 
 }

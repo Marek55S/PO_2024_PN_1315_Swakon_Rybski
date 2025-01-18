@@ -41,15 +41,38 @@ public class Animal implements WorldElement {
             case LEFT -> facingDirection = facingDirection.previous();
             case RIGHT -> facingDirection = facingDirection.next();
             case FORWARD -> {
-                var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
-                if (validator.canMoveTo(newLoc))
-                    localizationOnMap = newLoc;
+                var newLoc = moveOnBorders(direction, validator);
+                if (newLoc.isPresent() && validator.canMoveTo(newLoc.get())) {
+                    localizationOnMap = newLoc.get();
+                }
             }
-            case BACKWARD -> {
-                var newLoc = localizationOnMap.subtract(this.facingDirection.toUnitVector());
-                if (validator.canMoveTo(newLoc))
-                    localizationOnMap = newLoc;
+            var newLoc = moveOnBorders(direction, validator);
+            if (newLoc.isPresent() && validator.canMoveTo(newLoc.get())) {
+                localizationOnMap = newLoc.get();
             }
+        }
+    }
+
+    private Optional<Vector2d> moveOnBorders(MoveDirection direction,DarwinSimulationMap map){
+        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
+        if(newLoc.getX()<0){
+            Vector2d changedLoc = new Vector2d(map.getCurrentBounds().upperRight().getX(), localizationOnMap.getY());
+            return Optional.of(changedLoc);
+        }
+        else if(newLoc.getX()>map.getCurrentBounds().upperRight().getX()){
+            Vector2d changedLoc = new Vector2d(0, localizationOnMap.getY());
+            return Optional.of(changedLoc);
+        }
+        else if(map.getCurrentBounds().upperRight().precedes(newLoc)){
+            facingDirection = facingDirection.next().next().next().next();
+            return Optional.empty();
+        }
+        else if(newLoc.precedes(map.getCurrentBounds().lowerLeft())){
+            facingDirection = facingDirection.next().next().next().next();
+            return Optional.empty();
+        }
+        else{
+            return Optional.of(newLoc);
         }
     }
 
