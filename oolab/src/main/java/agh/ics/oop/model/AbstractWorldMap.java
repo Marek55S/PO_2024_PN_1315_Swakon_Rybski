@@ -77,7 +77,11 @@ public abstract class AbstractWorldMap implements WorldMap {
 
             if (oldPosition != newPosition) {
                 animals.get(oldPosition).remove(animal);
+                if (!animals.containsKey(newPosition)) {
+                    animals.put(newPosition, new LinkedList<>());
+                }
                 animals.get(newPosition).add(animal);
+
                 notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
             } else if (oldOrientation != newOrientation) {
                 notifyObservers(String.format("Animal changed direction from %s to %s", oldOrientation, newOrientation));
