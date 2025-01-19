@@ -75,16 +75,16 @@ public class Animal implements WorldElement {
         return newLoc;
     }
 
-    // method should be changed to move all 8 directions
-    public void moveByGenome(MoveValidator validator) {
-        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
-        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
-        if (validator.canMoveTo(newLoc))
-            localizationOnMap = newLoc;
-        currentGenomeIndex++;
-    }
+//    // method should be changed to move all 8 directions
+//    public void moveByGenome(MoveValidator validator) {
+//        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
+//        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
+//        if (validator.canMoveTo(newLoc))
+//            localizationOnMap = newLoc;
+//        currentGenomeIndex++;
+//    }
 
-    public void rotateAnimal(){
+    private void rotateAnimal(){
         var rotation = genome.get(currentGenomeIndex);
         for(int i = 0; i < rotation; i++){
             facingDirection = facingDirection.next();
@@ -92,11 +92,16 @@ public class Animal implements WorldElement {
         currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
     }
 
-    public void moveForward(AbstractWorldMap validator){
+    private void moveForward(AbstractWorldMap validator){
         var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
         if (validator.canMoveTo(newLoc)) {
             localizationOnMap = newLoc;
         }
+    }
+
+    public void moveByGenome(AbstractWorldMap validator){
+        rotateAnimal();
+        moveForward(validator);
     }
 
     @Override

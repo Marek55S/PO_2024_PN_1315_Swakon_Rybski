@@ -154,6 +154,7 @@ class DarwinSimulationMapTest {
         Assertions.assertEquals(90, testAnimal.getEnergy());
     }
 
+    // something should be fixed
     @Test
     void moveAllAnimalsByGenomeTest() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
