@@ -4,6 +4,7 @@ import agh.ics.oop.presenter.MainWindowPresenter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -16,6 +17,7 @@ public class SimulationApp extends Application {
         BorderPane viewRoot = loader.load();
         MainWindowPresenter presenter = loader.getController();
         configureStage(primaryStage, viewRoot);
+//        presenter.initialize();
         primaryStage.show();
     }
 

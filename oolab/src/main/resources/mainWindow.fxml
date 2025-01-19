@@ -8,6 +8,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             minHeight="550.0" minWidth="850.0"
@@ -18,24 +23,49 @@
         </VBox>
     </top>
     <center>
-        <VBox spacing="10" alignment="CENTER">
-            <Label fx:id="whL" text="Select width and heigth"></Label>
-            <HBox>
-                <Spinner fx:id="widthSpinner" min="1" max="500" amountToStepBy="1" editable="true"></Spinner>
-                <Spinner fx:id="heightSpinner" min="1" max="500" amountToStepBy="1" editable="true"></Spinner>
-            </HBox>
-            <Label fx:id="mvL" text="Select map variant"></Label>
-            <ChoiceBox fx:id="mapVariantCB"></ChoiceBox>
-            <Label fx:id="igcL" text="Select initial grass count"></Label>
-            <Spinner fx:id="initialGrassCount" min="1" max="500" amountToStepBy="1" editable="true"></Spinner>
+        <GridPane alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="150" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints prefHeight="50" />
+                <RowConstraints prefHeight="50" />
+            </rowConstraints>
+            <Label text="Select width and heigth" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="4"></Label>
+            <Spinner fx:id="widthSpinner" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2"></Spinner>
+            <Spinner fx:id="heightSpinner" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="1" GridPane.rowIndex="1"  GridPane.columnSpan="2"></Spinner>
+            <Label fx:id="mvL" text="Select map variant"  GridPane.columnIndex="0" GridPane.rowIndex="2"></Label>
+            <ChoiceBox fx:id="mapVariantCB"  GridPane.columnIndex="0" GridPane.rowIndex="3"></ChoiceBox>
+            <Label fx:id="gL" text="Configure grass"  GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="4"></Label>
+                <Label fx:id="igcL" text="initial grass count"  GridPane.columnIndex="0" GridPane.rowIndex="5"></Label>
+                <Label fx:id="peL" text="plant energy"  GridPane.columnIndex="1" GridPane.rowIndex="5" ></Label>
+                <Label fx:id="epgL" text="everyday plant growth"  GridPane.columnIndex="2" GridPane.rowIndex="5" ></Label>
+                <Spinner fx:id="initialGrassCount" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="0" GridPane.rowIndex="6"></Spinner>
+                <Spinner fx:id="energyFromPlant" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="1" GridPane.rowIndex="6"></Spinner>
+                <Spinner fx:id="everydayPlantGrowth" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="2" GridPane.rowIndex="6"></Spinner>
+            <Label fx:id="aL" text="Configure animals"  GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="4"></Label>
+                <Label fx:id="iaeL" text="initial animal energy"  GridPane.columnIndex="0" GridPane.rowIndex="8"></Label>
+                <Label fx:id="iacL" text="initial animal count energy"  GridPane.columnIndex="1" GridPane.rowIndex="8" ></Label>
+                <Label fx:id="afeL" text="animal full energy"  GridPane.columnIndex="2" GridPane.rowIndex="8" ></Label>
+                <Label fx:id="reL" text="reproduction energy"  GridPane.columnIndex="3" GridPane.rowIndex="8" ></Label>
+                <Spinner fx:id="initialAnimalEnergy" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="0" GridPane.rowIndex="9"></Spinner>
+                <Spinner fx:id="initialAnimalsCount" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="1" GridPane.rowIndex="9"></Spinner>
+                <Spinner fx:id="animalFullEnergy" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="2" GridPane.rowIndex="9"></Spinner>
+                <Spinner fx:id="reproductionEnergy" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="3" GridPane.rowIndex="9"></Spinner>
+            <Label fx:id="mL" text="Configure mutations and genes"  GridPane.columnIndex="0" GridPane.rowIndex="10" GridPane.columnSpan="4"></Label>
+                <Label fx:id="mcL" text="mutations count"  GridPane.columnIndex="0" GridPane.rowIndex="11"></Label>
+                <Label fx:id="mV" text="mutation variant"  GridPane.columnIndex="1" GridPane.rowIndex="11" ></Label>
+                <Label fx:id="genL" text="genome length"  GridPane.columnIndex="2" GridPane.rowIndex="11" ></Label>
+                <Spinner fx:id="mutationsCount" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="0" GridPane.rowIndex="12"></Spinner>
+                <ChoiceBox fx:id="mutationVariant"  GridPane.columnIndex="1" GridPane.rowIndex="12"></ChoiceBox>
+                <Spinner fx:id="genomeLength" min="1" max="500" amountToStepBy="1" editable="true"  GridPane.columnIndex="2" GridPane.rowIndex="12"></Spinner>
 
-        </VBox>
+        </GridPane>
     </center>
     <bottom>
         <VBox spacing="10" alignment="CENTER">
-            <TextField fx:id="moveslisttextfield"/>
-            <Label fx:id="movedescription" textAlignment="CENTER"/>
-            <Button fx:id="startButton" onAction="#onSimulationStartClicked" text="Start"/>
+            <Button fx:id="saveConfigButton" text="Save Config" onMouseClicked="#onSaveConfigClicked"></Button>
+            <Button fx:id="startButton"  text="Start"/>
         </VBox>
     </bottom>
 </BorderPane>

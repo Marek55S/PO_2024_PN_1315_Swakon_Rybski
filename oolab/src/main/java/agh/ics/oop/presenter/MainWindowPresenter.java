@@ -1,14 +1,13 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.OptionsParser;
-import agh.ics.oop.Simulation;
-import agh.ics.oop.SimulationEngine;
+import agh.ics.oop.*;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -24,47 +23,108 @@ public class MainWindowPresenter {
     private final List<Simulation> simulations = new ArrayList<>();
     private final SimulationEngine simulationEngine = new SimulationEngine(simulations);
     @FXML
-    private TextField moveslisttextfield;
-    @FXML
     private Label infolabel;
     @FXML
     private Spinner<Integer> widthSpinner;
     @FXML
-    private Spinner<Integer> heigthSpinner;
+    private Spinner<Integer> heightSpinner;
+    @FXML
+    private ChoiceBox<MapTypes> mapVariantCB;
+    @FXML
+    private Spinner<Integer> initialGrassCount;
+    @FXML
+    private Spinner<Integer> energyFromPlant;
+    @FXML
+    private Spinner<Integer> everydayPlantGrowth;
+    @FXML
+    private Spinner<Integer> initialAnimalEnergy;
+    @FXML
+    private Spinner<Integer> initialAnimalsCount;
+    @FXML
+    private Spinner<Integer> animalFullEnergy;
+    @FXML
+    private Spinner<Integer> reproductionEnergy;
+    @FXML
+    private Spinner<Integer> mutationsCount;
+    @FXML
+    private ChoiceBox<MutationVariants> mutationVariant;
+    @FXML
+    private Spinner<Integer> genomeLength;
     private int ids = 0;
+    private SimulationOptions simulationOptions;
 
-    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
-
-        if (!moveslisttextfield.getText().strip().isEmpty()) {
-            try {
-                List<MoveDirection> moves = OptionsParser.parseOptions(moveslisttextfield.getText().split(" "));
-                List<Vector2d> positions = List.of(new Vector2d(1, 1));
-
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-                BorderPane viewRoot = loader.load();
-                SimulationPresenter presenter = loader.getController();
-                //presenters.add(presenter);
-
-                Stage stage = new Stage();
-                configureStage(stage, viewRoot);
-                stage.show();
-
-//                var grassField = new GrassField(2, ids);
-//                ids += 1;
-//                presenter.setWorldMap(grassField);
-//                Simulation simulation = new Simulation(positions, moves, grassField);
-//                simulations.add(simulation);
-//                simulationEngine.addToThreadPool(simulation);
-            } catch (IllegalArgumentException e) {
-                infolabel.setText("This moves combination is invalid");
-            }
-        } else {
-            infolabel.setText("Moves list shouldn't be empty");
-        }
-
+    public void initialize() {
+        mapVariantCB.getItems().addAll(MapTypes.values());
+        mutationVariant.getItems().addAll(MutationVariants.values());
+        //load defaults
+        SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
+        //handle exceptions
+        SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
+        widthSpinner.getValueFactory().setValue(options.simulationWidth());
+        heightSpinner.getValueFactory().setValue(options.simulationHeigth());
+        mapVariantCB.setValue(options.mapType());
+        initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
+        energyFromPlant.getValueFactory().setValue(options.plantEnergy());
+        everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
+        initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
+        initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
+        animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
+        reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
+        mutationsCount.getValueFactory().setValue(options.mutationsCount());
+        genomeLength.getValueFactory().setValue(options.genomeLength());
+        mutationVariant.setValue(options.mutationVariant());
     }
 
+//    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
+//
+//        if (!moveslisttextfield.getText().strip().isEmpty()) {
+//            try {
+//                List<MoveDirection> moves = OptionsParser.parseOptions(moveslisttextfield.getText().split(" "));
+//                List<Vector2d> positions = List.of(new Vector2d(1, 1));
+//
+//                FXMLLoader loader = new FXMLLoader();
+//                loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+//                BorderPane viewRoot = loader.load();
+//                SimulationPresenter presenter = loader.getController();
+//                //presenters.add(presenter);
+//
+//                Stage stage = new Stage();
+//                configureStage(stage, viewRoot);
+//                stage.show();
+//
+////                var grassField = new GrassField(2, ids);
+////                ids += 1;
+////                presenter.setWorldMap(grassField);
+////                Simulation simulation = new Simulation(positions, moves, grassField);
+////                simulations.add(simulation);
+////                simulationEngine.addToThreadPool(simulation);
+//            } catch (IllegalArgumentException e) {
+//                infolabel.setText("This moves combination is invalid");
+//            }
+//        } else {
+//            infolabel.setText("Moves list shouldn't be empty");
+//        }
+//
+//    }
+
+
+
+    private SimulationOptions generateSimulationOptions(){
+        return new SimulationOptions(widthSpinner.getValue(),
+                heightSpinner.getValue(), mapVariantCB.getValue(),
+                initialGrassCount.getValue(), energyFromPlant.getValue(),
+                everydayPlantGrowth.getValue(), initialAnimalEnergy.getValue(),
+                initialAnimalsCount.getValue(), animalFullEnergy.getValue(),
+                reproductionEnergy.getValue(), mutationsCount.getValue(),
+                genomeLength.getValue(), mutationVariant.getValue());
+    }
+
+    public void onSaveConfigClicked(){
+        String path = "default.csv";
+        SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
+        simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
+
+    }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);
