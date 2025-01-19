@@ -196,5 +196,44 @@ public class AnimalTest {
         }
     }
 
+    @Test
+    void rotateAnimalByGenome(){
+        var validator = new DarwinSimulationMap(4, 4, 0);
+        var genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
+        var testAnimal = new Animal(new Vector2d(2, 2), genome);
+
+        MapDirection initialDirection = testAnimal.getFacingDirection();
+
+        for (int gene : genome) {
+            testAnimal.rotateAnimal();
+            MapDirection expectedDirection = initialDirection;
+
+            for (int i = 0; i < gene; i++) {
+                expectedDirection = expectedDirection.next();
+            }
+
+            Assertions.assertEquals(expectedDirection, testAnimal.getFacingDirection());
+
+            initialDirection = testAnimal.getFacingDirection();
+        }
+    }
+
+    @Test
+    void moveForwardByGenome(){
+        var validator = new DarwinSimulationMap(10, 10, 0);
+        var genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
+        var testAnimal = new Animal(new Vector2d(4, 4), genome);
+
+        Vector2d initialPosition = testAnimal.getPosition();
+
+        for (int gene : genome) {
+            Vector2d expectedPosition = initialPosition.add(MapDirection.values()[gene].toUnitVector());
+            testAnimal.moveForward(validator);
+            Assertions.assertEquals(expectedPosition, testAnimal.getPosition());
+
+            initialPosition = testAnimal.getPosition();
+        }
+    }
+
 
 }

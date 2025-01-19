@@ -71,7 +71,8 @@ public abstract class AbstractWorldMap implements WorldMap {
         for (var animal : getOrderedByEnergyAnimals()) {
             var oldPosition = animal.getPosition();
             var oldOrientation = animal.getFacingDirection();
-            animal.moveByGenome(this);
+            animal.rotateAnimal();
+            animal.moveForward(this);
             var newPosition = animal.getPosition();
             var newOrientation = animal.getFacingDirection();
 

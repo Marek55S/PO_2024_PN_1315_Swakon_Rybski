@@ -38,6 +38,9 @@ public class Animal implements WorldElement {
         return facingDirection;
     }
 
+    // method move and moveByGenome are probably redundant
+    // moveOnBorders should be changed to be used only for moving forward or merged with moveForward
+
     public void move(MoveDirection direction, AbstractWorldMap validator) {
         switch (direction) {
             case LEFT -> facingDirection = facingDirection.previous();
@@ -81,6 +84,21 @@ public class Animal implements WorldElement {
         currentGenomeIndex++;
     }
 
+    public void rotateAnimal(){
+        var rotation = genome.get(currentGenomeIndex);
+        for(int i = 0; i < rotation; i++){
+            facingDirection = facingDirection.next();
+        }
+        currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
+    }
+
+    public void moveForward(AbstractWorldMap validator){
+        var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
+        if (validator.canMoveTo(newLoc)) {
+            localizationOnMap = newLoc;
+        }
+    }
+
     @Override
     public String toString() {
         return String.format(switch (facingDirection) {
@@ -99,6 +117,7 @@ public class Animal implements WorldElement {
         return Objects.equals(localizationOnMap, position);
     }
 
+    // equals should compare only by reference, no need to override it
 //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;

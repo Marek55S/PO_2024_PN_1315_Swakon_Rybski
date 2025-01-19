@@ -23,12 +23,22 @@ public class Simulation implements Runnable {
 
 // grass energy and day energy consumption will be set in by user
     public void run() {
-        map.removeDeadAnimals();
-        map.moveAllAnimals();
-        map.eatGrass(15);
-        map.reproduceAnimals();
-        map.growGrass();
-        map.takeEnergyFromAnimals(5);
+        int dayCounter = 0;
+        while(!map.getOrderedAnimals().isEmpty()) {
+            dayCounter++;
+            map.removeDeadAnimals();
+//            map.moveAllAnimals();
+            map.eatGrass(15);
+            map.reproduceAnimals();
+            map.growGrass();
+            map.takeEnergyFromAnimals(5);
+            System.out.println("Day " + dayCounter + " has ended");
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+        }
 
     }
 }

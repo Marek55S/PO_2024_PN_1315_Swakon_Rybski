@@ -154,5 +154,21 @@ class DarwinSimulationMapTest {
         Assertions.assertEquals(90, testAnimal.getEnergy());
     }
 
+    @Test
+    void moveAllAnimalsByGenomeTest() {
+        var testMap = new DarwinSimulationMap(10, 10, 0);
+        var startPosition = new Vector2d(1, 1);
+        var startPosition2 = new Vector2d(2, 2);
+
+        try {
+            testMap.place(startPosition);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        var testAnimal = testMap.getOrderedAnimals().getFirst();
+        testMap.moveAllAnimals();
+        Assertions.assertNotEquals(startPosition, testMap.getOrderedAnimals().getFirst().getPosition());
+    }
+
 
 }
