@@ -130,7 +130,7 @@ public class AnimalTest {
         Animal child = parent1.reproduce(parent2);
         //then
         List<Integer> childGenome = child.getGenome();
-        for (int i = 0; i < Animal.GENOM_LENGTH; i++) {
+        for (int i = 0; i < Animal.GENOME_LENGTH; i++) {
             Integer gene = childGenome.get(i);
             Assertions.assertTrue(gene == genome.get(i) || gene == (genome.get(i) + 1) % 8 || gene == (genome.get(i) +7) % 8);
         }
@@ -146,7 +146,7 @@ public class AnimalTest {
         Animal child = parent1.reproduce(parent2);
 
         //then
-        Assertions.assertEquals(Animal.GENOM_LENGTH, child.getGenome().size());
+        Assertions.assertEquals(Animal.GENOME_LENGTH, child.getGenome().size());
         Assertions.assertEquals(Animal.NEWBORNS_ENERGY,child.getEnergy());
         Assertions.assertEquals(50, parent1.getEnergy());
         Assertions.assertEquals(50, parent2.getEnergy());
@@ -185,7 +185,7 @@ public class AnimalTest {
         //given
         List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7,0);
         Animal testAnimal = new Animal(new Vector2d(2, 2), genome);
-        GrassField map = new GrassField(10,0);
+        DarwinSimulationMap map = new DarwinSimulationMap(10,10,0);
         Vector2d currentPosition = testAnimal.getPosition();
         //when
         for (int gene : genome) {
