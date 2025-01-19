@@ -130,7 +130,7 @@ public class AnimalTest {
         Animal child = parent1.reproduce(parent2);
         //then
         List<Integer> childGenome = child.getGenome();
-        for (int i = 0; i < Animal.GENOM_LENGTH; i++) {
+        for (int i = 0; i < Animal.GENOME_LENGTH; i++) {
             Integer gene = childGenome.get(i);
             Assertions.assertTrue(gene == genome.get(i) || gene == (genome.get(i) + 1) % 8 || gene == (genome.get(i) +7) % 8);
         }
@@ -146,7 +146,7 @@ public class AnimalTest {
         Animal child = parent1.reproduce(parent2);
 
         //then
-        Assertions.assertEquals(Animal.GENOM_LENGTH, child.getGenome().size());
+        Assertions.assertEquals(Animal.GENOME_LENGTH, child.getGenome().size());
         Assertions.assertEquals(Animal.NEWBORNS_ENERGY,child.getEnergy());
         Assertions.assertEquals(50, parent1.getEnergy());
         Assertions.assertEquals(50, parent2.getEnergy());

@@ -13,7 +13,7 @@ public class Animal implements WorldElement {
     // all this static values should be moved to the configuration file
     public static final int NEWBORNS_ENERGY = 100;
     public static final int ENERGY_TO_REPRODUCE = 100;
-    public static final int GENOM_LENGTH = 8;
+    public static final int GENOME_LENGTH = 8;
 
     public Animal() {
         this(new Vector2d(2, 2));
@@ -99,13 +99,13 @@ public class Animal implements WorldElement {
         return Objects.equals(localizationOnMap, position);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Animal animal = (Animal) o;
-        return localizationOnMap == animal.localizationOnMap && Objects.equals(localizationOnMap, animal.localizationOnMap);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Animal animal = (Animal) o;
+//        return localizationOnMap == animal.localizationOnMap && Objects.equals(localizationOnMap, animal.localizationOnMap);
+//    }
 
     @Override
     public int hashCode() {
@@ -153,14 +153,14 @@ public class Animal implements WorldElement {
 
     // method for mutation of the genome, each gene can be mutated more than once
     private void randomMutation(List<Integer> genomeToMutate){
-        for (int i = 0; i < RANDOM.nextInt(GENOM_LENGTH); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), RANDOM.nextInt(8));
+        for (int i = 0; i < RANDOM.nextInt(GENOME_LENGTH); i++){
+            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOME_LENGTH), RANDOM.nextInt(8));
         }
     }
 
     // method for mutation of the genome, each gene can be slightly mutated only once
     void slightMutation(List<Integer> genomeToMutate){
-        for (int i = 0; i < GENOM_LENGTH; i++){
+        for (int i = 0; i < GENOME_LENGTH; i++){
             if(RANDOM.nextBoolean()){;
                 genomeToMutate.set(i, (genomeToMutate.get(i) + (RANDOM.nextBoolean() ? 1 : -1)+8) % 8);
             }
@@ -171,15 +171,15 @@ public class Animal implements WorldElement {
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
         double energyFactor = (double) this.energy /(this.energy + partner.energy);
-        int splitIndex = (int) Math.round(GENOM_LENGTH * energyFactor);
+        int splitIndex = (int) Math.round(GENOME_LENGTH * energyFactor);
         int reproduceEnergy = (int) Math.round(energyFactor * ENERGY_TO_REPRODUCE);
         if(RANDOM.nextInt(2) == 0){
             newGenome.addAll(this.genome.subList(0, splitIndex));
-            newGenome.addAll(partner.genome.subList(splitIndex, GENOM_LENGTH));
+            newGenome.addAll(partner.genome.subList(splitIndex, GENOME_LENGTH));
         }
         else{
             newGenome.addAll(partner.genome.subList(0, splitIndex));
-            newGenome.addAll(this.genome.subList(splitIndex, GENOM_LENGTH));
+            newGenome.addAll(this.genome.subList(splitIndex, GENOME_LENGTH));
         }
         this.subtractEnergy(reproduceEnergy);
         partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);

@@ -10,14 +10,15 @@ public abstract class AbstractWorldMap implements WorldMap {
     protected final MapVisualizer visualizer;
     private final int mapId;
     protected HashMap<Vector2d, List<Animal>> animals;
-    protected List<MapChangeListener> observers;
+    protected List<MapChangeListener> observers = new ArrayList<>();
     public final Boundary mapBounds;
+    public static final Random GENERATOR = new Random();
+
 
     AbstractWorldMap(int mapId){
         visualizer = new MapVisualizer(this);
         animals = new HashMap<>();
         mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(0, 0));
-        observers = new ArrayList();
         this.mapId = mapId;
     }
 
@@ -26,8 +27,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         visualizer = new MapVisualizer(this);
         animals = new HashMap<>();
         mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
-
-        observers = new ArrayList();
 
         this.mapId = mapId;
 
@@ -58,6 +57,9 @@ public abstract class AbstractWorldMap implements WorldMap {
 
         if (oldPosition != newPosition) {
             animals.get(oldPosition).remove(animal);
+            if(!animals.containsKey(newPosition)){
+                animals.put(newPosition, new LinkedList<>());
+            }
             animals.get(newPosition).add(animal);
             notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
         } else if (oldOrientation != newOrientation) {
@@ -86,9 +88,12 @@ public abstract class AbstractWorldMap implements WorldMap {
 
 
     @Override
-    public void place(Animal animal) throws IncorrectPositionException {
-        var animalProposedLocalisation = animal.getPosition();
+    public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
+        var animal = new Animal(animalProposedLocalisation, generateGenome());
         if (canMoveTo(animalProposedLocalisation)) {
+            if (!animals.containsKey(animalProposedLocalisation)) {
+                animals.put(animalProposedLocalisation, new LinkedList<>());
+            }
             animals.get(animalProposedLocalisation).add(animal);
             notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
         } else {
@@ -96,10 +101,24 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
-    // temporary solution
+    private List<Integer> generateGenome(){
+        List<Integer> genome = new ArrayList<>();
+        for(int i = 0; i < Animal.GENOME_LENGTH; i++){
+            genome.add(GENERATOR.nextInt(8));
+        }
+        return genome;
+    }
+
+
+
     @Override
     public Optional<WorldElement> objectAt(Vector2d position) {
-        return Optional.ofNullable(animals.get(position).get(0));
+        if (animals.containsKey(position)) {
+            return animals.get(position).stream()
+                    .max(Comparator.comparing(Animal::getEnergy))
+                    .map(animal -> animal);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -110,7 +129,7 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     //move to be abstract
     public boolean canMoveTo(Vector2d position) {
-        return (animals.get(position) == null);
+        return position.follows(mapBounds.lowerLeft()) && position.precedes(mapBounds.upperRight());
     }
 
 

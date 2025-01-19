@@ -3,6 +3,7 @@ package agh.ics.oop.presenter;
 import agh.ics.oop.OptionsParser;
 import agh.ics.oop.Simulation;
 import agh.ics.oop.SimulationEngine;
+import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.DarwinSimulationMap;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;

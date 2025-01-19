@@ -9,10 +9,10 @@ import java.util.List;
 public class Simulation implements Runnable {
     private final DarwinSimulationMap map;
 
-    public Simulation(List<Animal> startingPositions, DarwinSimulationMap map) {
-        for (var animalToBeAdded : startingPositions) {
+    public Simulation(List<Vector2d> startingPositions, DarwinSimulationMap map) {
+        for (var animalPosition : startingPositions) {
             try {
-                map.place(animalToBeAdded);
+                map.place(animalPosition);
             } catch (IncorrectPositionException ex) {
                 System.out.println(ex.getMessage());
             }

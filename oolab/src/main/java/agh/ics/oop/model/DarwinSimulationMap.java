@@ -10,7 +10,6 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
-    public static final Random GENERATOR = new Random();
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -32,9 +31,6 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         this.growGrass();
     }
 
-    public int getGrassCount(){
-        return grasses.size();
-    }
 
     public void growGrass(){
         Set<Vector2d> toRemoveEquator = equatorFreePositions.stream()
@@ -118,11 +114,10 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                     Animal parent2 = animalsAtPosition.get(1);
                     if (parent1.canReproduce() && parent2.canReproduce()) {
                         Animal child = parent1.reproduce(parent2);
-                        if (canMoveTo(child.getPosition())) {
-                            animals.get(child.getPosition()).add(child);
-                            notifyObservers("Animal was born at position " + child.getPosition());
-                        }
+                        animals.get(child.getPosition()).add(child);
+                        notifyObservers("Animal was born at position " + child.getPosition());
                     }
+                    i+=2;
                 }
             }
         }}
