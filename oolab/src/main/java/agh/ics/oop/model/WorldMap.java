@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
@@ -56,4 +57,6 @@ public interface WorldMap extends agh.ics.oop.model.MoveValidator {
     int getId();
 
     List<Animal> getOrderedAnimals();
+
+    StatisticsTracker getStatistics();
 }

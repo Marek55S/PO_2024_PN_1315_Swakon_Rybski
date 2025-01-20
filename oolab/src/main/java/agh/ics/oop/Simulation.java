@@ -9,6 +9,7 @@ import java.util.List;
 public class Simulation implements Runnable {
     private final DarwinSimulationMap map;
     private boolean running = false;
+    private boolean stopped = false;
     public Simulation(List<Vector2d> startingPositions, DarwinSimulationMap map) {
         for (var animalPosition : startingPositions) {
             try {
@@ -24,12 +25,14 @@ public class Simulation implements Runnable {
     public void toggle() {
         running = !running;
     }
+    public void stop() {stopped = true;}
 // grass energy and day energy consumption will be set in by user
     public void run() {
         int dayCounter = 0;
-        while(!map.getOrderedAnimals().isEmpty()) {
+        while(!map.getOrderedAnimals().isEmpty() && !stopped) {
             if(running){
             dayCounter++;
+
             map.nextDay();
             System.out.println("Day " + dayCounter + " has ended");
 //            try {

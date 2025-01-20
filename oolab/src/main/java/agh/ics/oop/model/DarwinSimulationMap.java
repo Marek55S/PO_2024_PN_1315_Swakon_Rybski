@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.util.Boundary;
 
 import java.util.*;
@@ -10,7 +11,12 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
+    private StatisticsTracker statisticsTracker = new StatisticsTracker();
+    private int deadAnimalsLivesLengthSum = 0;
+    private int deadAnimalsCount = 0;
+
     protected int dayCounter = 0;
+
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -87,6 +93,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                 .toList();
 
         deadAnimals.forEach(animal -> {
+            deadAnimalsCount++;
+            deadAnimalsLivesLengthSum += animal.getAge();
             List<Animal> animalsAtPosition = animals.get(animal.getPosition());
             if (animalsAtPosition != null) {
                 animalsAtPosition.remove(animal);
@@ -133,6 +141,108 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         }
     }
 
+
+    private List<List<Integer>> getMostPopularGenoms(){
+        Map<List<Integer>, Integer> genomCount = new HashMap<>();
+
+        var maxGenomeCount = 0;
+        for(var animalList : animals.values()){
+            for(var animal : animalList){
+                if(!genomCount.containsKey(animal.getPosition())){
+                    genomCount.put(animal.getGenome(), 0);
+                }else{
+                    var newCount = genomCount.get(animal.getPosition()) + 1;
+                    genomCount.put(animal.getGenome(), newCount);
+                    if (newCount > maxGenomeCount) {
+                        maxGenomeCount = newCount;
+                    }
+                }
+            }
+        }
+
+        List<List<Integer>> maxGenomes = new ArrayList<>();
+
+        for(var genome : genomCount.keySet()){
+            if(genomCount.get(genome).equals(maxGenomeCount)){
+                maxGenomes.add(genome);
+            }
+        }
+
+        return maxGenomes;
+    }
+
+    private int getAnimalsCount(){
+        int animalsCount = 0;
+        for(var animalList : animals.values()){
+            for(var animal : animalList){
+                animalsCount++;
+            }
+        }
+        return animalsCount;
+    }
+
+    private int getAverageEnergyLevel(){
+        int energySum = 0;
+        int animalsCount = 0;
+        for(var animalList : animals.values()){
+            for(var animal : animalList){
+                animalsCount++;
+                energySum += animal.getEnergy();
+            }
+        }
+
+        return energySum / animalsCount;
+    }
+
+
+    private int getAverageChildrenAmount(){
+        int childrenAmount = 0;
+        int animalsCount = 0;
+        for(var animalList : animals.values()){
+            for(var animal : animalList){
+                animalsCount++;
+                childrenAmount += animal.getChildrenCount();
+            }
+        }
+
+        return childrenAmount / animalsCount;
+    }
+
+
+    private int getEmptyFieldsCount(){
+        int nonEmptyFieldsCount = 0;
+        for(int i = 0; i < super.mapBounds.upperRight().getX(); ++i){
+            for(int j = 0; j < super.mapBounds.upperRight().getY(); ++j){
+                if(isOccupied(new Vector2d(i,j))){
+                    nonEmptyFieldsCount++;
+                }
+            }
+        }
+
+        return super.mapBounds.upperRight().getX()*super.mapBounds.upperRight().getY() - nonEmptyFieldsCount;
+    }
+
+    private int getAverageLifespan(){
+        if(deadAnimalsCount > 0){
+            return deadAnimalsLivesLengthSum/deadAnimalsCount;
+        } else{
+            return 0;
+        }
+    }
+
+    public StatisticsTracker getStatistics(){
+        return this.statisticsTracker;
+    }
+
+    public void updateStatistics() {
+        statisticsTracker.setAnimalsCount(getAnimalsCount());
+        statisticsTracker.setGrassCount(grasses.size());
+        statisticsTracker.setMostPopularGenomes(getMostPopularGenoms());
+        statisticsTracker.setAverageEnergyLevel(getAverageEnergyLevel());
+        statisticsTracker.setEmptyFieldsCount(getEmptyFieldsCount());
+        statisticsTracker.setAverageLifespan(getAverageLifespan());
+        statisticsTracker.setAverageKidsAmount(getAverageChildrenAmount());
+      
     public void removeGrass(Vector2d position){
         grasses.remove(position);
     }
@@ -145,6 +255,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         growGrass();
         takeEnergyFromAnimals(5);
         dayCounter++;
+
     }
 
 }

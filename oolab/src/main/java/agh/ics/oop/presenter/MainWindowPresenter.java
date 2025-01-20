@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 public class MainWindowPresenter {
     //private final List<SimulationPresenter> presenters = new ArrayList<>();
@@ -101,10 +102,13 @@ public class MainWindowPresenter {
                 //presenters.add(presenter);
 
                 Stage stage = new Stage();
+
                 configureStage(stage, viewRoot);
                 stage.show();
+                var simulationMap = new DarwinSimulationMap(30,30, ids);
 
                 var simulationMap = new DarwinSimulationMapWithWater(10,10, ids);
+
                 ids += 1;
                 presenter.setWorldMap(simulationMap);
                 var positions = List.of(new Vector2d(4,4));
@@ -112,6 +116,10 @@ public class MainWindowPresenter {
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
+                stage.setOnCloseRequest(event -> {
+                simulation.stop();
+                // Save file
+                });
 
         } else {
             infolabel.setText("Moves list shouldn't be empty");
@@ -194,6 +202,9 @@ public class MainWindowPresenter {
 
 
 
+    }
+    public void close() throws InterruptedException {
+        simulationEngine.awaitSimulationEnd();
     }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
