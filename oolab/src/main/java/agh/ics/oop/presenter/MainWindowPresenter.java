@@ -9,6 +9,7 @@ import agh.ics.oop.utils.MutationVariants;
 import agh.ics.oop.utils.SimulationOptions;
 import agh.ics.oop.utils.SimulationOptionsToFile;
 import com.opencsv.exceptions.CsvValidationException;
+import com.sun.tools.javac.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,6 +62,12 @@ public class MainWindowPresenter {
     private int ids = 0;
     private SimulationOptions simulationOptions;
 
+    private final Stage stage;
+
+    public MainWindowPresenter(Stage stage) {
+        this.stage = stage;
+    }
+
     public void initialize() {
         mapVariantCB.getItems().addAll(MapTypes.values());
         mutationVariant.getItems().addAll(MutationVariants.values());
@@ -95,16 +102,28 @@ public class MainWindowPresenter {
         simulationOptions = generateSimulationOptions();
         //here some validation could be done
         if (true) {
+                Stage newStage = new Stage();
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+                loader.setControllerFactory(param -> {
+                    if (param == SimulationPresenter.class) {
+                        return new SimulationPresenter(newStage); // Pass Stage to the constructor
+                    } else {
+                        try {
+                            return param.getDeclaredConstructor().newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
                 BorderPane viewRoot = loader.load();
                 SimulationPresenter presenter = loader.getController();
                 //presenters.add(presenter);
 
-                Stage stage = new Stage();
 
-                configureStage(stage, viewRoot);
-                stage.show();
+
+                configureStage(newStage, viewRoot);
+             newStage.show();
 
                 var simulationMap = new DarwinSimulationMap(10,10, ids);
 
@@ -115,7 +134,7 @@ public class MainWindowPresenter {
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
-                stage.setOnCloseRequest(event -> {
+            newStage.setOnCloseRequest(event -> {
                 simulation.stop();
                 // Save file
                 });

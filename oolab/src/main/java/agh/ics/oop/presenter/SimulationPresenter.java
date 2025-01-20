@@ -11,10 +11,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static java.lang.Math.min;
 
 public class SimulationPresenter implements MapChangeListener {
     private AbstractWorldMap worldMap;
@@ -47,7 +50,11 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellWidth;
     private Simulation simulation;
     private StatisticsTracker statistics = new StatisticsTracker();
+    private final Stage stage;
 
+    SimulationPresenter(Stage stage) {
+        this.stage = stage;
+    }
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
     }
@@ -77,10 +84,10 @@ public class SimulationPresenter implements MapChangeListener {
         width = maxX - minX;
         height = maxY - minY;
 
-        cellWidth = Math.round((float) 1000 / (width + 2));
-        cellHeight = Math.round((float) 1000 / (height + 2));
+        cellWidth = min(1000000,Math.round((float) stage.getWidth()/ (2*(width + 2))));
+        cellHeight = min(1000000, Math.round((float) stage.getHeight() / (2*(height + 2))));
 
-
+        System.out.println(cellWidth + " " + cellHeight);
     }
 
     private void clearGrid() {
@@ -131,8 +138,6 @@ public class SimulationPresenter implements MapChangeListener {
                 if (worldMap.isOccupied(positionToCheck)) {
                     WorldElement element = worldMap.objectAt(positionToCheck).get();
                     var label = new Label(element.toString());
-                    System.out.println(label);
-                    //mapGrid.add(label, positionToCheck.getX() - minX + 1, maxY - positionToCheck.getY() + 1);
                     mapGrid.add(new WorldElementBox(element, cellWidth, cellHeight), i + 1, height - j + 1);
                     GridPane.setHalignment(label, HPos.CENTER);
                 } else{
@@ -158,7 +163,7 @@ public class SimulationPresenter implements MapChangeListener {
         setLabelsOx();
         setLabelsOy();
         addElementsToMap();
-        mapGrid.setPrefSize(1000, 1000);
+        mapGrid.setPrefSize(stage.getX()/2, stage.getY()/2);
         infolabel.setText(input);
     }
 
