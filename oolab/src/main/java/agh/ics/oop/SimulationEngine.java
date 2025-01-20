@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class SimulationEngine {
@@ -36,8 +37,9 @@ public class SimulationEngine {
         }
     }
 
-    public void addToThreadPool(Simulation simulation) {
-        threadPool.submit(new Thread(simulation));
+    public Future<?> addToThreadPool(Simulation simulation) {
+
+        return threadPool.submit(new Thread(simulation));
     }
 
     public void awaitSimulationEnd() throws InterruptedException {

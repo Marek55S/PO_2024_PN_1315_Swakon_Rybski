@@ -171,9 +171,6 @@ public abstract class AbstractWorldMap implements WorldMap {
                 .sorted(Comparator.comparing(Animal::getEnergy).reversed()).toList();
     }
 
-    public int getAnimalsCount(){
-        return animals.size();
-    }
 
 
 

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
 public class MainWindowPresenter {
     //private final List<SimulationPresenter> presenters = new ArrayList<>();
@@ -100,6 +101,7 @@ public class MainWindowPresenter {
                 //presenters.add(presenter);
 
                 Stage stage = new Stage();
+
                 configureStage(stage, viewRoot);
                 stage.show();
 
@@ -111,6 +113,10 @@ public class MainWindowPresenter {
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
+                stage.setOnCloseRequest(event -> {
+                simulation.stop();
+                // Save file
+                });
 
         } else {
             infolabel.setText("Moves list shouldn't be empty");

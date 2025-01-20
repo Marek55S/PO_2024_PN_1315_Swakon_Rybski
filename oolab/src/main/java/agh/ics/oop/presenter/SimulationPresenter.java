@@ -1,6 +1,7 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.Simulation;
+import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -21,6 +22,20 @@ public class SimulationPresenter implements MapChangeListener {
     private Label infolabel;
     @FXML
     private GridPane mapGrid;
+    @FXML
+    private Label animalsCountLabel;
+    @FXML
+    private Label plantsCountLabel;
+    @FXML
+    private Label freeFieldsCount;
+    @FXML
+    private Label mostPopularGenotypes;
+    @FXML
+    private Label avgEnergyLevelLabel;
+    @FXML
+    private Label averageLifespan;
+    @FXML
+    private Label averageKidsAmount;
 
     private int minY;
     private int maxY;
@@ -31,7 +46,7 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellHeight;
     private int cellWidth;
     private Simulation simulation;
-    private StatisticsPane statistics = new StatisticsPane();
+    private StatisticsTracker statistics = new StatisticsTracker();
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
@@ -49,6 +64,7 @@ public class SimulationPresenter implements MapChangeListener {
         }));
 
         worldMap = map;
+        statistics = map.getStatistics();
     }
 
     private void updateStoredConstraints() {
@@ -146,11 +162,25 @@ public class SimulationPresenter implements MapChangeListener {
         infolabel.setText(input);
     }
 
+    public void updateStatistics(){
+        animalsCountLabel.setText(String.format("Animals count: %d", statistics.getAnimalsCount()));
+        plantsCountLabel.setText(String.format("Plants count: %d", statistics.getGrassCount()));
+        freeFieldsCount.setText(String.format("Free Fields: %d", statistics.getEmptyFieldsCount()));
+        mostPopularGenotypes.setText(String.format("Most popular genotypes: "));
+        avgEnergyLevelLabel.setText(String.format("Avg energy level: %d", statistics.getAverageEnergyLevel()));
+        averageLifespan.setText(" ");
+        averageKidsAmount.setText(" ");
+    }
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {
             drawMap(message);
+            updateStatistics();
         });
+
+    }
+
+    private void updateGlobalStatistics(){
 
     }
 

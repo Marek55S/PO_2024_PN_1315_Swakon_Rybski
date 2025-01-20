@@ -19,6 +19,7 @@ public class SimulationApp extends Application {
         configureStage(primaryStage, viewRoot);
 //        presenter.initialize();
         primaryStage.show();
+
     }
 
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
