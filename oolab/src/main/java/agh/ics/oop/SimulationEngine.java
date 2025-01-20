@@ -37,9 +37,8 @@ public class SimulationEngine {
         }
     }
 
-    public Future<?> addToThreadPool(Simulation simulation) {
-
-        return threadPool.submit(new Thread(simulation));
+    public void addToThreadPool(Simulation simulation) {
+        threadPool.submit(new Thread(simulation));
     }
 
     public void awaitSimulationEnd() throws InterruptedException {

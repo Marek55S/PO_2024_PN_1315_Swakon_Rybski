@@ -19,6 +19,15 @@ public class SimulationApp extends Application {
         configureStage(primaryStage, viewRoot);
 //        presenter.initialize();
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                presenter.close();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            // Save file
+        });
+
 
     }
 

@@ -200,6 +200,9 @@ public class MainWindowPresenter {
 
 
     }
+    public void close() throws InterruptedException {
+        simulationEngine.awaitSimulationEnd();
+    }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);

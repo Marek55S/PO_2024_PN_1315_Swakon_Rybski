@@ -12,6 +12,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
     private StatisticsTracker statisticsTracker = new StatisticsTracker();
+    private int deadAnimalsLivesLengthSum = 0;
+    private int deadAnimalsCount = 0;
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -84,6 +86,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                 .toList();
 
         deadAnimals.forEach(animal -> {
+            deadAnimalsCount++;
+            deadAnimalsLivesLengthSum += animal.getAge();
             List<Animal> animalsAtPosition = animals.get(animal.getPosition());
             if (animalsAtPosition != null) {
                 animalsAtPosition.remove(animal);
@@ -182,6 +186,21 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return energySum / animalsCount;
     }
 
+
+    private int getAverageChildrenAmount(){
+        int childrenAmount = 0;
+        int animalsCount = 0;
+        for(var animalList : animals.values()){
+            for(var animal : animalList){
+                animalsCount++;
+                childrenAmount += animal.getChildrenCount();
+            }
+        }
+
+        return childrenAmount / animalsCount;
+    }
+
+
     private int getEmptyFieldsCount(){
         int nonEmptyFieldsCount = 0;
         for(int i = 0; i < super.mapBounds.upperRight().getX(); ++i){
@@ -195,6 +214,14 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return super.mapBounds.upperRight().getX()*super.mapBounds.upperRight().getY() - nonEmptyFieldsCount;
     }
 
+    private int getAverageLifespan(){
+        if(deadAnimalsCount > 0){
+            return deadAnimalsLivesLengthSum/deadAnimalsCount;
+        } else{
+            return 0;
+        }
+    }
+
     public StatisticsTracker getStatistics(){
         return this.statisticsTracker;
     }
@@ -205,8 +232,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         statisticsTracker.setMostPopularGenomes(getMostPopularGenoms());
         statisticsTracker.setAverageEnergyLevel(getAverageEnergyLevel());
         statisticsTracker.setEmptyFieldsCount(getEmptyFieldsCount());
-        statisticsTracker.setAverageLifespan(0);
-        statisticsTracker.setAverageKidsAmount(0);
+        statisticsTracker.setAverageLifespan(getAverageLifespan());
+        statisticsTracker.setAverageKidsAmount(getAverageChildrenAmount());
     }
 
 }

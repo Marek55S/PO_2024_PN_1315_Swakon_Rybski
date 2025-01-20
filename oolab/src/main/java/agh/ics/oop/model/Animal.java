@@ -9,6 +9,8 @@ public class Animal implements WorldElement {
     private final List<Integer> genome = new ArrayList<>();
     private int currentGenomeIndex = 0;
     public static final Random RANDOM = new Random();
+    private int kidsCount = 0;
+    private int age = 0;
 
     // all this static values should be moved to the configuration file
     public static final int NEWBORNS_ENERGY = 100;
@@ -32,7 +34,9 @@ public class Animal implements WorldElement {
         facingDirection = MapDirection.NORTH;
     }
 
-
+    public int getAge() {
+        return age;
+    }
 
     public MapDirection getFacingDirection() {
         return facingDirection;
@@ -161,6 +165,7 @@ public class Animal implements WorldElement {
     }
     public void subtractEnergy(int energy){
         this.energy -= energy;
+        age++;
     }
     public int getEnergy(){
         return energy;
@@ -190,6 +195,12 @@ public class Animal implements WorldElement {
         }
     }
 
+    public void addChildren(){
+        kidsCount++;
+    }
+    public int getChildrenCount(){
+        return kidsCount;
+    }
     // should be another method for different types of mutations
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
@@ -208,6 +219,8 @@ public class Animal implements WorldElement {
         partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);
         //randomMutation(newGenome);
         slightMutation(newGenome);
+        addChildren();
+        partner.addChildren();
 
         return new Animal(this.localizationOnMap, newGenome);
     }
