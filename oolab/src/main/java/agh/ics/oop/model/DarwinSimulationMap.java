@@ -128,4 +128,10 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         }
     }
 
+    public void removeGrass(Vector2d position){
+        if(grasses.containsKey(position)){
+            grasses.remove(position);
+        }
+    }
+
 }

@@ -10,11 +10,13 @@ import java.util.stream.Stream;
 public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
 
     private final HashMap<Vector2d, Water> waters;
+    private final HashMap<Vector2d, Water> inflowedWaters;
 
     public DarwinSimulationMapWithWater(int width, int height, int mapId) {
         super(width, height, mapId);
 
         waters = new HashMap<>();
+        inflowedWaters = new HashMap<>();
     }
 
     @Override
@@ -46,5 +48,20 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     @Override
     public boolean isOccupied(Vector2d position) {
         return super.isOccupied(position);
+    }
+
+    public void inflow(){
+        for(var water : waters.values()){
+            for(var direction : MapDirection.values()){
+                var newPosition = water.getPosition().add(direction.toUnitVector());
+                if(!isOccupied(newPosition)){
+                    inflowedWaters.put(newPosition, water);
+                } else if(objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Grass){
+                    super.removeGrass(newPosition);
+                } else if(objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Animal){
+                    //
+                }
+            }
+        }
     }
 }
