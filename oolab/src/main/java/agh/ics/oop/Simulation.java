@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Simulation implements Runnable {
     private final DarwinSimulationMap map;
-
+    private boolean running = false;
     public Simulation(List<Vector2d> startingPositions, DarwinSimulationMap map) {
         for (var animalPosition : startingPositions) {
             try {
@@ -21,10 +21,14 @@ public class Simulation implements Runnable {
     }
 
 
+    public void toggle() {
+        running = !running;
+    }
 // grass energy and day energy consumption will be set in by user
     public void run() {
         int dayCounter = 0;
         while(!map.getOrderedAnimals().isEmpty()) {
+            if(running){
             dayCounter++;
             map.removeDeadAnimals();
             map.moveAllAnimals();
@@ -38,6 +42,7 @@ public class Simulation implements Runnable {
 //            } catch (InterruptedException e) {
 //                throw new RuntimeException(e);
 //            }
+        }
         }
 
     }

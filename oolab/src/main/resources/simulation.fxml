@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             minHeight="550.0" minWidth="850.0"
@@ -17,4 +18,7 @@
         <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"></GridPane>
         <!--        <Label fx:id="infoLabel" text="All animals will be living here!" textAlignment="CENTER"/>-->
     </center>
+    <bottom>
+        <Button fx:id="pauseButton" text="Pause" onAction="#toggleRunning"></Button>
+    </bottom>
 </BorderPane>

@@ -105,6 +105,7 @@ public class MainWindowPresenter {
                 presenter.setWorldMap(simulationMap);
                 var positions = List.of(new Vector2d(1,1));
                 var simulation = new Simulation(positions, simulationMap);
+                presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
 

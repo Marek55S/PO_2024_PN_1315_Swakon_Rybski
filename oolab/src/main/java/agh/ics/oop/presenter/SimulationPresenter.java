@@ -1,7 +1,9 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.Simulation;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.control.Label;
@@ -9,6 +11,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -27,8 +30,11 @@ public class SimulationPresenter implements MapChangeListener {
     private int height;
     private int cellHeight;
     private int cellWidth;
+    private Simulation simulation;
 
-
+    public void setSimulation(Simulation simulation) {
+        this.simulation = simulation;
+    }
     public void setWorldMap(AbstractWorldMap map) {
         if (worldMap != null) {
             worldMap.removeObserver(this);
@@ -114,6 +120,10 @@ public class SimulationPresenter implements MapChangeListener {
                 }
             }
         }
+    }
+
+    public void toggleRunning(ActionEvent actionEvent){
+        simulation.toggle();
     }
 
     public void drawMap(String input) {
