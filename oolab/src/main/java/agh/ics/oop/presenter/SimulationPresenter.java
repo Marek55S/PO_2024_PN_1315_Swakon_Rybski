@@ -60,8 +60,8 @@ public class SimulationPresenter implements MapChangeListener {
         width = maxX - minX;
         height = maxY - minY;
 
-        cellWidth = Math.round((float) 300 / (width + 2));
-        cellHeight = Math.round((float) 300 / (height + 2));
+        cellWidth = Math.round((float) 1000 / (width + 2));
+        cellHeight = Math.round((float) 1000 / (height + 2));
 
 
     }
@@ -133,7 +133,7 @@ public class SimulationPresenter implements MapChangeListener {
         setLabelsOx();
         setLabelsOy();
         addElementsToMap();
-        mapGrid.setPrefSize(300, 300);
+        mapGrid.setPrefSize(1000, 1000);
         infolabel.setText(input);
     }
 

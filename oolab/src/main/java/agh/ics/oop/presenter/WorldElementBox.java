@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class WorldElementBox extends VBox {
-    private static final int IMAGE_HEIGHT = 20;
-    private static final int IMAGE_WIDTH = 20;
+    private static final int IMAGE_HEIGHT = 100;
+    private static final int IMAGE_WIDTH = 100;
     private static final Map<String, Image> images = new HashMap<>();
 
     static {

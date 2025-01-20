@@ -37,11 +37,11 @@ public class Simulation implements Runnable {
             map.growGrass();
             map.takeEnergyFromAnimals(5);
             System.out.println("Day " + dayCounter + " has ended");
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         }
 
