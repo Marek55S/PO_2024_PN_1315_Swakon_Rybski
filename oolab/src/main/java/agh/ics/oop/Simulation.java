@@ -27,7 +27,7 @@ public class Simulation implements Runnable {
         while(!map.getOrderedAnimals().isEmpty()) {
             dayCounter++;
             map.removeDeadAnimals();
-//            map.moveAllAnimals();
+            map.moveAllAnimals();
             map.eatGrass(15);
             map.reproduceAnimals();
             map.growGrass();

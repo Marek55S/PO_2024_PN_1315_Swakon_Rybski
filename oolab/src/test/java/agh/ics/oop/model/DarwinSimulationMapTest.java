@@ -163,12 +163,17 @@ class DarwinSimulationMapTest {
 
         try {
             testMap.place(startPosition);
+            testMap.place(startPosition2);
         } catch (IncorrectPositionException e) {
             Assertions.fail("Exception was thrown " + e.getMessage());
         }
-        var testAnimal = testMap.getOrderedAnimals().getFirst();
+        var testAnimal1 = testMap.getOrderedAnimals().getFirst();
+        var testAnimal2 = testMap.getOrderedAnimals().getLast();
+        Assertions.assertEquals(startPosition, testAnimal1.getPosition());
+        Assertions.assertEquals(startPosition2, testAnimal2.getPosition());
         testMap.moveAllAnimals();
-        Assertions.assertNotEquals(startPosition, testMap.getOrderedAnimals().getFirst().getPosition());
+        Assertions.assertNotEquals(startPosition, testAnimal1.getPosition());
+        Assertions.assertNotEquals(startPosition2, testAnimal2.getPosition());
     }
 
 

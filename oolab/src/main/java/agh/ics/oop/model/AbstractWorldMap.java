@@ -67,6 +67,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
+    @Override
     public void moveAllAnimals() {
         for (var animal : getOrderedByEnergyAnimals()) {
             var oldPosition = animal.getPosition();
@@ -90,7 +91,6 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
 
-
     @Override
     public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
         var animal = new Animal(animalProposedLocalisation, generateGenome());
@@ -112,7 +112,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
         return genome;
     }
-
 
 
     @Override
@@ -157,6 +156,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         return mapId;
     }
 
+    // probably useless, maybe better will be method that doesnt sort
     @Override
     public List<Animal> getOrderedAnimals() {
         return animals.values().stream()
@@ -170,5 +170,7 @@ public abstract class AbstractWorldMap implements WorldMap {
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(Animal::getEnergy).reversed()).toList();
     }
+
+
 
 }

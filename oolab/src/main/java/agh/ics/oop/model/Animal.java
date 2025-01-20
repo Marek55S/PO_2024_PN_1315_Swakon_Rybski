@@ -15,17 +15,17 @@ public class Animal implements WorldElement {
     public static final int ENERGY_TO_REPRODUCE = 100;
     public static final int GENOME_LENGTH = 8;
 
+    // redundant constructor
     public Animal() {
         this(new Vector2d(2, 2));
     }
-
+    // redundant constructor
     public Animal(Vector2d localizationOnMap) {
         this.localizationOnMap = localizationOnMap;
         facingDirection = MapDirection.NORTH;
     }
 
 
-    //temporary constructor
     public Animal(Vector2d localizationOnMap, List<Integer> genome) {
         this.localizationOnMap = localizationOnMap;
         this.genome.addAll(genome);
@@ -69,7 +69,7 @@ public class Animal implements WorldElement {
             newLoc = new Vector2d(0, newLoc.getY());
         }
         if (!newLoc.precedes(map.getCurrentBounds().upperRight()) || !newLoc.follows(map.getCurrentBounds().lowerLeft())) {
-        facingDirection = facingDirection.next().next().next().next();
+        this.rotateAnimal(4);
         newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
         }
         return newLoc;
@@ -84,12 +84,10 @@ public class Animal implements WorldElement {
 //        currentGenomeIndex++;
 //    }
 
-    private void rotateAnimal(){
-        var rotation = genome.get(currentGenomeIndex);
+    private void rotateAnimal(int rotation){
         for(int i = 0; i < rotation; i++){
             facingDirection = facingDirection.next();
         }
-        currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
     }
 
     private void moveForward(AbstractWorldMap validator){
@@ -100,8 +98,10 @@ public class Animal implements WorldElement {
     }
 
     public void moveByGenome(AbstractWorldMap validator){
-        rotateAnimal();
+        var rotation = genome.get(currentGenomeIndex);
+        rotateAnimal(rotation);
         moveForward(validator);
+        currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
     }
 
     @Override

@@ -15,83 +15,38 @@ public class AnimalTest {
         Assertions.assertEquals(MapDirection.NORTH, testAnimal.getFacingDirection());
     }
 
-    // test should be changed to use moveByGenome from here,
-    // first 5 of them are probably redundant, because they are tested in last tests
-    @Test
-    void animalRotatesLeft() {
-        var testAnimal = new Animal();
-        testAnimal.move(MoveDirection.LEFT, validator);
-        Assertions.assertEquals(MapDirection.NORTH_WEST, testAnimal.getFacingDirection());
-    }
-
-    @Test
-    void animalRotatesRight() {
-        var testAnimal = new Animal();
-        testAnimal.move(MoveDirection.RIGHT, validator);
-        Assertions.assertEquals(MapDirection.NORTH_EAST, testAnimal.getFacingDirection());
-    }
-
-    @Test
-    void animalMovesForward() {
-        var testAnimal = new Animal();
-        var finalPosition = new Vector2d(2, 3);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-    }
-
-    @Test
-    void animalMovesBackward() {
-        var testAnimal = new Animal();
-        var finalPosition = new Vector2d(2, 1);
-        testAnimal.move(MoveDirection.BACKWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-    }
-
-    @Test
-    void animalMovesAfterRotation() {
-        var testAnimal = new Animal();
-        var finalPosition = new Vector2d(1, 3);
-        testAnimal.move(MoveDirection.LEFT, validator);
-        testAnimal.move(MoveDirection.FORWARD, validator);
-        Assertions.assertEquals(finalPosition, testAnimal.getPosition());
-    }
 
     @Test
     void animalTeleportsOnXAxis() {
         var startingPositionX = new Vector2d(3, 2);
-        var animalX = new Animal(startingPositionX);
+        var genome = List.of(2,4,0,0,0,0,0,0);
+        var animalX = new Animal(startingPositionX,genome);
 
-        animalX.move(MoveDirection.RIGHT, validator);
-        animalX.move(MoveDirection.RIGHT, validator);
-        Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
-
-        animalX.move(MoveDirection.FORWARD, validator);
+        animalX.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
-
-        animalX.move(MoveDirection.BACKWARD, validator);
+        animalX.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(3, 2), animalX.getPosition());
     }
 
     @Test
     void animalTeleportsAndMoves(){
         var startingPositionX = new Vector2d(3, 1);
-        var animalX = new Animal(startingPositionX);
+        var genome = List.of(1,4,0,0,0,0,0,0);
+        var animalX = new Animal(startingPositionX,genome);
 
-        animalX.move(MoveDirection.RIGHT, validator);
-        Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
-
-        animalX.move(MoveDirection.FORWARD, validator);
+        animalX.moveByGenome( validator);
         Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
 
-        animalX.move(MoveDirection.BACKWARD, validator);
+        animalX.moveByGenome( validator);
         Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
     }
 
     @Test
     void animalRotatesOnUpperYAxis() {
         var startingPositionY = new Vector2d(2, 3);
-        var animalY = new Animal(startingPositionY);
-        animalY.move(MoveDirection.FORWARD, validator);
+        var genome = List.of(0,0,0,0,0,0,0,0);
+        var animalY = new Animal(startingPositionY,genome);
+        animalY.moveByGenome( validator);
         Assertions.assertEquals(new Vector2d(2, 3), animalY.getPosition());
         Assertions.assertEquals(MapDirection.SOUTH, animalY.getFacingDirection());
     }
@@ -99,12 +54,13 @@ public class AnimalTest {
     @Test
     void animalRotatesOnLowerYAxis() {
         var bottomPosition = new Vector2d(2, 0);
-        var animalBottom = new Animal(bottomPosition);
-        animalBottom.move(MoveDirection.BACKWARD, validator);
+        var genome = List.of(4,0,0,0,0,0,0,0);
+        var animalBottom = new Animal(bottomPosition,genome);
+        animalBottom.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(2, 0), animalBottom.getPosition());
+        Assertions.assertEquals(MapDirection.NORTH, animalBottom.getFacingDirection());
     }
 
-    // to here
 
 
     @Test

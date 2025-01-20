@@ -15,12 +15,6 @@ public class World {
         List<Vector2d> startingPositions = List.of(new Vector2d(1,1));
         Simulation simulation = new Simulation(startingPositions,map);
         simulation.run();
-        try{
-            map.place(new Vector2d(1,1));
-        } catch (IncorrectPositionException e){
-            System.out.println(e.getMessage());
-        }
-        map.moveAllAnimals();
     }
 
 }
