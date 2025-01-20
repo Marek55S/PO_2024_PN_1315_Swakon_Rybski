@@ -1,4 +1,4 @@
-package agh.ics.oop;
+package agh.ics.oop.utils;
 
 public enum MutationVariants {
     STANDARD_MUTATION,

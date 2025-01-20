@@ -1,5 +1,4 @@
-package agh.ics.oop;
-import com.opencsv.CSVParser;
+package agh.ics.oop.utils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;

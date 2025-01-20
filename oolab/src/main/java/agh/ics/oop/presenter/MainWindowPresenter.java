@@ -2,8 +2,11 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.*;
 import agh.ics.oop.model.DarwinSimulationMap;
-import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.utils.MapTypes;
+import agh.ics.oop.utils.MutationVariants;
+import agh.ics.oop.utils.SimulationOptions;
+import agh.ics.oop.utils.SimulationOptionsToFile;
 import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,14 +15,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class MainWindowPresenter {
     //private final List<SimulationPresenter> presenters = new ArrayList<>();
@@ -134,13 +137,61 @@ public class MainWindowPresenter {
     }
 
     public void onSaveConfigClicked(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName("settings.csv");
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("csv files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(genomeLength.getScene().getWindow());
         String path = "default.csv";
+        if (file != null) {
+            path = file.getAbsolutePath();
+        }
+
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
         try{
         simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
         } catch (IOException e) {
             infolabel.setText("Error writing config file");
         }
+
+    }
+
+    public void onLoadConfigClicked() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName("settings.csv");
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("csv files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showOpenDialog(genomeLength.getScene().getWindow());
+        if (file != null) {
+            String path = file.getAbsolutePath();
+            SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
+            try{
+                SimulationOptions options = simulationOptionsToFile.readOptionsFromFile(path);
+                widthSpinner.getValueFactory().setValue(options.simulationWidth());
+                heightSpinner.getValueFactory().setValue(options.simulationHeigth());
+                mapVariantCB.setValue(options.mapType());
+                initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
+                energyFromPlant.getValueFactory().setValue(options.plantEnergy());
+                everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
+                initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
+                initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
+                animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
+                reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
+                mutationsCount.getValueFactory().setValue(options.mutationsCount());
+                genomeLength.getValueFactory().setValue(options.genomeLength());
+                mutationVariant.setValue(options.mutationVariant());
+            } catch (IOException e) {
+                infolabel.setText("Error reading from config file");
+            } catch (CsvValidationException e) {
+                infolabel.setText("Error reading from config file");
+            }
+        } else{
+            infolabel.setText("Error reading from config file");
+        }
+
+
 
     }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {

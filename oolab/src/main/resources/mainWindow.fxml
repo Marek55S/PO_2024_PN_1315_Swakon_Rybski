@@ -64,7 +64,8 @@
     </center>
     <bottom>
         <VBox spacing="10" alignment="CENTER">
-            <Button fx:id="saveConfigButton" text="Save Config" onMouseClicked="#onSaveConfigClicked"></Button>
+            <HBox><Button fx:id="saveConfigButton" text="Save Config" onMouseClicked="#onSaveConfigClicked"></Button>
+                <Button fx:id="loadConfigButton" text="Load Config" onMouseClicked="#onLoadConfigClicked"></Button></HBox>
             <Button fx:id="startButton"  text="Start" onAction="#onSimulationStartClicked"/>
         </VBox>
     </bottom>
