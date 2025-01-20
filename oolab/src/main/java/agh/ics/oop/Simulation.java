@@ -32,11 +32,11 @@ public class Simulation implements Runnable {
             dayCounter++;
             map.nextDay();
             System.out.println("Day " + dayCounter + " has ended");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
         }
         }
 
