@@ -38,7 +38,7 @@ public class SimulationOptionsToFile {
                 case "sml" -> MutationVariants.SMALL_CHANGE_MUTATION;
                 default -> throw new IllegalStateException("Unexpected value: " + nextLine[12]);
             };
-
+            try{
             return new SimulationOptions(Integer.parseInt(nextLine[0]),
                     Integer.parseInt(nextLine[1]),
                     mapType,
@@ -52,6 +52,9 @@ public class SimulationOptionsToFile {
                     Integer.parseInt(nextLine[10]),
                     Integer.parseInt(nextLine[11]),
                     mutationVariants);
+            } catch (NumberFormatException e) {
+                throw new CsvValidationException(e.getMessage());
+            }
         }
 
     }

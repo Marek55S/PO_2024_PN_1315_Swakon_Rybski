@@ -18,7 +18,7 @@ public class WorldElementBox extends VBox {
     private static final Map<String, Image> images = new HashMap<>();
 
     static {
-        String[] images = {"up.png", "right.png", "down.png", "left.png", "grass.png"};
+        String[] images = {"animal_up.png", "animal_ru.png", "animal_r.png", "animal_rd.png", "animal_ld.png", "animal_l.png", "animal_lu.png", "animal_d.png", "tree.png"};
         for (String url : images) {
             WorldElementBox.images.put(url, new Image(url));
         }

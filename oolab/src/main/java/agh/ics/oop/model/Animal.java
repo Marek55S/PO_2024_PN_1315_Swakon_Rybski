@@ -144,15 +144,14 @@ public class Animal implements WorldElement {
     @Override
     public String getResourceString() {
         return switch (facingDirection) {
-            case NORTH -> "up.png";
-            case EAST -> "right.png";
-            case SOUTH -> "down.png";
-            case WEST -> "left.png";
-            //below are temporary values that need to be changed
-            case NORTH_EAST -> "up.png";
-            case SOUTH_WEST -> "up.png";
-            case NORTH_WEST -> "up.png";
-            case SOUTH_EAST ->  "up.png";
+            case NORTH -> "animal_up.png";
+            case EAST -> "animal_r.png";
+            case SOUTH -> "animal_d.png";
+            case WEST -> "animal_l.png";
+            case NORTH_EAST -> "animal_ru.png";
+            case SOUTH_WEST -> "animal_ld.png";
+            case NORTH_WEST -> "animal_lu.png";
+            case SOUTH_EAST ->  "animal_rd.png";
         };
     }
 

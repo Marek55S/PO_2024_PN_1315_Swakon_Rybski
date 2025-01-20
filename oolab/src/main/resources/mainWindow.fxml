@@ -65,7 +65,7 @@
     <bottom>
         <VBox spacing="10" alignment="CENTER">
             <Button fx:id="saveConfigButton" text="Save Config" onMouseClicked="#onSaveConfigClicked"></Button>
-            <Button fx:id="startButton"  text="Start"/>
+            <Button fx:id="startButton"  text="Start" onAction="#onSimulationStartClicked"/>
         </VBox>
     </bottom>
 </BorderPane>

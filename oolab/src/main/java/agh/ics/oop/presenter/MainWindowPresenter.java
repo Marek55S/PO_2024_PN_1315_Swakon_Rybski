@@ -1,16 +1,17 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.OptionsParser;
-import agh.ics.oop.Simulation;
-import agh.ics.oop.SimulationEngine;
-import agh.ics.oop.model.GrassField;
+import agh.ics.oop.*;
+import agh.ics.oop.model.DarwinSimulationMap;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
+import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class MainWindowPresenter {
     //private final List<SimulationPresenter> presenters = new ArrayList<>();
@@ -83,14 +85,11 @@ public class MainWindowPresenter {
         }
     }
 
-    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
+    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException{
+
         simulationOptions = generateSimulationOptions();
         //here some validation could be done
         if (true) {
-            try {
-                List<MoveDirection> moves = OptionsParser.parseOptions(moveslisttextfield.getText().split(" "));
-                List<Vector2d> positions = List.of(new Vector2d(1, 1));
-
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
                 BorderPane viewRoot = loader.load();
@@ -104,12 +103,11 @@ public class MainWindowPresenter {
                 var simulationMap = new DarwinSimulationMap(10,10, ids);
                 ids += 1;
                 presenter.setWorldMap(simulationMap);
-                Simulation simulation = new Simulation(positions, simulationMap);
+                var positions = List.of(new Vector2d(1,1));
+                var simulation = new Simulation(positions, simulationMap);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
-            } catch (IllegalArgumentException e) {
-                infolabel.setText("This moves combination is invalid");
-            }
+
         } else {
             infolabel.setText("Moves list shouldn't be empty");
         }
@@ -119,13 +117,19 @@ public class MainWindowPresenter {
 
 
     private SimulationOptions generateSimulationOptions(){
-        return new SimulationOptions(widthSpinner.getValue(),
-                heightSpinner.getValue(), mapVariantCB.getValue(),
-                initialGrassCount.getValue(), energyFromPlant.getValue(),
-                everydayPlantGrowth.getValue(), initialAnimalEnergy.getValue(),
-                initialAnimalsCount.getValue(), animalFullEnergy.getValue(),
-                reproductionEnergy.getValue(), mutationsCount.getValue(),
-                genomeLength.getValue(), mutationVariant.getValue());
+        try {
+            return new SimulationOptions(widthSpinner.getValue(),
+                    heightSpinner.getValue(), mapVariantCB.getValue(),
+                    initialGrassCount.getValue(), energyFromPlant.getValue(),
+                    everydayPlantGrowth.getValue(), initialAnimalEnergy.getValue(),
+                    initialAnimalsCount.getValue(), animalFullEnergy.getValue(),
+                    reproductionEnergy.getValue(), mutationsCount.getValue(),
+                    genomeLength.getValue(), mutationVariant.getValue());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            //throw new RuntimeException(e);
+            return null;
+        }
     }
 
     public void onSaveConfigClicked(){
