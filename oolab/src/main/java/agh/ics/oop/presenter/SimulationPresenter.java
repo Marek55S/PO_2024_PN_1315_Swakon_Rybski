@@ -115,7 +115,7 @@ public class SimulationPresenter implements MapChangeListener {
                     var label = new Label(element.toString());
                     System.out.println(label);
                     //mapGrid.add(label, positionToCheck.getX() - minX + 1, maxY - positionToCheck.getY() + 1);
-                    mapGrid.add(new WorldElementBox(element), i + 1, height - j + 1);
+                    mapGrid.add(new WorldElementBox(element, cellWidth, cellHeight), i + 1, height - j + 1);
                     GridPane.setHalignment(label, HPos.CENTER);
                 }
             }

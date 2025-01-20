@@ -103,7 +103,7 @@ public class MainWindowPresenter {
                 configureStage(stage, viewRoot);
                 stage.show();
 
-                var simulationMap = new DarwinSimulationMap(10,10, ids);
+                var simulationMap = new DarwinSimulationMap(30,30, ids);
                 ids += 1;
                 presenter.setWorldMap(simulationMap);
                 var positions = List.of(new Vector2d(1,1));
