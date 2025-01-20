@@ -12,11 +12,10 @@ class DarwinSimulationMapTest {
     void animalIsPlacedOnValidCoordinates() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var properPosition = new Vector2d(1, 1);
-        var testAnimal = new Animal(properPosition);
 
         try {
-            testMap.place(testAnimal);
-            Assertions.assertEquals(testAnimal, testMap.objectAt(properPosition).get());
+            testMap.place(properPosition);
+            assertSame(testMap.objectAt(properPosition).get().getClass(), Animal.class);
         } catch (IncorrectPositionException ex) {
             Assertions.fail("Exception was thrown");
         }
@@ -25,16 +24,15 @@ class DarwinSimulationMapTest {
 
 
     @Test
-    void animalIsNotPlacedOnOtherAnimal() {
+    void animalIsNotPlacedOutsideMap() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var properPosition = new Vector2d(1, 1);
-        var exampleAnimal = new Animal(properPosition);
-        var testAnimal = new Animal(properPosition);
+        var improperPosition = new Vector2d(-1, 1);
 
         try {
-            testMap.place(exampleAnimal);
+            testMap.place(properPosition);
             Assertions.assertThrows(IncorrectPositionException.class, () -> {
-                testMap.place(testAnimal);
+                testMap.place(improperPosition);
             });
         } catch (IncorrectPositionException ex) {
             Assertions.fail("Exception was thrown" + ex.getMessage());
@@ -45,46 +43,27 @@ class DarwinSimulationMapTest {
     void animalMovesIfPositionValid() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var testPosition = new Vector2d(1, 1);
-        var testAnimal = new Animal(testPosition);
 
         try {
-            testMap.place(testAnimal);
+            testMap.place(testPosition);
+            var testAnimal = testMap.getOrderedAnimals().getFirst();
             testMap.move(testAnimal, MoveDirection.FORWARD);
-
             var expectedPosition = new Vector2d(1, 2);
-
+            Assertions.assertTrue(testMap.isOccupied(expectedPosition));
             Assertions.assertEquals(testAnimal, testMap.objectAt(expectedPosition).get());
         } catch (IncorrectPositionException ex) {
             Assertions.fail("Exception was thrown" + ex.getMessage());
         }
     }
 
-    @Test
-    void animalWontMoveIfPositionInvalid() {
-        var testMap = new DarwinSimulationMap(10, 10, 0);
-        var testPosition = new Vector2d(0, 0);
-        var futurePosition = new Vector2d(0, -1);
-        var testAnimal = new Animal(testPosition);
-        var blockingAnimal = new Animal(futurePosition);
-
-        try {
-            testMap.place(testAnimal);
-            testMap.place(blockingAnimal);
-            testMap.move(testAnimal, MoveDirection.BACKWARD);
-            Assertions.assertEquals(testAnimal, testMap.objectAt(testPosition).get());
-        } catch (IncorrectPositionException e) {
-            Assertions.fail("Exception was thrown" + e.getMessage());
-        }
-    }
 
     @Test
     void occupiedPlaceIsOccupied() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var testPosition = new Vector2d(1, 1);
-        var testAnimal = new Animal(testPosition);
 
         try {
-            testMap.place(testAnimal);
+            testMap.place(testPosition);
         } catch (IncorrectPositionException e) {
             Assertions.fail("Exception was thrown" + e.getMessage());
         }
@@ -92,59 +71,109 @@ class DarwinSimulationMapTest {
         Assertions.assertTrue(testMap.isOccupied(testPosition));
     }
 
-    @Test
-    void unoccupiedPlaceIsUnoccupied() {
-        var testMap = new DarwinSimulationMap(10, 10, 0);
-        var testPosition = new Vector2d(1, 1);
-
-        Assertions.assertFalse(testMap.isOccupied(testPosition));
-    }
-
-
-    @Test
-    void objectThatIsOnPositionIsReturned() {
-        var testMap = new DarwinSimulationMap(10, 10, 0);
-        var occupiedPosition = new Vector2d(1, 1);
-        var testAnimal = new Animal(occupiedPosition);
-
-        try {
-            testMap.place(testAnimal);
-        } catch (IncorrectPositionException e) {
-            Assertions.fail("Exception was thrown" + e.getMessage());
-        }
-
-        Assertions.assertEquals(testAnimal, testMap.objectAt(occupiedPosition).get());
-    }
 
     @Test
     void canMoveToValidPosition() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var testPosition = new Vector2d(1, 1);
 
-
         Assertions.assertTrue(testMap.canMoveTo(testPosition));
     }
 
     @Test
-    void cantMoveToOccupiedPosition() {
+    void canMoveToOccupiedPosition() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
         var occupiedPosition = new Vector2d(1, 1);
-        var testAnimal = new Animal(occupiedPosition);
 
         try {
-            testMap.place(testAnimal);
+            testMap.place(occupiedPosition);
         } catch (IncorrectPositionException e) {
             Assertions.fail("Exception was thrown " + e.getMessage());
         }
 
-        Assertions.assertFalse(testMap.canMoveTo(occupiedPosition));
+        Assertions.assertTrue(testMap.canMoveTo(occupiedPosition));
     }
 
     @Test
-    void doesGrassGrow() {
+    void removeDeadAnimalsTest() {
         var testMap = new DarwinSimulationMap(10, 10, 0);
 
-        Assertions.assertTrue(testMap.getGrassCount() > 0);
+        try {
+            testMap.place(new Vector2d(1,1));
+
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        var testAnimal = testMap.getOrderedAnimals().getFirst();
+        testAnimal.subtractEnergy(100);
+        Assertions.assertEquals(1, testMap.getOrderedAnimals().size());
+        testMap.removeDeadAnimals();
+        Assertions.assertEquals(0, testMap.getOrderedAnimals().size());
+    }
+
+    @Test
+    void eatGrassTest() {
+        var testMap = new DarwinSimulationMap(10, 10, 0);
+        var grassPosition = testMap.getElements().getFirst().getPosition();
+        try {
+            testMap.place(grassPosition);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        int allElementsNumber = testMap.getElements().size();
+        testMap.eatGrass(10);
+        Assertions.assertEquals(allElementsNumber - 1, testMap.getElements().size());
+    }
+
+    @Test
+    void reproduceAnimalsTest() {
+        var testMap = new DarwinSimulationMap(10, 10, 0);
+        var startPosition = new Vector2d(1, 1);
+        try {
+            testMap.place(startPosition);
+            testMap.place(startPosition);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        int allElementsNumber = testMap.getElements().size();
+        testMap.reproduceAnimals();
+        Assertions.assertEquals(allElementsNumber + 1, testMap.getElements().size());
+    }
+
+    @Test
+    void takeEnergyFromAnimalsTest() {
+        var testMap = new DarwinSimulationMap(10, 10, 0);
+        var startPosition = (new Vector2d(1, 1));
+        try {
+            testMap.place(startPosition);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        var testAnimal = testMap.getOrderedAnimals().getFirst();
+        testMap.takeEnergyFromAnimals(10);
+        Assertions.assertEquals(90, testAnimal.getEnergy());
+    }
+
+    // something should be fixed
+    @Test
+    void moveAllAnimalsByGenomeTest() {
+        var testMap = new DarwinSimulationMap(10, 10, 0);
+        var startPosition = new Vector2d(1, 1);
+        var startPosition2 = new Vector2d(2, 2);
+
+        try {
+            testMap.place(startPosition);
+            testMap.place(startPosition2);
+        } catch (IncorrectPositionException e) {
+            Assertions.fail("Exception was thrown " + e.getMessage());
+        }
+        var testAnimal1 = testMap.getOrderedAnimals().getFirst();
+        var testAnimal2 = testMap.getOrderedAnimals().getLast();
+        Assertions.assertEquals(startPosition, testAnimal1.getPosition());
+        Assertions.assertEquals(startPosition2, testAnimal2.getPosition());
+        testMap.moveAllAnimals();
+        Assertions.assertNotEquals(startPosition, testAnimal1.getPosition());
+        Assertions.assertNotEquals(startPosition2, testAnimal2.getPosition());
     }
 
 

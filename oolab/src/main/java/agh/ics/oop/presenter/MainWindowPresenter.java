@@ -1,16 +1,16 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.*;
+import agh.ics.oop.OptionsParser;
+import agh.ics.oop.Simulation;
+import agh.ics.oop.SimulationEngine;
+import agh.ics.oop.model.GrassField;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
-import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -88,6 +88,8 @@ public class MainWindowPresenter {
         //here some validation could be done
         if (true) {
             try {
+                List<MoveDirection> moves = OptionsParser.parseOptions(moveslisttextfield.getText().split(" "));
+                List<Vector2d> positions = List.of(new Vector2d(1, 1));
 
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
@@ -99,20 +101,12 @@ public class MainWindowPresenter {
                 configureStage(stage, viewRoot);
                 stage.show();
 
-//                var grassField = new GrassField(2, ids);
-//                ids += 1;
-//                presenter.setWorldMap(grassField);
-//                Simulation simulation = new Simulation(positions, moves, grassField);
-//                simulations.add(simulation);
-//                simulationEngine.addToThreadPool(simulation);
-
-                //Simulation simulation = new Simulation();
-                if(simulationOptions.mapType() == MapTypes.NORMAL_MAP){
-                    //map is normal map
-                } else {
-                    //water map
-                }
-
+                var simulationMap = new DarwinSimulationMap(10,10, ids);
+                ids += 1;
+                presenter.setWorldMap(simulationMap);
+                Simulation simulation = new Simulation(positions, simulationMap);
+                simulations.add(simulation);
+                simulationEngine.addToThreadPool(simulation);
             } catch (IllegalArgumentException e) {
                 infolabel.setText("This moves combination is invalid");
             }

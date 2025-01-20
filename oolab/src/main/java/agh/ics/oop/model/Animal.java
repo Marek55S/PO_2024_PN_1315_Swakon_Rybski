@@ -9,21 +9,23 @@ public class Animal implements WorldElement {
     private final List<Integer> genome = new ArrayList<>();
     private int currentGenomeIndex = 0;
     public static final Random RANDOM = new Random();
+
+    // all this static values should be moved to the configuration file
     public static final int NEWBORNS_ENERGY = 100;
     public static final int ENERGY_TO_REPRODUCE = 100;
-    public static final int GENOM_LENGTH = 8;
+    public static final int GENOME_LENGTH = 8;
 
+    // redundant constructor
     public Animal() {
         this(new Vector2d(2, 2));
     }
-
+    // redundant constructor
     public Animal(Vector2d localizationOnMap) {
         this.localizationOnMap = localizationOnMap;
         facingDirection = MapDirection.NORTH;
     }
 
 
-    //temporary constructor
     public Animal(Vector2d localizationOnMap, List<Integer> genome) {
         this.localizationOnMap = localizationOnMap;
         this.genome.addAll(genome);
@@ -35,6 +37,9 @@ public class Animal implements WorldElement {
     public MapDirection getFacingDirection() {
         return facingDirection;
     }
+
+    // method move and moveByGenome are probably redundant
+    // moveOnBorders should be changed to be used only for moving forward or merged with moveForward
 
     public void move(MoveDirection direction, AbstractWorldMap validator) {
         switch (direction) {
@@ -64,19 +69,39 @@ public class Animal implements WorldElement {
             newLoc = new Vector2d(0, newLoc.getY());
         }
         if (!newLoc.precedes(map.getCurrentBounds().upperRight()) || !newLoc.follows(map.getCurrentBounds().lowerLeft())) {
-        facingDirection = facingDirection.next().next().next().next();
+        this.rotateAnimal(4);
         newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
         }
         return newLoc;
     }
 
-    // method should be changed to move all 8 directions
-    public void moveByGenome(MoveValidator validator) {
-        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
-        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
-        if (validator.canMoveTo(newLoc))
+//    // method should be changed to move all 8 directions
+//    public void moveByGenome(MoveValidator validator) {
+//        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
+//        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
+//        if (validator.canMoveTo(newLoc))
+//            localizationOnMap = newLoc;
+//        currentGenomeIndex++;
+//    }
+
+    private void rotateAnimal(int rotation){
+        for(int i = 0; i < rotation; i++){
+            facingDirection = facingDirection.next();
+        }
+    }
+
+    private void moveForward(AbstractWorldMap validator){
+        var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
+        if (validator.canMoveTo(newLoc)) {
             localizationOnMap = newLoc;
-        currentGenomeIndex++;
+        }
+    }
+
+    public void moveByGenome(AbstractWorldMap validator){
+        var rotation = genome.get(currentGenomeIndex);
+        rotateAnimal(rotation);
+        moveForward(validator);
+        currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
     }
 
     @Override
@@ -97,13 +122,14 @@ public class Animal implements WorldElement {
         return Objects.equals(localizationOnMap, position);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Animal animal = (Animal) o;
-        return localizationOnMap == animal.localizationOnMap && Objects.equals(localizationOnMap, animal.localizationOnMap);
-    }
+    // equals should compare only by reference, no need to override it
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Animal animal = (Animal) o;
+//        return localizationOnMap == animal.localizationOnMap && Objects.equals(localizationOnMap, animal.localizationOnMap);
+//    }
 
     @Override
     public int hashCode() {
@@ -151,14 +177,14 @@ public class Animal implements WorldElement {
 
     // method for mutation of the genome, each gene can be mutated more than once
     private void randomMutation(List<Integer> genomeToMutate){
-        for (int i = 0; i < RANDOM.nextInt(GENOM_LENGTH); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOM_LENGTH), RANDOM.nextInt(8));
+        for (int i = 0; i < RANDOM.nextInt(GENOME_LENGTH); i++){
+            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOME_LENGTH), RANDOM.nextInt(8));
         }
     }
 
     // method for mutation of the genome, each gene can be slightly mutated only once
     void slightMutation(List<Integer> genomeToMutate){
-        for (int i = 0; i < GENOM_LENGTH; i++){
+        for (int i = 0; i < GENOME_LENGTH; i++){
             if(RANDOM.nextBoolean()){;
                 genomeToMutate.set(i, (genomeToMutate.get(i) + (RANDOM.nextBoolean() ? 1 : -1)+8) % 8);
             }
@@ -169,15 +195,15 @@ public class Animal implements WorldElement {
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
         double energyFactor = (double) this.energy /(this.energy + partner.energy);
-        int splitIndex = (int) Math.round(GENOM_LENGTH * energyFactor);
+        int splitIndex = (int) Math.round(GENOME_LENGTH * energyFactor);
         int reproduceEnergy = (int) Math.round(energyFactor * ENERGY_TO_REPRODUCE);
         if(RANDOM.nextInt(2) == 0){
             newGenome.addAll(this.genome.subList(0, splitIndex));
-            newGenome.addAll(partner.genome.subList(splitIndex, GENOM_LENGTH));
+            newGenome.addAll(partner.genome.subList(splitIndex, GENOME_LENGTH));
         }
         else{
             newGenome.addAll(partner.genome.subList(0, splitIndex));
-            newGenome.addAll(this.genome.subList(splitIndex, GENOM_LENGTH));
+            newGenome.addAll(this.genome.subList(splitIndex, GENOME_LENGTH));
         }
         this.subtractEnergy(reproduceEnergy);
         partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);
