@@ -14,6 +14,9 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private StatisticsTracker statisticsTracker = new StatisticsTracker();
     private int deadAnimalsLivesLengthSum = 0;
     private int deadAnimalsCount = 0;
+
+    protected int dayCounter = 0;
+
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -33,6 +36,10 @@ public class DarwinSimulationMap extends AbstractWorldMap {
             }
         }
         this.growGrass();
+    }
+
+    public int getDayCounter(){
+        return dayCounter;
     }
 
 
@@ -134,6 +141,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         }
     }
 
+
     private List<List<Integer>> getMostPopularGenoms(){
         Map<List<Integer>, Integer> genomCount = new HashMap<>();
 
@@ -234,6 +242,20 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         statisticsTracker.setEmptyFieldsCount(getEmptyFieldsCount());
         statisticsTracker.setAverageLifespan(getAverageLifespan());
         statisticsTracker.setAverageKidsAmount(getAverageChildrenAmount());
+      
+    public void removeGrass(Vector2d position){
+        grasses.remove(position);
+    }
+
+    public void nextDay(){
+        removeDeadAnimals();
+        moveAllAnimals();
+        eatGrass(15);
+        reproduceAnimals();
+        growGrass();
+        takeEnergyFromAnimals(5);
+        dayCounter++;
+
     }
 
 }
