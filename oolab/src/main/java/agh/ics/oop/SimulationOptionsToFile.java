@@ -4,14 +4,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 
 public class SimulationOptionsToFile {
 
-    public void writeOptionsToFile(SimulationOptions simulationOptions, String filePath) {
+    public void writeOptionsToFile(SimulationOptions simulationOptions, String filePath) throws IOException {
         try(CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath))){
             String[] header = {"width", "height", "mapType", "initialGrass", "plantEnergy",
             "everydayPlants", "initialAnimalEnergy", "initialAnimalsCount", "animalFullEnergy",
@@ -20,12 +17,10 @@ public class SimulationOptionsToFile {
 
             csvWriter.writeNext(header);
             csvWriter.writeNext(record);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public SimulationOptions readOptionsFromFile(String filePath) {
+    public SimulationOptions readOptionsFromFile(String filePath) throws IOException, CsvValidationException {
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] nextLine;
             reader.readNext();
@@ -57,12 +52,7 @@ public class SimulationOptionsToFile {
                     Integer.parseInt(nextLine[10]),
                     Integer.parseInt(nextLine[11]),
                     mutationVariants);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
         }
 
-        return null;
     }
 }

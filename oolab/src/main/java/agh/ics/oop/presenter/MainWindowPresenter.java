@@ -3,6 +3,7 @@ package agh.ics.oop.presenter;
 import agh.ics.oop.*;
 import agh.ics.oop.model.MoveDirection;
 import agh.ics.oop.model.Vector2d;
+import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -59,6 +60,7 @@ public class MainWindowPresenter {
         //load defaults
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
         //handle exceptions
+        try{
         SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
         widthSpinner.getValueFactory().setValue(options.simulationWidth());
         heightSpinner.getValueFactory().setValue(options.simulationHeigth());
@@ -73,6 +75,12 @@ public class MainWindowPresenter {
         mutationsCount.getValueFactory().setValue(options.mutationsCount());
         genomeLength.getValueFactory().setValue(options.genomeLength());
         mutationVariant.setValue(options.mutationVariant());
+        }
+        catch (CsvValidationException e) {
+            infolabel.setText("Default configuration could't be loaded");
+        } catch (IOException e) {
+            infolabel.setText("Default configuration could't be loaded");
+        }
     }
 
     public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
@@ -129,7 +137,11 @@ public class MainWindowPresenter {
     public void onSaveConfigClicked(){
         String path = "default.csv";
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
+        try{
         simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
+        } catch (IOException e) {
+            infolabel.setText("Error writing config file");
+        }
 
     }
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
