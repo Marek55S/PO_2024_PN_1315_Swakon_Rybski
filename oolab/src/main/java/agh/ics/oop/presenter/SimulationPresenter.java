@@ -31,6 +31,7 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellHeight;
     private int cellWidth;
     private Simulation simulation;
+    private StatisticsPane statisticsPane;
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;

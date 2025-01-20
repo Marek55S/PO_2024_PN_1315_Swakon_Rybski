@@ -6,6 +6,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.CheckBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             minHeight="550.0" minWidth="850.0"
@@ -27,11 +29,15 @@
             <Label fx:id="freeFieldsCount" text="Free fields Count: "></Label>
             <Label fx:id="mostPopularGenotypes" text="Free fields Count: "></Label>
             <Label fx:id="avgEnergyLevelLabel" text="Free fields Count: "></Label>
-            <Label fx:id="averageLivespan" text="Free fields Count: "></Label>
+            <Label fx:id="averageLifespan" text="Free fields Count: "></Label>
             <Label fx:id="averageKidsAmount" text="Free fields Count: "></Label>
         </VBox>
     </right>
     <bottom>
+        <HBox>
         <Button fx:id="pauseButton" text="Pause" onAction="#toggleRunning"></Button>
+            <CheckBox fx:id="showLikedFieldsGrass" text="Grass Favoured Fields Visible"></CheckBox>
+            <CheckBox fx:id="showDominatingGenome" text="Dominating Genome Visible"></CheckBox>
+        </HBox>
     </bottom>
 </BorderPane>
