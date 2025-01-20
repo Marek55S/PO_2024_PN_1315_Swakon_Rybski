@@ -128,4 +128,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         }
     }
 
+    public int getGrassCount(){
+        return grasses.size();
+    }
+
 }

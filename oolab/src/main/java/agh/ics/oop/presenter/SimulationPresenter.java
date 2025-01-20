@@ -31,7 +31,7 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellHeight;
     private int cellWidth;
     private Simulation simulation;
-    private StatisticsPane statisticsPane;
+    private StatisticsPane statistics = new StatisticsPane();
 
     public void setSimulation(Simulation simulation) {
         this.simulation = simulation;
@@ -108,6 +108,7 @@ public class SimulationPresenter implements MapChangeListener {
 //                GridPane.setHalignment(label, HPos.CENTER);
 //            }
 //        }
+        int emptyFields = 0;
         for (int i = 0; i <= width; ++i) {
             for (int j = 0; j <= height; ++j) {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
@@ -118,9 +119,16 @@ public class SimulationPresenter implements MapChangeListener {
                     //mapGrid.add(label, positionToCheck.getX() - minX + 1, maxY - positionToCheck.getY() + 1);
                     mapGrid.add(new WorldElementBox(element, cellWidth, cellHeight), i + 1, height - j + 1);
                     GridPane.setHalignment(label, HPos.CENTER);
+                } else{
+                    emptyFields += 1;
                 }
             }
         }
+
+        statistics.setEmptyFieldsCount(emptyFields);
+
+
+
     }
 
     public void toggleRunning(ActionEvent actionEvent){
