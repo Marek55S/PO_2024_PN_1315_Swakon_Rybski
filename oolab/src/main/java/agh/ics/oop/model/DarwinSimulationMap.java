@@ -242,7 +242,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         statisticsTracker.setEmptyFieldsCount(getEmptyFieldsCount());
         statisticsTracker.setAverageLifespan(getAverageLifespan());
         statisticsTracker.setAverageKidsAmount(getAverageChildrenAmount());
-      
+    }
+
     public void removeGrass(Vector2d position){
         grasses.remove(position);
     }
@@ -254,6 +255,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         reproduceAnimals();
         growGrass();
         takeEnergyFromAnimals(5);
+        updateStatistics();
         dayCounter++;
 
     }
