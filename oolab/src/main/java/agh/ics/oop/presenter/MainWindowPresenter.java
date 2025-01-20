@@ -75,37 +75,44 @@ public class MainWindowPresenter {
         mutationVariant.setValue(options.mutationVariant());
     }
 
-//    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
-//
-//        if (!moveslisttextfield.getText().strip().isEmpty()) {
-//            try {
-//                List<MoveDirection> moves = OptionsParser.parseOptions(moveslisttextfield.getText().split(" "));
-//                List<Vector2d> positions = List.of(new Vector2d(1, 1));
-//
-//                FXMLLoader loader = new FXMLLoader();
-//                loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-//                BorderPane viewRoot = loader.load();
-//                SimulationPresenter presenter = loader.getController();
-//                //presenters.add(presenter);
-//
-//                Stage stage = new Stage();
-//                configureStage(stage, viewRoot);
-//                stage.show();
-//
-////                var grassField = new GrassField(2, ids);
-////                ids += 1;
-////                presenter.setWorldMap(grassField);
-////                Simulation simulation = new Simulation(positions, moves, grassField);
-////                simulations.add(simulation);
-////                simulationEngine.addToThreadPool(simulation);
-//            } catch (IllegalArgumentException e) {
-//                infolabel.setText("This moves combination is invalid");
-//            }
-//        } else {
-//            infolabel.setText("Moves list shouldn't be empty");
-//        }
-//
-//    }
+    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
+        simulationOptions = generateSimulationOptions();
+        //here some validation could be done
+        if (true) {
+            try {
+
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+                BorderPane viewRoot = loader.load();
+                SimulationPresenter presenter = loader.getController();
+                //presenters.add(presenter);
+
+                Stage stage = new Stage();
+                configureStage(stage, viewRoot);
+                stage.show();
+
+//                var grassField = new GrassField(2, ids);
+//                ids += 1;
+//                presenter.setWorldMap(grassField);
+//                Simulation simulation = new Simulation(positions, moves, grassField);
+//                simulations.add(simulation);
+//                simulationEngine.addToThreadPool(simulation);
+
+                //Simulation simulation = new Simulation();
+                if(simulationOptions.mapType() == MapTypes.NORMAL_MAP){
+                    //map is normal map
+                } else {
+                    //water map
+                }
+
+            } catch (IllegalArgumentException e) {
+                infolabel.setText("This moves combination is invalid");
+            }
+        } else {
+            infolabel.setText("Moves list shouldn't be empty");
+        }
+
+    }
 
 
 
