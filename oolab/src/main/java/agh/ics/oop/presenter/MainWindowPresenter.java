@@ -2,6 +2,7 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.*;
 import agh.ics.oop.model.DarwinSimulationMap;
+import agh.ics.oop.model.DarwinSimulationMapWithWater;
 import agh.ics.oop.model.Vector2d;
 import agh.ics.oop.utils.MapTypes;
 import agh.ics.oop.utils.MutationVariants;
@@ -103,10 +104,10 @@ public class MainWindowPresenter {
                 configureStage(stage, viewRoot);
                 stage.show();
 
-                var simulationMap = new DarwinSimulationMap(10,10, ids);
+                var simulationMap = new DarwinSimulationMapWithWater(10,10, ids);
                 ids += 1;
                 presenter.setWorldMap(simulationMap);
-                var positions = List.of(new Vector2d(1,1));
+                var positions = List.of(new Vector2d(4,4));
                 var simulation = new Simulation(positions, simulationMap);
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);

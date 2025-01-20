@@ -30,18 +30,13 @@ public class Simulation implements Runnable {
         while(!map.getOrderedAnimals().isEmpty()) {
             if(running){
             dayCounter++;
-            map.removeDeadAnimals();
-            map.moveAllAnimals();
-            map.eatGrass(15);
-            map.reproduceAnimals();
-            map.growGrass();
-            map.takeEnergyFromAnimals(5);
+            map.nextDay();
             System.out.println("Day " + dayCounter + " has ended");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
         }
         }
 

@@ -10,6 +10,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private final HashMap<Vector2d, Grass> grasses;
     private final Set<Vector2d> equatorFreePositions = new HashSet<>();
     private final Set<Vector2d> otherFreePositions = new HashSet<>();
+    protected int dayCounter = 0;
     
 
     public DarwinSimulationMap(int width,int height, int mapId) {
@@ -29,6 +30,10 @@ public class DarwinSimulationMap extends AbstractWorldMap {
             }
         }
         this.growGrass();
+    }
+
+    public int getDayCounter(){
+        return dayCounter;
     }
 
 
@@ -126,6 +131,20 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         for (Animal animal : getOrderedByEnergyAnimals()) {
             animal.subtractEnergy(energy);
         }
+    }
+
+    public void removeGrass(Vector2d position){
+        grasses.remove(position);
+    }
+
+    public void nextDay(){
+        removeDeadAnimals();
+        moveAllAnimals();
+        eatGrass(15);
+        reproduceAnimals();
+        growGrass();
+        takeEnergyFromAnimals(5);
+        dayCounter++;
     }
 
 }
