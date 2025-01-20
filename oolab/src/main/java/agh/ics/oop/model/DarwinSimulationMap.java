@@ -134,4 +134,13 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         }
     }
 
+    public void nextDay(){
+        removeDeadAnimals();
+        moveAllAnimals();
+        eatGrass(15);
+        reproduceAnimals();
+        growGrass();
+        takeEnergyFromAnimals(5);
+    }
+
 }

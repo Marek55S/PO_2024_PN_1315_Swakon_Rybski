@@ -14,8 +14,9 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
 
     public DarwinSimulationMapWithWater(int width, int height, int mapId) {
         super(width, height, mapId);
-
+        var tmpWater = new Water(new Vector2d(1,1));
         waters = new HashMap<>();
+        waters.put(tmpWater.getPosition(), tmpWater);
         inflowedWaters = new HashMap<>();
     }
 
@@ -63,5 +64,11 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
                 }
             }
         }
+    }
+
+    @Override
+    public void nextDay() {
+        super.nextDay();
+        inflow();
     }
 }
