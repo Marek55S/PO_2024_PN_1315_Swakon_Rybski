@@ -18,7 +18,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private int deadAnimalsLivesLengthSum = 0;
     private int deadAnimalsCount = 0;
     protected int dayCounter = 0;
-    private final SimulationOptions options;
+    protected final SimulationOptions options;
 
     public DarwinSimulationMap( int width,int height,int mapId) {
         super(width, height, mapId);
