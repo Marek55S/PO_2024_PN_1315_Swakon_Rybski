@@ -91,8 +91,8 @@ public class AnimalTest {
         Animal child = parent1.reproduce(parent2);
 
         //then
-        Assertions.assertEquals(Animal.GENOME_LENGTH, child.getGenome().size());
-        Assertions.assertEquals(Animal.NEWBORNS_ENERGY,child.getEnergy());
+        Assertions.assertEquals(parent1.genomeLength, child.getGenome().size());
+        Assertions.assertEquals(parent1.newbornsEnergy,child.getEnergy());
         Assertions.assertEquals(50, parent1.getEnergy());
         Assertions.assertEquals(50, parent2.getEnergy());
     }
@@ -108,8 +108,8 @@ public class AnimalTest {
         testAnimal1.addEnergy(10);
         testAnimal2.subtractEnergy(10);
         //then
-        Assertions.assertEquals(Animal.NEWBORNS_ENERGY + 10, testAnimal1.getEnergy());
-        Assertions.assertEquals(Animal.NEWBORNS_ENERGY - 10, testAnimal2.getEnergy());
+        Assertions.assertEquals(testAnimal1.newbornsEnergy + 10, testAnimal1.getEnergy());
+        Assertions.assertEquals(testAnimal1.newbornsEnergy - 10, testAnimal2.getEnergy());
     }
 
     @Test
@@ -121,8 +121,8 @@ public class AnimalTest {
         Animal testAnimal2 = new Animal(position,genome);
 
         //when
-        testAnimal1.addEnergy(Animal.ENERGY_TO_REPRODUCE);
-        testAnimal2.subtractEnergy(Animal.ENERGY_TO_REPRODUCE - 1);
+        testAnimal1.addEnergy(testAnimal1.energyToReproduce);
+        testAnimal2.subtractEnergy(testAnimal1.energyToReproduce - 1);
 
         //then
         Assertions.assertTrue(testAnimal1.canReproduce());

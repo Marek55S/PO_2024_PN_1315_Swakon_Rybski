@@ -69,7 +69,7 @@ class DarwinSimulationMapWithWaterTest {
             map.nextDay();
         }
 
-        Optional<WorldElement> water = map.objectAt(new Vector2d(2, 1)); // Przykład pozycji sąsiedniej
+        Optional<WorldElement> water = map.objectAt(new Vector2d(2, 1));
         assertTrue(water.isPresent());
         assertInstanceOf(Water.class, water.get());
     }
@@ -92,6 +92,7 @@ class DarwinSimulationMapWithWaterTest {
         assertFalse(map.objectAt(new Vector2d(3, 3)).isPresent());
         assertEquals(9, map.getAllWaters().size());
     }
+
 
 
 }

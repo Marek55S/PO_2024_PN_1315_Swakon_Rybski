@@ -2,6 +2,9 @@ package agh.ics.oop.model;
 
 import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.util.IncorrectPositionException;
+import agh.ics.oop.utils.SimulationOptions;
+import agh.ics.oop.utils.MutationVariants;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,16 +17,14 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private StatisticsTracker statisticsTracker = new StatisticsTracker();
     private int deadAnimalsLivesLengthSum = 0;
     private int deadAnimalsCount = 0;
-
     protected int dayCounter = 0;
+    private final SimulationOptions options;
 
-    
-
-    public DarwinSimulationMap(int width,int height, int mapId) {
+    public DarwinSimulationMap( int width,int height,int mapId) {
         super(width, height, mapId);
         grasses = new HashMap<>();
-
         animals = new HashMap<>();
+        this.options = null;
 
         // not exacly 20% of the map
         for (int i = 0; i < width; i++) {
@@ -35,32 +36,89 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                 }
             }
         }
-        this.growGrass();
+        this.growGrass(10);
     }
+
+    public DarwinSimulationMap( SimulationOptions options,int mapId) {
+        super(options.simulationWidth(), options.simulationHeigth(), mapId);
+        int width = options.simulationWidth();
+        int height = options.simulationHeigth();
+        grasses = new HashMap<>();
+        animals = new HashMap<>();
+        this.options = options;
+
+        // not exacly 20% of the map
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)) {
+                    equatorFreePositions.add(new Vector2d(i, j));
+                } else {
+                    otherFreePositions.add(new Vector2d(i, j));
+                }
+            }
+        }
+        this.growGrass(options.initialGrassCount());
+    }
+
+    protected Animal createAnimal(SimulationOptions options, Vector2d position) {
+        if (options.mutationVariant() == MutationVariants.SMALL_CHANGE_MUTATION) {
+            return new AnimalSlightMutation(
+                    position,
+                    generateGenome(options.genomeLength())
+            );
+        }
+        return new Animal(
+                position,
+                generateGenome(options.genomeLength())
+        );
+    }
+
 
     public int getDayCounter(){
         return dayCounter;
     }
 
+    public void place(Vector2d animalProposedLocalisation,SimulationOptions options) throws IncorrectPositionException {
+        var animal = createAnimal(options, animalProposedLocalisation);
+        if (canMoveTo(animalProposedLocalisation)) {
+            if (!animals.containsKey(animalProposedLocalisation)) {
+                animals.put(animalProposedLocalisation, new LinkedList<>());
+            }
+            animals.get(animalProposedLocalisation).add(animal);
+            notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
+        } else {
+            throw new IncorrectPositionException((animal.getPosition()));
+        }
+    }
 
-    public void growGrass(){
-        Set<Vector2d> toRemoveEquator = equatorFreePositions.stream()
-                .filter(position -> GENERATOR.nextDouble() < 0.8)
-                .collect(Collectors.toSet());
 
-        toRemoveEquator.forEach(position -> {
-            grasses.put(position, new Grass(position));
-            equatorFreePositions.remove(position);
-        });
+    public void growGrass(int grassCount){
+        int grassOnEquator = (int) Math.round(grassCount * 0.8);
+        int grassOffEquator = grassCount - grassOnEquator;
 
-        Set<Vector2d> toRemoveOther = otherFreePositions.stream()
-                .filter(position -> GENERATOR.nextDouble() < 0.2)
-                .collect(Collectors.toSet());
+        for (int i = 0; i < grassOnEquator && !equatorFreePositions.isEmpty(); i++) {
+            Vector2d position = equatorFreePositions.stream()
+                    .skip(GENERATOR.nextInt(equatorFreePositions.size()))
+                    .findFirst()
+                    .orElse(null);
 
-        toRemoveOther.forEach(position -> {
-            grasses.put(position, new Grass(position));
-            otherFreePositions.remove(position);
-        });
+            if (position != null) {
+                grasses.put(position, new Grass(position));
+                equatorFreePositions.remove(position);
+            }
+        }
+
+        for (int i = 0; i < grassOffEquator && !otherFreePositions.isEmpty(); i++) {
+            Vector2d position = otherFreePositions.stream()
+                    .skip(GENERATOR.nextInt(otherFreePositions.size()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (position != null) {
+                grasses.put(position, new Grass(position));
+                otherFreePositions.remove(position);
+            }
+        }
 
     }
 
@@ -257,9 +315,9 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     public void nextDay(){
         removeDeadAnimals();
         moveAllAnimals();
-        eatGrass(15);
+        eatGrass(options.plantEnergy());
         reproduceAnimals();
-        growGrass();
+        growGrass(options.everydayPlantGrowth());
         takeEnergyFromAnimals(5);
         updateStatistics();
         dayCounter++;

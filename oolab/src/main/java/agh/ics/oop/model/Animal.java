@@ -1,11 +1,12 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.utils.SimulationOptions;
+
 import java.util.*;
 
 public class Animal implements WorldElement {
     private MapDirection facingDirection;
     private Vector2d localizationOnMap;
-    private int energy = NEWBORNS_ENERGY;
     private final List<Integer> genome = new ArrayList<>();
     private int currentGenomeIndex = 0;
     public static final Random RANDOM = new Random();
@@ -15,12 +16,14 @@ public class Animal implements WorldElement {
     private final Set<Animal> descendants = new HashSet<>();
     private final Animal parent1;
     private final Animal parent2;
+    protected final SimulationOptions options = null;
 
     // all this static values should be moved to the configuration file
-    public static final int NEWBORNS_ENERGY = 100;
-    public static final int ENERGY_TO_REPRODUCE = 100;
-    public static final int GENOME_LENGTH = 8;
-    public static final int MAX_MUTATION = 3;
+    protected int newbornsEnergy = 100;
+    protected  int energyToReproduce = 100;
+    protected int genomeLength = 8;
+    protected int maxMutation = 3;
+    private int energy = newbornsEnergy;
 
     public Animal(Vector2d localizationOnMap, List<Integer> genome) {
         this(localizationOnMap, genome, null, null);
@@ -37,6 +40,16 @@ public class Animal implements WorldElement {
         this.facingDirection = facingDirection;
         this.parent1 = parent1;
         this.parent2 = parent2;
+    }
+
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, SimulationOptions options){
+        this(localizationOnMap, genome, null,null);
+        this.localizationOnMap = localizationOnMap;
+        this.genome.addAll(genome);
+        energyToReproduce = options.reproductionEnergy();
+        newbornsEnergy = options.initialAnimalEnergy();
+        genomeLength = options.genomeLength();
+        maxMutation = options.mutationsCount();
     }
 
     public int getAge() {
@@ -79,7 +92,7 @@ public class Animal implements WorldElement {
         var rotation = genome.get(currentGenomeIndex);
         rotateAnimal(rotation);
         moveForward(validator);
-        currentGenomeIndex = (currentGenomeIndex+1)%GENOME_LENGTH;
+        currentGenomeIndex = (currentGenomeIndex+1)% genomeLength;
     }
 
     @Override
@@ -139,7 +152,7 @@ public class Animal implements WorldElement {
     }
 
     public boolean canReproduce(){
-        return energy >= ENERGY_TO_REPRODUCE;
+        return energy >= energyToReproduce;
     }
 
     public List<Integer> getGenome(){
@@ -148,8 +161,8 @@ public class Animal implements WorldElement {
 
     // method for mutation of the genome, each gene can be mutated more than once
     protected void mutateGenome(List<Integer> genomeToMutate){
-        for (int i = 0; i < RANDOM.nextInt(MAX_MUTATION); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOME_LENGTH), RANDOM.nextInt(8));
+        for (int i = 0; i < RANDOM.nextInt(maxMutation); i++){
+            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(genomeLength), RANDOM.nextInt(8));
         }
     }
 
@@ -190,18 +203,18 @@ public class Animal implements WorldElement {
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
         double energyFactor = (double) this.energy /(this.energy + partner.energy);
-        int splitIndex = (int) Math.round(GENOME_LENGTH * energyFactor);
-        int reproduceEnergy = (int) Math.round(energyFactor * ENERGY_TO_REPRODUCE);
+        int splitIndex = (int) Math.round(genomeLength * energyFactor);
+        int reproduceEnergy = (int) Math.round(energyFactor * energyToReproduce);
         if(RANDOM.nextInt(2) == 0){
             newGenome.addAll(this.genome.subList(0, splitIndex));
-            newGenome.addAll(partner.genome.subList(splitIndex, GENOME_LENGTH));
+            newGenome.addAll(partner.genome.subList(splitIndex, genomeLength));
         }
         else{
             newGenome.addAll(partner.genome.subList(0, splitIndex));
-            newGenome.addAll(this.genome.subList(splitIndex, GENOME_LENGTH));
+            newGenome.addAll(this.genome.subList(splitIndex, genomeLength));
         }
         this.subtractEnergy(reproduceEnergy);
-        partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);
+        partner.subtractEnergy(energyToReproduce - reproduceEnergy);
         mutateGenome(newGenome);
 
         var child = new Animal(this.localizationOnMap, newGenome,this,partner);
