@@ -1,2 +1,2 @@
 "width","height","mapType","initialGrass","plantEnergy","everydayPlants","initialAnimalEnergy","initialAnimalsCount","animalFullEnergy","reproductionEnergy","mutationsCount","genomeLength","mutationVariant"
-"50","50","std","5","5","5","10","3","20","5","5","7","std"
+"25","25","std","20","10","10","100","10","200","10","6","10","std"
