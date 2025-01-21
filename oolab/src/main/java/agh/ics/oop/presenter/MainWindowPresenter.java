@@ -113,7 +113,7 @@ public class MainWindowPresenter {
 
 
                 configureStage(newStage, viewRoot);
-             newStage.show();
+                newStage.show();
                 DarwinSimulationMap simulationMap;
                 if(simulationOptions.mapType() == MapTypes.NORMAL_MAP){
                      simulationMap = new DarwinSimulationMap(simulationOptions.simulationWidth(),simulationOptions.simulationHeigth(), ids);
@@ -123,11 +123,13 @@ public class MainWindowPresenter {
 
 
                 ids += 1;
-                presenter.setWorldMap(simulationMap);
+
 
                 //add randomness
                 var positions = List.of(new Vector2d(4,4), new Vector2d(5,5), new Vector2d(9, 9));
-                var simulation = new Simulation(positions, simulationMap);
+//                var simulation = new Simulation(positions, simulationMap);
+            var simulation = new Simulation(simulationOptions, ids);
+                presenter.setWorldMap(simulation.getMap());
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);

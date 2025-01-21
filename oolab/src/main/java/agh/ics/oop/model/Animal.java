@@ -238,4 +238,7 @@ public class Animal implements WorldElement {
         return dayOfDeath;
     }
 
+    public int getNewbornsEnergy() {
+        return newbornsEnergy;
+    }
 }

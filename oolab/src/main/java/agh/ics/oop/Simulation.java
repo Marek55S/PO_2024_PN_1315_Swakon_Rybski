@@ -92,5 +92,9 @@ public class Simulation implements Runnable {
         }
 
     }
+
+    public AbstractWorldMap getMap(){
+        return map;
+    }
 }
 

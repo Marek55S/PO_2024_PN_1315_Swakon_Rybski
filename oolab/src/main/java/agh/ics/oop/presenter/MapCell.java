@@ -52,11 +52,11 @@ public class MapCell extends StackPane {
 
         Color energyColor = Color.GREEN;
 
-        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY){
+        if(animal.getEnergy() < animal.getNewbornsEnergy()){
             energyColor = Color.YELLOW;
         }
 
-        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY/2){
+        if(animal.getEnergy() < animal.getNewbornsEnergy()/2){
             energyColor = Color.RED;
         }
 
