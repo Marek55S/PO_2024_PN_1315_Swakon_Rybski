@@ -13,51 +13,54 @@ public class MapCell extends StackPane {
     private final int width;
     private final int height;
     private final boolean hasAnimal;
-    private final boolean hasGrass;
     private Rectangle bg;
     private Circle animal;
     private Rectangle grass;
-    public MapCell(int width, int heigth, boolean hasGrass) {
+    public MapCell(int width, int heigth) {
         this.width = width;
         this.height = heigth;
         this.hasAnimal = false;
-        this.hasGrass = hasGrass;
 
         bg = new Rectangle(width, height);
         bg.setFill(Color.LIGHTGREEN);
         this.getChildren().add(bg);
 
-        if(hasGrass) {
-            grass = new Rectangle(width / 2.0, height / 2.0, Color.DARKGREEN);
-            this.getChildren().add(grass);
-        }
 
 
 
     }
-    public MapCell(int width, int heigth, boolean hasGrass, boolean higlightAnimal, Animal animal, SimulationPresenter sim) {
-        this.width = width;
-        this.height = heigth;
-        this.hasAnimal = true;
-        this.hasGrass = hasGrass;
 
-        bg = new Rectangle(width, height);
-        bg.setFill(Color.LIGHTGREEN);
-        this.getChildren().add(bg);
+    public MapCell turnToWater(){
+        this.bg.setFill(Color.BLUE);
+        return this;
+    }
 
-        if(hasGrass) {
-            grass = new Rectangle(width / 2.0, height / 2.0, Color.DARKGREEN);
-            this.getChildren().add(grass);
-        }
+    public MapCell addGrass(){
+        grass = new Rectangle(width / 2.0, height / 2.0, Color.DARKGREEN);
+        this.getChildren().add(grass);
+        return this;
+    }
 
+    public MapCell addAnimal(boolean higlightAnimal, Animal animal, SimulationPresenter sim){
         Color animalColor = higlightAnimal ? Color.YELLOW : Color.BROWN;
         this.animal = new Circle(width / 5.0, animalColor);
         this.animal.setOnMouseClicked(mouseEvent -> {sim.setSelectedAnimal(animal);
             System.out.println("Someone touched meeeee");
-        this.animal.setFill(Color.YELLOW);});
+            this.animal.setFill(Color.YELLOW);});
         this.getChildren().add(this.animal);
 
-
+        return this;
     }
+
+    public MapCell selectAnimal(){
+        animal.setFill(Color.YELLOW);
+        return this;
+    }
+
+    public MapCell higlightAnimal(){
+        animal.setFill(Color.RED);
+        return this;
+    }
+
 
 }

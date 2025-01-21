@@ -72,7 +72,9 @@ public class SimulationPresenter implements MapChangeListener {
     SimulationPresenter(Stage stage) {
         this.stage = stage;
     }
+
     public void setSimulation(Simulation simulation) {
+
         this.simulation = simulation;
     }
     public void setWorldMap(AbstractWorldMap map) {
@@ -81,11 +83,11 @@ public class SimulationPresenter implements MapChangeListener {
         }
 
         map.addObserver(this);
-        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-            System.out.println(dtf.format(now) + " " + message);
-        }));
+//        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
+//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//            LocalDateTime now = LocalDateTime.now();
+//            System.out.println(dtf.format(now) + " " + message);
+//        }));
 
         worldMap = map;
         statistics = map.getStatistics();
@@ -101,10 +103,9 @@ public class SimulationPresenter implements MapChangeListener {
         width = maxX - minX;
         height = maxY - minY;
 
-        cellWidth = min(1000000,Math.round((float) stage.getWidth()/ (2*(width + 2))));
-        cellHeight = min(1000000, Math.round((float) stage.getHeight() / (2*(height + 2))));
+        cellWidth = min(200,Math.round((float) stage.getWidth()/ (2*(width + 2))));
+        cellHeight = min(200, Math.round((float) stage.getHeight() / (2*(height + 2))));
 
-        System.out.println(cellWidth + " " + cellHeight);
     }
 
     private void clearGrid() {
@@ -140,25 +141,33 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void addElementsToMap() {
-//        for (var element : worldMap.getElements()) {
-//            if (worldMap.isOccupied(element.getPosition())) {
-//                var label = new Label(element.toString());
-//                var pos = element.getPosition();
-//                mapGrid.add(label, pos.getX() - minX + 1, maxY - pos.getY() + 1);
-//                GridPane.setHalignment(label, HPos.CENTER);
-//            }
-//        }
         int emptyFields = 0;
         for (int i = 0; i <= width; ++i) {
             for (int j = 0; j <= height; ++j) {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
 //                    var label = new Label(element.toString());
-                    if(worldMap.isAnimalAt(positionToCheck)){
-                        Animal animal = (Animal)worldMap.objectAt(positionToCheck).get();
-                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck), false, animal, this), i + 1, height - j + 1);
-                    } else{
-                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck)), i + 1, height - j + 1);
+
+                if(worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)){
+                    mapGrid.add(new MapCell(cellWidth, cellHeight).turnToWater(), i + 1, height - j + 1);
+                    continue;
+                }
+                    var mc = new MapCell(cellWidth, cellHeight);
+                    if(worldMap.isAnimalAt(positionToCheck)) {
+                        Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
+                        mc.addAnimal(false, animal, this);
+
+                        if(animal == selectedAnimal){
+                            mc.selectAnimal();
+                        }
                     }
+                    if(worldMap.isGrassAt(positionToCheck)){
+                        mc.addGrass();
+                    }
+
+                mapGrid.add(mc, i + 1, height - j + 1);
+
+
+
                     //GridPane.setHalignment(label, HPos.CENTER);
 
             }

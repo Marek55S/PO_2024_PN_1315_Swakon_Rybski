@@ -76,19 +76,7 @@ public class MainWindowPresenter {
         //handle exceptions
         try{
         SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
-        widthSpinner.getValueFactory().setValue(options.simulationWidth());
-        heightSpinner.getValueFactory().setValue(options.simulationHeigth());
-        mapVariantCB.setValue(options.mapType());
-        initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
-        energyFromPlant.getValueFactory().setValue(options.plantEnergy());
-        everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
-        initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
-        initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
-        animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
-        reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
-        mutationsCount.getValueFactory().setValue(options.mutationsCount());
-        genomeLength.getValueFactory().setValue(options.genomeLength());
-        mutationVariant.setValue(options.mutationVariant());
+        setInterfaceValues(options);
         }
         catch (CsvValidationException e) {
             infolabel.setText("Default configuration could't be loaded");
@@ -152,7 +140,21 @@ public class MainWindowPresenter {
 
     }
 
-
+    private void setInterfaceValues(SimulationOptions options){
+        widthSpinner.getValueFactory().setValue(options.simulationWidth());
+        heightSpinner.getValueFactory().setValue(options.simulationHeigth());
+        mapVariantCB.setValue(options.mapType());
+        initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
+        energyFromPlant.getValueFactory().setValue(options.plantEnergy());
+        everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
+        initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
+        initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
+        animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
+        reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
+        mutationsCount.getValueFactory().setValue(options.mutationsCount());
+        genomeLength.getValueFactory().setValue(options.genomeLength());
+        mutationVariant.setValue(options.mutationVariant());
+    }
 
     private SimulationOptions generateSimulationOptions(){
         try {
@@ -203,19 +205,7 @@ public class MainWindowPresenter {
             SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
             try{
                 SimulationOptions options = simulationOptionsToFile.readOptionsFromFile(path);
-                widthSpinner.getValueFactory().setValue(options.simulationWidth());
-                heightSpinner.getValueFactory().setValue(options.simulationHeigth());
-                mapVariantCB.setValue(options.mapType());
-                initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
-                energyFromPlant.getValueFactory().setValue(options.plantEnergy());
-                everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
-                initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
-                initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
-                animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
-                reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
-                mutationsCount.getValueFactory().setValue(options.mutationsCount());
-                genomeLength.getValueFactory().setValue(options.genomeLength());
-                mutationVariant.setValue(options.mutationVariant());
+                setInterfaceValues(options);
             } catch (IOException e) {
                 infolabel.setText("Error reading from config file");
             } catch (CsvValidationException e) {
@@ -228,6 +218,8 @@ public class MainWindowPresenter {
 
 
     }
+
+
     public void close() throws InterruptedException {
         simulationEngine.awaitSimulationEnd();
     }
