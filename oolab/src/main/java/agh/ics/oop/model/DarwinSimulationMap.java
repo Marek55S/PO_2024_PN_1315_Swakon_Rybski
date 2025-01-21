@@ -94,6 +94,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
 
         deadAnimals.forEach(animal -> {
             deadAnimalsCount++;
+            animal.setDayOfDeath(dayCounter);
             deadAnimalsLivesLengthSum += animal.getAge();
             List<Animal> animalsAtPosition = animals.get(animal.getPosition());
             if (animalsAtPosition != null) {

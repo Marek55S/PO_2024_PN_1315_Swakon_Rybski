@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static java.lang.Math.min;
 
@@ -206,7 +207,11 @@ public class SimulationPresenter implements MapChangeListener {
         animalsCountLabel.setText(String.format("Animals count: %d", statistics.getAnimalsCount()));
         plantsCountLabel.setText(String.format("Plants count: %d", statistics.getGrassCount()));
         freeFieldsCount.setText(String.format("Free Fields: %d", statistics.getEmptyFieldsCount()));
-        mostPopularGenotypes.setText(String.format("Most popular genotypes: "));
+        String genotypes = "";
+        for(var genotype : statistics.getMostPopularGenomes()){
+            genotypes += genomeToString(genotype) + "\n";
+        }
+        mostPopularGenotypes.setText("Most popular genotypes: " + genotypes);
         avgEnergyLevelLabel.setText(String.format("Avg energy level: %d", statistics.getAverageEnergyLevel()));
         averageLifespan.setText(" ");
         averageKidsAmount.setText(" ");
@@ -216,6 +221,17 @@ public class SimulationPresenter implements MapChangeListener {
         if(selectedAnimal != null){
             singleAnimal.setVisible(true);
             animalEnergy.setText(String.format("Animals energy: %d", selectedAnimal.getEnergy()));
+            animalGenom.setText(String.format("Animals genome: %s", genomeToString(selectedAnimal.getGenome())));
+            animalGenomActivated.setText(String.format("Animals activated gene: %d", selectedAnimal.getCurrentGenomeIndex()));
+            animalChildrenCount.setText(String.format("Animals childrens: %d", selectedAnimal.getChildrenCount()));
+            animalDescendants.setText(String.format("Animals descendants: %d", selectedAnimal.getTotalDescendantsCount()));
+            if(selectedAnimal.getDayOfDeath().isPresent()){
+                animalDaysAlive.setText(String.format("Animal death: %d", selectedAnimal.getDayOfDeath().get()));
+            } else {
+                animalDaysAlive.setText(String.format("Animal is alive for: %d", selectedAnimal.getAge()));
+            }
+
+
         }
     }
 
@@ -231,5 +247,16 @@ public class SimulationPresenter implements MapChangeListener {
 
     public void setSelectedAnimal(Animal selectedAnimal) {
         this.selectedAnimal = selectedAnimal;
+    }
+    private String genomeToString(List<Integer> genome) {
+        String tmp = "[";
+
+        for(Integer i : genome) {
+            tmp = tmp + i + ",";
+        }
+
+        tmp += "]";
+
+        return tmp;
     }
 }
