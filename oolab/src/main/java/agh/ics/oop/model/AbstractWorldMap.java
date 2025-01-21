@@ -15,13 +15,6 @@ public abstract class AbstractWorldMap implements WorldMap {
     public static final Random GENERATOR = new Random();
 
 
-    AbstractWorldMap(int mapId){
-        visualizer = new MapVisualizer(this);
-        animals = new HashMap<>();
-        mapBounds = new Boundary(new Vector2d(0, 0), new Vector2d(0, 0));
-        this.mapId = mapId;
-    }
-
     public AbstractWorldMap(int width,int height,int mapId) {
 
         visualizer = new MapVisualizer(this);
@@ -74,7 +67,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
-        var animal = new Animal(animalProposedLocalisation, generateGenome());
+        var animal = new Animal(animalProposedLocalisation, generateGenome(8));
         if (canMoveTo(animalProposedLocalisation)) {
             if (!animals.containsKey(animalProposedLocalisation)) {
                 animals.put(animalProposedLocalisation, new LinkedList<>());
@@ -86,9 +79,9 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
-    private List<Integer> generateGenome(){
+    protected List<Integer> generateGenome(int length) {
         List<Integer> genome = new ArrayList<>();
-        for(int i = 0; i < Animal.GENOME_LENGTH; i++){
+        for(int i = 0; i < length; i++){
             genome.add(GENERATOR.nextInt(8));
         }
         return genome;

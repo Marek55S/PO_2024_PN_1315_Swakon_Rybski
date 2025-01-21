@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.IncorrectPositionException;
+import agh.ics.oop.utils.SimulationOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +15,19 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     private final HashMap<Vector2d, WaterInflowed> inflowedWaters;
     private List<Animal> drownedAnimals;
     private int currentCycleStep = 0;
-    // temporary
     public static final int WATER_CYCLE_DURATION = 20;
     public static final int WATER_STEP_DURATION = 5;
 
-    public DarwinSimulationMapWithWater(int width, int height, int mapId) {
-        super(width, height, mapId);
+    public DarwinSimulationMapWithWater(int width,int height, int mapId) {
+        super(width,height, mapId);
+        var tmpWater = new Water(new Vector2d(1,1));
+        waters = new HashMap<>();
+        waters.put(tmpWater.getPosition(), tmpWater);
+        inflowedWaters = new HashMap<>();
+    }
+
+    public DarwinSimulationMapWithWater(SimulationOptions options, int mapId) {
+        super(options, mapId);
         var tmpWater = new Water(new Vector2d(1,1));
         waters = new HashMap<>();
         waters.put(tmpWater.getPosition(), tmpWater);

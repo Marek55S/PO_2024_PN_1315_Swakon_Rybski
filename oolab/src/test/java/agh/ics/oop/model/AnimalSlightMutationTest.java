@@ -19,7 +19,7 @@ class AnimalSlightMutationTest {
         Animal child = parent1.reproduce(parent2);
         //then
         List<Integer> childGenome = child.getGenome();
-        for (int i = 0; i < Animal.GENOME_LENGTH; i++) {
+        for (int i = 0; i < 8; i++) {
             Integer gene = childGenome.get(i);
             Assertions.assertTrue(gene == genome.get(i) || gene == (genome.get(i) + 1) % 8 || gene == (genome.get(i) +7) % 8);
         }
