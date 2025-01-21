@@ -9,6 +9,7 @@ import agh.ics.oop.utils.MutationVariants;
 import agh.ics.oop.utils.SimulationOptions;
 import agh.ics.oop.utils.SimulationOptionsToFile;
 import com.opencsv.exceptions.CsvValidationException;
+import com.sun.tools.javac.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,6 +62,12 @@ public class MainWindowPresenter {
     private int ids = 0;
     private SimulationOptions simulationOptions;
 
+    private final Stage stage;
+
+    public MainWindowPresenter(Stage stage) {
+        this.stage = stage;
+    }
+
     public void initialize() {
         mapVariantCB.getItems().addAll(MapTypes.values());
         mutationVariant.getItems().addAll(MutationVariants.values());
@@ -69,19 +76,7 @@ public class MainWindowPresenter {
         //handle exceptions
         try{
         SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
-        widthSpinner.getValueFactory().setValue(options.simulationWidth());
-        heightSpinner.getValueFactory().setValue(options.simulationHeigth());
-        mapVariantCB.setValue(options.mapType());
-        initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
-        energyFromPlant.getValueFactory().setValue(options.plantEnergy());
-        everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
-        initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
-        initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
-        animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
-        reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
-        mutationsCount.getValueFactory().setValue(options.mutationsCount());
-        genomeLength.getValueFactory().setValue(options.genomeLength());
-        mutationVariant.setValue(options.mutationVariant());
+        setInterfaceValues(options);
         }
         catch (CsvValidationException e) {
             infolabel.setText("Default configuration could't be loaded");
@@ -95,27 +90,46 @@ public class MainWindowPresenter {
         simulationOptions = generateSimulationOptions();
         //here some validation could be done
         if (true) {
+                Stage newStage = new Stage();
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+                loader.setControllerFactory(param -> {
+                    if (param == SimulationPresenter.class) {
+                        return new SimulationPresenter(newStage); // Pass Stage to the constructor
+                    } else {
+                        try {
+                            return param.getDeclaredConstructor().newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
                 BorderPane viewRoot = loader.load();
                 SimulationPresenter presenter = loader.getController();
                 //presenters.add(presenter);
 
-                Stage stage = new Stage();
 
-                configureStage(stage, viewRoot);
-                stage.show();
 
-                var simulationMap = new DarwinSimulationMap(10,10, ids);
+                configureStage(newStage, viewRoot);
+             newStage.show();
+                DarwinSimulationMap simulationMap;
+                if(simulationOptions.mapType() == MapTypes.NORMAL_MAP){
+                     simulationMap = new DarwinSimulationMap(simulationOptions.simulationWidth(),simulationOptions.simulationHeigth(), ids);
+                } else{
+                    simulationMap = new DarwinSimulationMapWithWater(simulationOptions.simulationWidth(),simulationOptions.simulationHeigth(), ids);
+                }
+
 
                 ids += 1;
                 presenter.setWorldMap(simulationMap);
+
+                //add randomness
                 var positions = List.of(new Vector2d(4,4), new Vector2d(5,5), new Vector2d(9, 9));
                 var simulation = new Simulation(positions, simulationMap);
                 presenter.setSimulation(simulation);
                 simulations.add(simulation);
                 simulationEngine.addToThreadPool(simulation);
-                stage.setOnCloseRequest(event -> {
+            newStage.setOnCloseRequest(event -> {
                 simulation.stop();
                 // Save file
                 });
@@ -126,7 +140,21 @@ public class MainWindowPresenter {
 
     }
 
-
+    private void setInterfaceValues(SimulationOptions options){
+        widthSpinner.getValueFactory().setValue(options.simulationWidth());
+        heightSpinner.getValueFactory().setValue(options.simulationHeigth());
+        mapVariantCB.setValue(options.mapType());
+        initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
+        energyFromPlant.getValueFactory().setValue(options.plantEnergy());
+        everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
+        initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
+        initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
+        animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
+        reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
+        mutationsCount.getValueFactory().setValue(options.mutationsCount());
+        genomeLength.getValueFactory().setValue(options.genomeLength());
+        mutationVariant.setValue(options.mutationVariant());
+    }
 
     private SimulationOptions generateSimulationOptions(){
         try {
@@ -177,19 +205,7 @@ public class MainWindowPresenter {
             SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
             try{
                 SimulationOptions options = simulationOptionsToFile.readOptionsFromFile(path);
-                widthSpinner.getValueFactory().setValue(options.simulationWidth());
-                heightSpinner.getValueFactory().setValue(options.simulationHeigth());
-                mapVariantCB.setValue(options.mapType());
-                initialGrassCount.getValueFactory().setValue(options.initialGrassCount());
-                energyFromPlant.getValueFactory().setValue(options.plantEnergy());
-                everydayPlantGrowth.getValueFactory().setValue(options.everydayPlantGrowth());
-                initialAnimalEnergy.getValueFactory().setValue(options.initialAnimalEnergy());
-                initialAnimalsCount.getValueFactory().setValue(options.initialAnimalsCount());
-                animalFullEnergy.getValueFactory().setValue(options.animalFullEnergy());
-                reproductionEnergy.getValueFactory().setValue(options.reproductionEnergy());
-                mutationsCount.getValueFactory().setValue(options.mutationsCount());
-                genomeLength.getValueFactory().setValue(options.genomeLength());
-                mutationVariant.setValue(options.mutationVariant());
+                setInterfaceValues(options);
             } catch (IOException e) {
                 infolabel.setText("Error reading from config file");
             } catch (CsvValidationException e) {
@@ -202,6 +218,8 @@ public class MainWindowPresenter {
 
 
     }
+
+
     public void close() throws InterruptedException {
         simulationEngine.awaitSimulationEnd();
     }

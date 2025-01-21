@@ -116,9 +116,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         return position.follows(mapBounds.lowerLeft()) && position.precedes(mapBounds.upperRight());
     }
 
-
-    //this getter is safe, because we are returning new list - modification of it won't directly impact object state
-
     @Override
     public List<WorldElement> getElements() {
         return animals.values().stream().flatMap(List::stream).map(animal -> (WorldElement) animal).toList();

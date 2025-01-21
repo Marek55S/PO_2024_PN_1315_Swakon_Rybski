@@ -7,14 +7,19 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static java.lang.Math.min;
 
 public class SimulationPresenter implements MapChangeListener {
     private AbstractWorldMap worldMap;
@@ -36,6 +41,22 @@ public class SimulationPresenter implements MapChangeListener {
     private Label averageLifespan;
     @FXML
     private Label averageKidsAmount;
+    @FXML
+    private Label animalGenom;
+    @FXML
+    private Label animalGenomActivated;
+    @FXML
+    private Label animalEnergy;
+    @FXML
+    private Label animalChildrenCount;
+    @FXML
+    private Label animalDescendants;
+    @FXML
+    private Label animalDaysAlive;
+    @FXML
+    private VBox singleAnimal;
+    @FXML
+    private CheckBox showDominatingGenome;
 
     private int minY;
     private int maxY;
@@ -47,8 +68,16 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellWidth;
     private Simulation simulation;
     private StatisticsTracker statistics = new StatisticsTracker();
+    private Animal selectedAnimal = null;
+
+    private final Stage stage;
+
+    SimulationPresenter(Stage stage) {
+        this.stage = stage;
+    }
 
     public void setSimulation(Simulation simulation) {
+
         this.simulation = simulation;
     }
     public void setWorldMap(AbstractWorldMap map) {
@@ -57,11 +86,11 @@ public class SimulationPresenter implements MapChangeListener {
         }
 
         map.addObserver(this);
-        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-            System.out.println(dtf.format(now) + " " + message);
-        }));
+//        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
+//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//            LocalDateTime now = LocalDateTime.now();
+//            System.out.println(dtf.format(now) + " " + message);
+//        }));
 
         worldMap = map;
         statistics = map.getStatistics();
@@ -77,9 +106,8 @@ public class SimulationPresenter implements MapChangeListener {
         width = maxX - minX;
         height = maxY - minY;
 
-        cellWidth = Math.round((float) 1000 / (width + 2));
-        cellHeight = Math.round((float) 1000 / (height + 2));
-
+        cellWidth = min(200,Math.round((float) stage.getWidth()/ (2*(width + 2))));
+        cellHeight = min(200, Math.round((float) stage.getHeight() / (2*(height + 2))));
 
     }
 
@@ -116,28 +144,40 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void addElementsToMap() {
-//        for (var element : worldMap.getElements()) {
-//            if (worldMap.isOccupied(element.getPosition())) {
-//                var label = new Label(element.toString());
-//                var pos = element.getPosition();
-//                mapGrid.add(label, pos.getX() - minX + 1, maxY - pos.getY() + 1);
-//                GridPane.setHalignment(label, HPos.CENTER);
-//            }
-//        }
         int emptyFields = 0;
         for (int i = 0; i <= width; ++i) {
             for (int j = 0; j <= height; ++j) {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
-                if (worldMap.isOccupied(positionToCheck)) {
-                    WorldElement element = worldMap.objectAt(positionToCheck).get();
-                    var label = new Label(element.toString());
-                    System.out.println(label);
-                    //mapGrid.add(label, positionToCheck.getX() - minX + 1, maxY - positionToCheck.getY() + 1);
-                    mapGrid.add(new WorldElementBox(element, cellWidth, cellHeight), i + 1, height - j + 1);
-                    GridPane.setHalignment(label, HPos.CENTER);
-                } else{
-                    emptyFields += 1;
+//                    var label = new Label(element.toString());
+
+                if(worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)){
+                    mapGrid.add(new MapCell(cellWidth, cellHeight).turnToWater(), i + 1, height - j + 1);
+                    continue;
                 }
+                    var mc = new MapCell(cellWidth, cellHeight);
+                    if(worldMap.isAnimalAt(positionToCheck)) {
+                        Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
+                        mc.addAnimal(false, animal, this);
+
+
+
+                        if(showDominatingGenome.isSelected() && statistics.getMostPopularGenomes().contains(animal.getGenome())){
+                            mc.higlightAnimal();
+                        }
+                        if(animal == selectedAnimal){
+                            mc.selectAnimal();
+                        }
+                    }
+                    if(worldMap.isGrassAt(positionToCheck)){
+                        mc.addGrass();
+                    }
+
+                mapGrid.add(mc, i + 1, height - j + 1);
+
+
+
+                    //GridPane.setHalignment(label, HPos.CENTER);
+
             }
         }
 
@@ -158,7 +198,7 @@ public class SimulationPresenter implements MapChangeListener {
         setLabelsOx();
         setLabelsOy();
         addElementsToMap();
-        mapGrid.setPrefSize(1000, 1000);
+        mapGrid.setPrefSize(stage.getX()/2, stage.getY()/2);
         infolabel.setText(input);
     }
 
@@ -171,17 +211,25 @@ public class SimulationPresenter implements MapChangeListener {
         averageLifespan.setText(" ");
         averageKidsAmount.setText(" ");
     }
+
+    public void updateSingleAnimalStatistics(){
+        if(selectedAnimal != null){
+            singleAnimal.setVisible(true);
+            animalEnergy.setText(String.format("Animals energy: %d", selectedAnimal.getEnergy()));
+        }
+    }
+
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {
             drawMap(message);
             updateStatistics();
+            updateSingleAnimalStatistics();
         });
 
     }
 
-    private void updateGlobalStatistics(){
-
+    public void setSelectedAnimal(Animal selectedAnimal) {
+        this.selectedAnimal = selectedAnimal;
     }
-
 }

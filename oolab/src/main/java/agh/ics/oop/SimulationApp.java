@@ -14,6 +14,17 @@ public class SimulationApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("mainWindow.fxml"));
+        loader.setControllerFactory(param -> {
+            if (param == MainWindowPresenter.class) {
+                return new MainWindowPresenter(primaryStage); // Pass Stage to the constructor
+            } else {
+                try {
+                    return param.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         BorderPane viewRoot = loader.load();
         MainWindowPresenter presenter = loader.getController();
         configureStage(primaryStage, viewRoot);

@@ -120,4 +120,8 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
         return Stream.concat(waters.values().stream(), inflowedWaters.values()
                 .stream()).toList();
     }
+
+    public boolean isWaterAt(Vector2d position){
+        return waters.containsKey(position) || inflowedWaters.containsKey(position);
+    }
 }
