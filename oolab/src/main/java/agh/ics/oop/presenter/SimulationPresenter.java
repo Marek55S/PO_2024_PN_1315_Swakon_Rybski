@@ -62,6 +62,8 @@ public class SimulationPresenter implements MapChangeListener {
     private VBox singleAnimal;
     @FXML
     private CheckBox showDominatingGenome;
+    @FXML
+    private CheckBox showLikedFieldsGrass;
 
     private int minY;
     private int maxY;
@@ -189,6 +191,10 @@ public class SimulationPresenter implements MapChangeListener {
                     }
                     if(worldMap.isGrassAt(positionToCheck)){
                         mc.addGrass();
+                    }
+
+                    if(showLikedFieldsGrass.isSelected() && height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)){
+                        mc.higlightCell();
                     }
 
                 mapGrid.add(mc, i + 1, height - j + 1);

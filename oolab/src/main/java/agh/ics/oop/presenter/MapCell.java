@@ -80,5 +80,10 @@ public class MapCell extends StackPane {
         return this;
     }
 
+    public MapCell higlightCell(){
+        bg.setFill(Color.LIGHTCORAL);
+        return this;
+    }
+
 
 }
