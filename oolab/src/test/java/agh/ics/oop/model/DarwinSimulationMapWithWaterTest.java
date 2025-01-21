@@ -64,6 +64,11 @@ class DarwinSimulationMapWithWaterTest {
     @Test
     void testNextDayInflow() {
         var map = new DarwinSimulationMapWithWater(10, 10, 1);
+        try{
+            map.place(new Vector2d(1, 2));
+        } catch (IncorrectPositionException e){
+            fail("Should not throw exception");
+        }
 
         for (int i = 0; i < DarwinSimulationMapWithWater.WATER_STEP_DURATION; i++) {
             map.nextDay();
@@ -77,6 +82,11 @@ class DarwinSimulationMapWithWaterTest {
     @Test
     void testNextDayOutflow() {
         var map = new DarwinSimulationMapWithWater(10, 10, 1);
+        try{
+            map.place(new Vector2d(1, 2));
+        } catch (IncorrectPositionException e){
+            fail("Should not throw exception");
+        }
         for (int i = 0; i < DarwinSimulationMapWithWater.WATER_CYCLE_DURATION / 2; i++) {
             map.nextDay();
         }

@@ -18,7 +18,9 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     private int deadAnimalsLivesLengthSum = 0;
     private int deadAnimalsCount = 0;
     protected int dayCounter = 0;
-    private final SimulationOptions options;
+    protected final SimulationOptions options;
+    protected int plantEnergy = 15;
+    private int everydayPlantGrowth = 5;
 
     public DarwinSimulationMap( int width,int height,int mapId) {
         super(width, height, mapId);
@@ -46,6 +48,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         grasses = new HashMap<>();
         animals = new HashMap<>();
         this.options = options;
+        plantEnergy = options.plantEnergy();
+        everydayPlantGrowth = options.everydayPlantGrowth();
 
         // not exacly 20% of the map
         for (int i = 0; i < width; i++) {
@@ -250,7 +254,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
             }
         }
 
-        return energySum / animalsCount;
+        return animalsCount>0 ? energySum / animalsCount:0;
     }
 
 
@@ -264,7 +268,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
             }
         }
 
-        return childrenAmount / animalsCount;
+        return animalsCount>0 ? childrenAmount / animalsCount: 0;
     }
 
 
@@ -317,9 +321,9 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     public void nextDay(){
         removeDeadAnimals();
         moveAllAnimals();
-        eatGrass(options.plantEnergy());
+        eatGrass(plantEnergy);
         reproduceAnimals();
-        growGrass(options.everydayPlantGrowth());
+        growGrass(everydayPlantGrowth);
         takeEnergyFromAnimals(5);
         updateStatistics();
         dayCounter++;
