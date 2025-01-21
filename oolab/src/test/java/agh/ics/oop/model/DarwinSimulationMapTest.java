@@ -47,10 +47,8 @@ class DarwinSimulationMapTest {
         try {
             testMap.place(testPosition);
             var testAnimal = testMap.getOrderedAnimals().getFirst();
-            testMap.move(testAnimal, MoveDirection.FORWARD);
-            var expectedPosition = new Vector2d(1, 2);
-            Assertions.assertTrue(testMap.isOccupied(expectedPosition));
-            Assertions.assertEquals(testAnimal, testMap.objectAt(expectedPosition).get());
+            testMap.moveAllAnimals();
+            Assertions.assertFalse(testMap.isOccupied(testPosition));
         } catch (IncorrectPositionException ex) {
             Assertions.fail("Exception was thrown" + ex.getMessage());
         }

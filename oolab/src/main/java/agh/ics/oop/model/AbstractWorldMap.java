@@ -47,25 +47,6 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
 
-    @Override
-    public void move(Animal animal, MoveDirection direction) {
-        var oldPosition = animal.getPosition();
-        var oldOrientation = animal.getFacingDirection();
-        animal.move(direction, this);
-        var newPosition = animal.getPosition();
-        var newOrientation = animal.getFacingDirection();
-
-        if (oldPosition != newPosition) {
-            animals.get(oldPosition).remove(animal);
-            if(!animals.containsKey(newPosition)){
-                animals.put(newPosition, new LinkedList<>());
-            }
-            animals.get(newPosition).add(animal);
-            notifyObservers(String.format("Animal moved from %s to %s", oldPosition, newPosition));
-        } else if (oldOrientation != newOrientation) {
-            notifyObservers(String.format("Animal changed direction from %s to %s", oldOrientation, newOrientation));
-        }
-    }
 
     @Override
     public void moveAllAnimals() {
@@ -170,8 +151,5 @@ public abstract class AbstractWorldMap implements WorldMap {
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(Animal::getEnergy).reversed()).toList();
     }
-
-
-
 
 }

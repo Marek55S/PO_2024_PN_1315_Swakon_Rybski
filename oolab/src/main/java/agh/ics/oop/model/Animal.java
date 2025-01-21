@@ -11,27 +11,31 @@ public class Animal implements WorldElement {
     public static final Random RANDOM = new Random();
     private int kidsCount = 0;
     private int age = 0;
+    private final List<Animal> children = new ArrayList<>();
+    private final Set<Animal> descendants = new HashSet<>();
+    private final Animal parent1;
+    private final Animal parent2;
 
     // all this static values should be moved to the configuration file
     public static final int NEWBORNS_ENERGY = 100;
     public static final int ENERGY_TO_REPRODUCE = 100;
     public static final int GENOME_LENGTH = 8;
 
-    // redundant constructor
-    public Animal() {
-        this(new Vector2d(2, 2));
-    }
-    // redundant constructor
-    public Animal(Vector2d localizationOnMap) {
-        this.localizationOnMap = localizationOnMap;
-        facingDirection = MapDirection.NORTH;
-    }
-
-
     public Animal(Vector2d localizationOnMap, List<Integer> genome) {
+        this(localizationOnMap, genome, null, null);
+    }
+
+
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2) {
+        this(localizationOnMap, genome, parent1, parent2, MapDirection.values()[RANDOM.nextInt(8)]);
+    }
+
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2, MapDirection facingDirection) {
         this.localizationOnMap = localizationOnMap;
         this.genome.addAll(genome);
-        facingDirection = MapDirection.NORTH;
+        this.facingDirection = facingDirection;
+        this.parent1 = parent1;
+        this.parent2 = parent2;
     }
 
     public int getAge() {
@@ -40,28 +44,6 @@ public class Animal implements WorldElement {
 
     public MapDirection getFacingDirection() {
         return facingDirection;
-    }
-
-    // method move and moveByGenome are probably redundant
-    // moveOnBorders should be changed to be used only for moving forward or merged with moveForward
-
-    public void move(MoveDirection direction, AbstractWorldMap validator) {
-        switch (direction) {
-            case LEFT -> facingDirection = facingDirection.previous();
-            case RIGHT -> facingDirection = facingDirection.next();
-            case FORWARD -> {
-                var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
-                if ( validator.canMoveTo(newLoc)) {
-                    localizationOnMap = newLoc;
-                }
-            }
-            case BACKWARD -> {
-                var newLoc = moveOnBorders(facingDirection.toUnitVector().opposite(), validator);
-                if (validator.canMoveTo(newLoc)) {
-                    localizationOnMap = newLoc;
-                }
-            }
-        }
     }
 
     private Vector2d moveOnBorders(Vector2d unitMove,AbstractWorldMap map){
@@ -78,15 +60,6 @@ public class Animal implements WorldElement {
         }
         return newLoc;
     }
-
-//    // method should be changed to move all 8 directions
-//    public void moveByGenome(MoveValidator validator) {
-//        facingDirection = MapDirection.values()[genome.get(currentGenomeIndex)];
-//        var newLoc = localizationOnMap.add(this.facingDirection.toUnitVector());
-//        if (validator.canMoveTo(newLoc))
-//            localizationOnMap = newLoc;
-//        currentGenomeIndex++;
-//    }
 
     private void rotateAnimal(int rotation){
         for(int i = 0; i < rotation; i++){
@@ -126,14 +99,6 @@ public class Animal implements WorldElement {
         return Objects.equals(localizationOnMap, position);
     }
 
-    // equals should compare only by reference, no need to override it
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Animal animal = (Animal) o;
-//        return localizationOnMap == animal.localizationOnMap && Objects.equals(localizationOnMap, animal.localizationOnMap);
-//    }
 
     @Override
     public int hashCode() {
@@ -163,6 +128,7 @@ public class Animal implements WorldElement {
     public void addEnergy(int energy){
         this.energy += energy;
     }
+
     public void subtractEnergy(int energy){
         this.energy -= energy;
         age++;
@@ -180,27 +146,45 @@ public class Animal implements WorldElement {
     }
 
     // method for mutation of the genome, each gene can be mutated more than once
-    private void randomMutation(List<Integer> genomeToMutate){
+    protected void mutateGenome(List<Integer> genomeToMutate){
         for (int i = 0; i < RANDOM.nextInt(GENOME_LENGTH); i++){
             if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOME_LENGTH), RANDOM.nextInt(8));
         }
     }
 
-    // method for mutation of the genome, each gene can be slightly mutated only once
-    void slightMutation(List<Integer> genomeToMutate){
-        for (int i = 0; i < GENOME_LENGTH; i++){
-            if(RANDOM.nextBoolean()){;
-                genomeToMutate.set(i, (genomeToMutate.get(i) + (RANDOM.nextBoolean() ? 1 : -1)+8) % 8);
+
+    public void addChildren(Animal child){
+        kidsCount++;
+        children.add(child);
+        addDescendant(child);
+    }
+
+    public int getChildrenCount(){
+        return kidsCount;
+    }
+
+    public int  getTotalDescendantsCount(){
+        return descendants.size();
+    }
+
+    public List<Animal> getChildren(){
+        return Collections.unmodifiableList(children);
+    }
+
+    private void addDescendant(Animal descendant) {
+        if (descendants.add(descendant)) {
+            if (parent1 != null) parent1.addDescendant(descendant);
+            if (parent2 != null) parent2.addDescendant(descendant);
+        }
+        for (Animal subDescendant : descendant.descendants) {
+            if (descendants.add(subDescendant)) {
+                if (parent1 != null) parent1.addDescendant(subDescendant);
+                if (parent2 != null) parent2.addDescendant(subDescendant);
             }
         }
     }
 
-    public void addChildren(){
-        kidsCount++;
-    }
-    public int getChildrenCount(){
-        return kidsCount;
-    }
+
     // should be another method for different types of mutations
     public Animal reproduce(Animal partner){
         List<Integer> newGenome = new ArrayList<>();
@@ -217,12 +201,13 @@ public class Animal implements WorldElement {
         }
         this.subtractEnergy(reproduceEnergy);
         partner.subtractEnergy(ENERGY_TO_REPRODUCE - reproduceEnergy);
-        //randomMutation(newGenome);
-        slightMutation(newGenome);
-        addChildren();
-        partner.addChildren();
+        mutateGenome(newGenome);
 
-        return new Animal(this.localizationOnMap, newGenome);
+        var child = new Animal(this.localizationOnMap, newGenome,this,partner);
+        addChildren(child);
+        partner.addChildren(child);
+
+        return child;
     }
 
 }
