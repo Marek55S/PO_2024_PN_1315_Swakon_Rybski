@@ -17,6 +17,8 @@ public class Animal implements WorldElement {
     private final Animal parent1;
     private final Animal parent2;
     protected final SimulationOptions options = null;
+    private Optional<Integer> dayOfDeath = Optional.empty();
+
 
     // all this static values should be moved to the configuration file
     protected int newbornsEnergy = 100;
@@ -222,6 +224,18 @@ public class Animal implements WorldElement {
         partner.addChildren(child);
 
         return child;
+    }
+
+    public int getCurrentGenomeIndex(){
+        return currentGenomeIndex;
+    }
+
+    public void setDayOfDeath(int dayOfDeath){
+        this.dayOfDeath = Optional.of(dayOfDeath);
+    }
+
+    public Optional<Integer> getDayOfDeath(){
+        return dayOfDeath;
     }
 
 }

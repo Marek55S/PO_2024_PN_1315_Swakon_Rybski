@@ -24,7 +24,7 @@ test {
     useJUnitPlatform()
 }
 application {
-    getMainClass().set('agh.ics.oop.World')
+    getMainClass().set('agh.ics.oop.WorldGui')
 }
 java {
     toolchain {

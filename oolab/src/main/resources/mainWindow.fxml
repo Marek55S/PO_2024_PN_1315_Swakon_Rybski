@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
+<?import javafx.scene.control.CheckBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             minHeight="550.0" minWidth="850.0"
@@ -65,7 +66,10 @@
     <bottom>
         <VBox spacing="10" alignment="CENTER">
             <HBox><Button fx:id="saveConfigButton" text="Save Config" onMouseClicked="#onSaveConfigClicked"></Button>
-                <Button fx:id="loadConfigButton" text="Load Config" onMouseClicked="#onLoadConfigClicked"></Button></HBox>
+                <Button fx:id="loadConfigButton" text="Load Config" onMouseClicked="#onLoadConfigClicked"></Button>
+                <CheckBox fx:id="shouldSaveLogs" text="Save logs to file" onMouseClicked="#toggleSavingLogs"></CheckBox>
+                <Button fx:id="logsLoc" text="Select Logs Localisation" onMouseClicked="#onSelectLogsSaveClicked" visible="false"></Button></HBox>
+
             <Button fx:id="startButton"  text="Start" onAction="#onSimulationStartClicked"/>
         </VBox>
     </bottom>

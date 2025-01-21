@@ -1,6 +1,7 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.model.Animal;
+import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -48,6 +49,23 @@ public class MapCell extends StackPane {
             System.out.println("Someone touched meeeee");
             this.animal.setFill(Color.YELLOW);});
         this.getChildren().add(this.animal);
+
+        Color energyColor = Color.GREEN;
+
+        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY){
+            energyColor = Color.YELLOW;
+        }
+
+        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY/2){
+            energyColor = Color.RED;
+        }
+
+        Rectangle energyBar = new Rectangle(width, height / 10.0, energyColor);
+
+        this.getChildren().add(energyBar);
+
+        this.setAlignment(energyBar, Pos.BOTTOM_CENTER);
+
 
         return this;
     }
