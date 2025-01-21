@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -54,6 +55,8 @@ public class SimulationPresenter implements MapChangeListener {
     private Label animalDaysAlive;
     @FXML
     private VBox singleAnimal;
+    @FXML
+    private CheckBox showDominatingGenome;
 
     private int minY;
     private int maxY;
@@ -156,6 +159,11 @@ public class SimulationPresenter implements MapChangeListener {
                         Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
                         mc.addAnimal(false, animal, this);
 
+
+
+                        if(showDominatingGenome.isSelected() && statistics.getMostPopularGenomes().contains(animal.getGenome())){
+                            mc.higlightAnimal();
+                        }
                         if(animal == selectedAnimal){
                             mc.selectAnimal();
                         }
