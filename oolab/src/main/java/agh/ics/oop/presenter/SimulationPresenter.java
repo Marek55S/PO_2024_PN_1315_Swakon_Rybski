@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -39,6 +40,20 @@ public class SimulationPresenter implements MapChangeListener {
     private Label averageLifespan;
     @FXML
     private Label averageKidsAmount;
+    @FXML
+    private Label animalGenom;
+    @FXML
+    private Label animalGenomActivated;
+    @FXML
+    private Label animalEnergy;
+    @FXML
+    private Label animalChildrenCount;
+    @FXML
+    private Label animalDescendants;
+    @FXML
+    private Label animalDaysAlive;
+    @FXML
+    private VBox singleAnimal;
 
     private int minY;
     private int maxY;
@@ -50,6 +65,8 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellWidth;
     private Simulation simulation;
     private StatisticsTracker statistics = new StatisticsTracker();
+    private Animal selectedAnimal = null;
+
     private final Stage stage;
 
     SimulationPresenter(Stage stage) {
@@ -137,7 +154,8 @@ public class SimulationPresenter implements MapChangeListener {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
 //                    var label = new Label(element.toString());
                     if(worldMap.isAnimalAt(positionToCheck)){
-                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck), false, 10), i + 1, height - j + 1);
+                        Animal animal = (Animal)worldMap.objectAt(positionToCheck).get();
+                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck), false, animal, this), i + 1, height - j + 1);
                     } else{
                         mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck)), i + 1, height - j + 1);
                     }
@@ -176,17 +194,25 @@ public class SimulationPresenter implements MapChangeListener {
         averageLifespan.setText(" ");
         averageKidsAmount.setText(" ");
     }
+
+    public void updateSingleAnimalStatistics(){
+        if(selectedAnimal != null){
+            singleAnimal.setVisible(true);
+            animalEnergy.setText(String.format("Animals energy: %d", selectedAnimal.getEnergy()));
+        }
+    }
+
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {
             drawMap(message);
             updateStatistics();
+            updateSingleAnimalStatistics();
         });
 
     }
 
-    private void updateGlobalStatistics(){
-
+    public void setSelectedAnimal(Animal selectedAnimal) {
+        this.selectedAnimal = selectedAnimal;
     }
-
 }

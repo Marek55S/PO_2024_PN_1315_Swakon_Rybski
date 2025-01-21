@@ -21,6 +21,17 @@
         <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"></GridPane>
         <!--        <Label fx:id="infoLabel" text="All animals will be living here!" textAlignment="CENTER"/>-->
     </center>
+    <left>
+        <VBox fx:id="singleAnimal" visible="false">
+            <Label text="Statistic For Animal"></Label>
+            <Label fx:id="animalGenom" text="Animals Count: "></Label>
+            <Label fx:id="animalGenomActivated" text="Plants Count: "></Label>
+            <Label fx:id="animalEnergy" text="Free fields Count: "></Label>
+            <Label fx:id="animalChildrenCount" text="Free fields Count: "></Label>
+            <Label fx:id="animalDescendants" text="Free fields Count: "></Label>
+            <Label fx:id="animalDaysAlive" text="Free fields Count: "></Label>
+        </VBox>
+    </left>
     <right>
         <VBox>
             <Label text="Statistic For Simulation"></Label>

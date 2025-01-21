@@ -35,7 +35,7 @@ public class MapCell extends StackPane {
 
 
     }
-    public MapCell(int width, int heigth, boolean hasGrass, boolean higlightAnimal, int animalEnergy) {
+    public MapCell(int width, int heigth, boolean hasGrass, boolean higlightAnimal, Animal animal, SimulationPresenter sim) {
         this.width = width;
         this.height = heigth;
         this.hasAnimal = true;
@@ -52,6 +52,9 @@ public class MapCell extends StackPane {
 
         Color animalColor = higlightAnimal ? Color.YELLOW : Color.BROWN;
         this.animal = new Circle(width / 5.0, animalColor);
+        this.animal.setOnMouseClicked(mouseEvent -> {sim.setSelectedAnimal(animal);
+            System.out.println("Someone touched meeeee");
+        this.animal.setFill(Color.YELLOW);});
         this.getChildren().add(this.animal);
 
 
