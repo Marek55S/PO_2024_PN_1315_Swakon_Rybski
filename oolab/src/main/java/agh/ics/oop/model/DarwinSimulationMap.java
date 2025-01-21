@@ -94,6 +94,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
 
         deadAnimals.forEach(animal -> {
             deadAnimalsCount++;
+            animal.setDayOfDeath(dayCounter);
             deadAnimalsLivesLengthSum += animal.getAge();
             List<Animal> animalsAtPosition = animals.get(animal.getPosition());
             if (animalsAtPosition != null) {
@@ -242,6 +243,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         statisticsTracker.setEmptyFieldsCount(getEmptyFieldsCount());
         statisticsTracker.setAverageLifespan(getAverageLifespan());
         statisticsTracker.setAverageKidsAmount(getAverageChildrenAmount());
+        statisticsTracker.setDay(dayCounter);
     }
 
     public void removeGrass(Vector2d position){
