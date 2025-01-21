@@ -135,14 +135,14 @@ public class SimulationPresenter implements MapChangeListener {
         for (int i = 0; i <= width; ++i) {
             for (int j = 0; j <= height; ++j) {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
-                if (worldMap.isOccupied(positionToCheck)) {
-                    WorldElement element = worldMap.objectAt(positionToCheck).get();
-                    var label = new Label(element.toString());
-                    mapGrid.add(new WorldElementBox(element, cellWidth, cellHeight), i + 1, height - j + 1);
-                    GridPane.setHalignment(label, HPos.CENTER);
-                } else{
-                    emptyFields += 1;
-                }
+//                    var label = new Label(element.toString());
+                    if(worldMap.isAnimalAt(positionToCheck)){
+                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck), false, 10), i + 1, height - j + 1);
+                    } else{
+                        mapGrid.add(new MapCell(cellWidth, cellHeight, worldMap.isGrassAt(positionToCheck)), i + 1, height - j + 1);
+                    }
+                    //GridPane.setHalignment(label, HPos.CENTER);
+
             }
         }
 

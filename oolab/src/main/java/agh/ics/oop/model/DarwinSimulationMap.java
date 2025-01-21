@@ -248,6 +248,12 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         grasses.remove(position);
     }
 
+    public boolean isGrassAt(Vector2d position){
+        return grasses.containsKey(position);
+    }
+    public boolean isAnimalAt(Vector2d position){
+        return animals.containsKey(position) && animals.get(position) != null && !animals.get(position).isEmpty();
+    }
     public void nextDay(){
         removeDeadAnimals();
         moveAllAnimals();
