@@ -20,6 +20,7 @@ public class Animal implements WorldElement {
     public static final int NEWBORNS_ENERGY = 100;
     public static final int ENERGY_TO_REPRODUCE = 100;
     public static final int GENOME_LENGTH = 8;
+    public static final int MAX_MUTATION = 3;
 
     public Animal(Vector2d localizationOnMap, List<Integer> genome) {
         this(localizationOnMap, genome, null, null);
@@ -147,7 +148,7 @@ public class Animal implements WorldElement {
 
     // method for mutation of the genome, each gene can be mutated more than once
     protected void mutateGenome(List<Integer> genomeToMutate){
-        for (int i = 0; i < RANDOM.nextInt(GENOME_LENGTH); i++){
+        for (int i = 0; i < RANDOM.nextInt(MAX_MUTATION); i++){
             if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(GENOME_LENGTH), RANDOM.nextInt(8));
         }
     }
