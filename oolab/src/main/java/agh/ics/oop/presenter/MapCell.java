@@ -50,8 +50,17 @@ public class MapCell extends StackPane {
             this.animal.setFill(Color.YELLOW);});
         this.getChildren().add(this.animal);
 
+        Color energyColor = Color.GREEN;
 
-        Rectangle energyBar = new Rectangle(width, height / 10.0, Color.BLUE);
+        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY){
+            energyColor = Color.YELLOW;
+        }
+
+        if(animal.getEnergy() < Animal.NEWBORNS_ENERGY/2){
+            energyColor = Color.RED;
+        }
+
+        Rectangle energyBar = new Rectangle(width, height / 10.0, energyColor);
 
         this.getChildren().add(energyBar);
 
