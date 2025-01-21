@@ -13,6 +13,7 @@ public class StatisticsTracker {
     private int averageEnergyLevel = 0;
     private int averageLifespan = 0;
     private int averageKidsAmount = 0;
+    private int day = 0;
 
 
     public int getAnimalsCount() {
@@ -69,5 +70,25 @@ public class StatisticsTracker {
 
     public void setAverageKidsAmount(int averageKidsAmount) {
         this.averageKidsAmount = averageKidsAmount;
+    }
+
+    public String genomeToString(List<Integer> genome) {
+        String tmp = "[";
+
+        for(Integer i : genome) {
+            tmp = tmp + i + ",";
+        }
+
+        tmp += "]";
+
+        return tmp;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getDay() {
+        return day;
     }
 }

@@ -14,9 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -59,8 +57,13 @@ public class MainWindowPresenter {
     private ChoiceBox<MutationVariants> mutationVariant;
     @FXML
     private Spinner<Integer> genomeLength;
+    @FXML
+    private Button logsLoc;
+    @FXML
+    private CheckBox shouldSaveLogs;
     private int ids = 0;
     private SimulationOptions simulationOptions;
+    private File logsSavingLoc = null;
 
     private final Stage stage;
 
@@ -71,17 +74,13 @@ public class MainWindowPresenter {
     public void initialize() {
         mapVariantCB.getItems().addAll(MapTypes.values());
         mutationVariant.getItems().addAll(MutationVariants.values());
-        //load defaults
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
-        //handle exceptions
         try{
         SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
         setInterfaceValues(options);
         }
-        catch (CsvValidationException e) {
-            infolabel.setText("Default configuration could't be loaded");
-        } catch (IOException e) {
-            infolabel.setText("Default configuration could't be loaded");
+        catch (CsvValidationException | IOException e) {
+            displayError(ErrorMessages.DEFAULTS_LOADING);
         }
     }
 
@@ -95,7 +94,11 @@ public class MainWindowPresenter {
                 loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
                 loader.setControllerFactory(param -> {
                     if (param == SimulationPresenter.class) {
-                        return new SimulationPresenter(newStage); // Pass Stage to the constructor
+                        if(shouldSaveLogs.isSelected()) {
+                            return new SimulationPresenter(newStage, true, logsSavingLoc); // Pass Stage to the constructor
+                        } else {
+                            return new SimulationPresenter(newStage);
+                        }
                     } else {
                         try {
                             return param.getDeclaredConstructor().newInstance();
@@ -106,7 +109,6 @@ public class MainWindowPresenter {
                 });
                 BorderPane viewRoot = loader.load();
                 SimulationPresenter presenter = loader.getController();
-                //presenters.add(presenter);
 
 
 
@@ -131,11 +133,10 @@ public class MainWindowPresenter {
                 simulationEngine.addToThreadPool(simulation);
             newStage.setOnCloseRequest(event -> {
                 simulation.stop();
-                // Save file
                 });
 
         } else {
-            infolabel.setText("Moves list shouldn't be empty");
+            displayError(ErrorMessages.WRONG_VALUES);
         }
 
     }
@@ -166,19 +167,13 @@ public class MainWindowPresenter {
                     reproductionEnergy.getValue(), mutationsCount.getValue(),
                     genomeLength.getValue(), mutationVariant.getValue());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            //throw new RuntimeException(e);
+            displayError(ErrorMessages.OPTION_PARSE_ERROR);
             return null;
         }
     }
 
     public void onSaveConfigClicked(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName("settings.csv");
-        FileChooser.ExtensionFilter extFilter =
-                new FileChooser.ExtensionFilter("csv files (*.csv)", "*.csv");
-        fileChooser.getExtensionFilters().add(extFilter);
-        File file = fileChooser.showSaveDialog(genomeLength.getScene().getWindow());
+        File file = chooseFileForSaveCSV("settings.csv");
         String path = "default.csv";
         if (file != null) {
             path = file.getAbsolutePath();
@@ -188,10 +183,21 @@ public class MainWindowPresenter {
         try{
         simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
         } catch (IOException e) {
-            infolabel.setText("Error writing config file");
+            displayError(ErrorMessages.FILE_WRITE_ERROR);
         }
 
     }
+
+    private File chooseFileForSaveCSV(String initialName){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(initialName);
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("csv files (*.csv)", "*.csv");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(genomeLength.getScene().getWindow());
+        return file;
+    }
+
 
     public void onLoadConfigClicked() throws IOException {
         FileChooser fileChooser = new FileChooser();
@@ -206,17 +212,30 @@ public class MainWindowPresenter {
             try{
                 SimulationOptions options = simulationOptionsToFile.readOptionsFromFile(path);
                 setInterfaceValues(options);
-            } catch (IOException e) {
-                infolabel.setText("Error reading from config file");
-            } catch (CsvValidationException e) {
-                infolabel.setText("Error reading from config file");
+            } catch (IOException | CsvValidationException e) {
+                displayError(ErrorMessages.FILE_READ_ERROR);
             }
         } else{
-            infolabel.setText("Error reading from config file");
+            displayError(ErrorMessages.FILE_READ_ERROR);
         }
 
 
 
+    }
+
+    public void toggleSavingLogs(){
+        logsLoc.setVisible(!logsLoc.isVisible());
+    }
+
+    public void onSelectLogsSaveClicked(){
+        File file = chooseFileForSaveCSV("logs.csv");
+        if(file != null){
+            logsSavingLoc = file;
+        }
+    }
+
+    public void displayError(ErrorMessages errorType){
+        infolabel.setText(errorType.toString());
     }
 
 

@@ -3,6 +3,8 @@ package agh.ics.oop.presenter;
 import agh.ics.oop.Simulation;
 import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.*;
+import agh.ics.oop.utils.SimulationOptions;
+import agh.ics.oop.utils.SimulationOptionsToFile;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,6 +18,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -70,11 +74,31 @@ public class SimulationPresenter implements MapChangeListener {
     private Simulation simulation;
     private StatisticsTracker statistics = new StatisticsTracker();
     private Animal selectedAnimal = null;
+    private SimulationOptionsToFile simWriter;
 
     private final Stage stage;
+    private boolean saveLogs;
+    private final File logsLoc;
 
     SimulationPresenter(Stage stage) {
         this.stage = stage;
+        this.saveLogs = false;
+        this.logsLoc = null;
+    }
+
+    public SimulationPresenter(Stage stage, boolean saveLogs, File logsLoc) {
+        this.stage = stage;
+        this.saveLogs = saveLogs;
+        this.logsLoc = logsLoc;
+        if(saveLogs){
+            simWriter = new SimulationOptionsToFile();
+            try{
+                simWriter.writeSimulationLogHeaderToFile(logsLoc.getPath());
+            } catch (IOException e) {
+                infolabel.setText("Failed to create simulation log file");
+                this.saveLogs = false;
+            }
+        }
     }
 
     public void setSimulation(Simulation simulation) {
@@ -87,12 +111,6 @@ public class SimulationPresenter implements MapChangeListener {
         }
 
         map.addObserver(this);
-//        map.addObserver((worldMap, message) -> Platform.runLater(() -> {
-//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-//            LocalDateTime now = LocalDateTime.now();
-//            System.out.println(dtf.format(now) + " " + message);
-//        }));
-
         worldMap = map;
         statistics = map.getStatistics();
     }
@@ -209,19 +227,27 @@ public class SimulationPresenter implements MapChangeListener {
         freeFieldsCount.setText(String.format("Free Fields: %d", statistics.getEmptyFieldsCount()));
         String genotypes = "";
         for(var genotype : statistics.getMostPopularGenomes()){
-            genotypes += genomeToString(genotype) + "\n";
+            genotypes += statistics.genomeToString(genotype) + "\n";
         }
         mostPopularGenotypes.setText("Most popular genotypes: " + genotypes);
         avgEnergyLevelLabel.setText(String.format("Avg energy level: %d", statistics.getAverageEnergyLevel()));
         averageLifespan.setText(" ");
         averageKidsAmount.setText(" ");
+
+        if(saveLogs){
+            try {
+                simWriter.writeSimulationLogToFile(statistics.getDay(), statistics, logsLoc.getPath());
+            } catch (IOException e) {
+                infolabel.setText("Failed to log todays data to file");
+            }
+        }
     }
 
     public void updateSingleAnimalStatistics(){
         if(selectedAnimal != null){
             singleAnimal.setVisible(true);
             animalEnergy.setText(String.format("Animals energy: %d", selectedAnimal.getEnergy()));
-            animalGenom.setText(String.format("Animals genome: %s", genomeToString(selectedAnimal.getGenome())));
+            animalGenom.setText(String.format("Animals genome: %s", statistics.genomeToString(selectedAnimal.getGenome())));
             animalGenomActivated.setText(String.format("Animals activated gene: %d", selectedAnimal.getCurrentGenomeIndex()));
             animalChildrenCount.setText(String.format("Animals childrens: %d", selectedAnimal.getChildrenCount()));
             animalDescendants.setText(String.format("Animals descendants: %d", selectedAnimal.getTotalDescendantsCount()));
@@ -248,15 +274,9 @@ public class SimulationPresenter implements MapChangeListener {
     public void setSelectedAnimal(Animal selectedAnimal) {
         this.selectedAnimal = selectedAnimal;
     }
-    private String genomeToString(List<Integer> genome) {
-        String tmp = "[";
 
-        for(Integer i : genome) {
-            tmp = tmp + i + ",";
-        }
 
-        tmp += "]";
+    private void saveLogsToFile(){
 
-        return tmp;
     }
 }

@@ -107,7 +107,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return objectAt(position).isPresent() && (objectAt(position) instanceof Optional<List<Animal>> );
+        return objectAt(position).isPresent();
     }
 
     @Override

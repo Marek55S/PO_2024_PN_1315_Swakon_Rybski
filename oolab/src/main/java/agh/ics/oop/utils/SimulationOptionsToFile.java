@@ -1,9 +1,11 @@
 package agh.ics.oop.utils;
+import agh.ics.oop.StatisticsTracker;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
+import java.util.List;
 
 public class SimulationOptionsToFile {
 
@@ -18,6 +20,29 @@ public class SimulationOptionsToFile {
             csvWriter.writeNext(record);
         }
     }
+
+    public void writeSimulationLogHeaderToFile(String filePath) throws IOException {
+        try(CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath))){
+            String[] header = {"day", "animals_count", "animals_genomes", "plants_count", "free_fields", "average_energy", "average_livespan", "average_kids_amount"};
+            csvWriter.writeNext(header);
+        }
+    }
+    public void writeSimulationLogToFile(int day, StatisticsTracker stats, String filePath) throws IOException {
+        try(CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath, true))){
+            String genomes  = "";
+            for(var genome : stats.getMostPopularGenomes()){
+                genomes = genomes + " " + genome;
+            }
+            String[] record = {Integer.toString(day), Integer.toString(stats.getAnimalsCount()), genomes,
+            Integer.toString(stats.getGrassCount()),
+            Integer.toString(stats.getEmptyFieldsCount()),
+            Integer.toString(stats.getAverageEnergyLevel()),
+            Integer.toString(stats.getAverageLifespan()),
+            Integer.toString(stats.getAverageKidsAmount())};
+            csvWriter.writeNext(record);
+        }
+    }
+
 
     public SimulationOptions readOptionsFromFile(String filePath) throws IOException, CsvValidationException {
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {

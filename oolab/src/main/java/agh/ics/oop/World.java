@@ -2,10 +2,7 @@ package agh.ics.oop;
 
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.ConsoleMapDisplay;
-import agh.ics.oop.model.util.FileMapDisplay;
-import agh.ics.oop.model.util.IncorrectPositionException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class World {
