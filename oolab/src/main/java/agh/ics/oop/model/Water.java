@@ -11,10 +11,6 @@ public class Water implements WorldElement{
         return position;
     }
 
-    @Override
-    public String getResourceString() {
-        return "water.png";
-    }
 
     @Override
     public String toString() {

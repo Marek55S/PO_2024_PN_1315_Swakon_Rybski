@@ -1,8 +1,12 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.MapVisualizer;
+import agh.ics.oop.utils.MapTypes;
+import agh.ics.oop.utils.MutationVariants;
+import agh.ics.oop.utils.SimulationOptions;
 
 import java.util.*;
 
@@ -64,10 +68,25 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
+    public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
+        var tmpOptions = new SimulationOptions(10, 10, MapTypes.NORMAL_MAP, 10, 10, 10, 10, 10, 10, 10, 10,
+                10, MutationVariants.SMALL_CHANGE_MUTATION);
+        var animal = new Animal(animalProposedLocalisation, generateGenome(8), tmpOptions);
+
+        if (canMoveTo(animalProposedLocalisation)) {
+            if (!animals.containsKey(animalProposedLocalisation)) {
+                animals.put(animalProposedLocalisation, new LinkedList<>());
+            }
+            animals.get(animalProposedLocalisation).add(animal);
+            notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
+        } else {
+            throw new IncorrectPositionException((animal.getPosition()));
+        }
+    }
 
     @Override
-    public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
-        var animal = new Animal(animalProposedLocalisation, generateGenome(8));
+    public void place(Vector2d animalProposedLocalisation, SimulationOptions simulationOptions) throws IncorrectPositionException {
+        var animal = new Animal(animalProposedLocalisation, generateGenome(simulationOptions.genomeLength()), simulationOptions);
         if (canMoveTo(animalProposedLocalisation)) {
             if (!animals.containsKey(animalProposedLocalisation)) {
                 animals.put(animalProposedLocalisation, new LinkedList<>());

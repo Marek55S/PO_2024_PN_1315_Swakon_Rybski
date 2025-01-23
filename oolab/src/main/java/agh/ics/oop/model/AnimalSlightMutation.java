@@ -8,15 +8,6 @@ import java.util.Set;
 
 public class AnimalSlightMutation extends Animal {
 
-    AnimalSlightMutation(Vector2d initialPosition, List<Integer> genome){
-        super(initialPosition, genome);
-    }
-    AnimalSlightMutation(Vector2d initialPosition, List<Integer> genome, Animal parent1, Animal parent2){
-        super(initialPosition, genome, parent1, parent2);
-    }
-    AnimalSlightMutation(Vector2d initialPosition, List<Integer> genome, Animal parent1, Animal parent2, MapDirection facingDirection){
-        super(initialPosition, genome, parent1, parent2, facingDirection);
-    }
     AnimalSlightMutation(Vector2d initialPosition, List<Integer> genome, SimulationOptions options){
         super(initialPosition, genome, options);
     }

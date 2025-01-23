@@ -54,11 +54,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     public boolean canMoveTo(Vector2d position) {
         return super.canMoveTo(position) && !waters.containsKey(position)&& !inflowedWaters.containsKey(position);
     }
-
-    @Override
-    public void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException {
-        super.place(animalProposedLocalisation);
-    }
+    
 
     @Override
     public boolean isOccupied(Vector2d position) {

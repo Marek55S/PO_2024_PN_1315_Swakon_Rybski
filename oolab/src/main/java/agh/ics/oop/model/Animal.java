@@ -16,42 +16,42 @@ public class Animal implements WorldElement {
     private final Set<Animal> descendants = new HashSet<>();
     private final Animal parent1;
     private final Animal parent2;
-    protected final SimulationOptions options = null;
+    protected final SimulationOptions options;
     private Optional<Integer> dayOfDeath = Optional.empty();
 
 
     // all this static values should be moved to the configuration file
-    protected int newbornsEnergy = 100;
+    protected int newbornsEnergy=-20;
     protected  int energyToReproduce = 100;
-    protected int genomeLength = 8;
+    protected int genomeLength = 6;
     protected int maxMutation = 3;
-    private int energy = newbornsEnergy;
+    private int energy;
 
-    public Animal(Vector2d localizationOnMap, List<Integer> genome) {
-        this(localizationOnMap, genome, null, null);
+
+
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2, SimulationOptions simulationOptions) {
+        this(localizationOnMap, genome, parent1, parent2, MapDirection.values()[RANDOM.nextInt(8)], simulationOptions);
     }
 
-
-    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2) {
-        this(localizationOnMap, genome, parent1, parent2, MapDirection.values()[RANDOM.nextInt(8)]);
-    }
-
-    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2, MapDirection facingDirection) {
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, Animal parent1, Animal parent2, MapDirection facingDirection, SimulationOptions options) {
         this.localizationOnMap = localizationOnMap;
         this.genome.addAll(genome);
         this.facingDirection = facingDirection;
         this.parent1 = parent1;
         this.parent2 = parent2;
-    }
-
-    public Animal(Vector2d localizationOnMap, List<Integer> genome, SimulationOptions options){
-        this(localizationOnMap, genome, null,null);
-        this.localizationOnMap = localizationOnMap;
-        this.genome.addAll(genome);
+        this.options = options;
         energyToReproduce = options.reproductionEnergy();
         newbornsEnergy = options.initialAnimalEnergy();
         genomeLength = options.genomeLength();
         maxMutation = options.mutationsCount();
+        energy = newbornsEnergy;
+    }
+
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, SimulationOptions options){
+        this(localizationOnMap, genome, null,null, options);
+        this.localizationOnMap = localizationOnMap;
+        //this.genome.addAll(genome);
+
     }
 
     public int getAge() {
@@ -126,19 +126,6 @@ public class Animal implements WorldElement {
         return localizationOnMap;
     }
 
-    @Override
-    public String getResourceString() {
-        return switch (facingDirection) {
-            case NORTH -> "animal_up.png";
-            case EAST -> "animal_r.png";
-            case SOUTH -> "animal_d.png";
-            case WEST -> "animal_l.png";
-            case NORTH_EAST -> "animal_ru.png";
-            case SOUTH_WEST -> "animal_ld.png";
-            case NORTH_WEST -> "animal_lu.png";
-            case SOUTH_EAST ->  "animal_rd.png";
-        };
-    }
 
     // method mostly for eating grass
     public void addEnergy(int energy){
@@ -219,7 +206,8 @@ public class Animal implements WorldElement {
         partner.subtractEnergy(energyToReproduce - reproduceEnergy);
         mutateGenome(newGenome);
 
-        var child = new Animal(this.localizationOnMap, newGenome,this,partner);
+        var child = new Animal(this.localizationOnMap, newGenome,this, partner, options);
+
         addChildren(child);
         partner.addChildren(child);
 

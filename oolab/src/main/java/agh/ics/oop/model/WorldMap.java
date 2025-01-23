@@ -3,6 +3,7 @@ package agh.ics.oop.model;
 import agh.ics.oop.StatisticsTracker;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
+import agh.ics.oop.utils.SimulationOptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,7 @@ public interface WorldMap extends agh.ics.oop.model.MoveValidator {
      *
      * @param animalProposedLocalisation position of animal to place on the map.
      */
-    void place(Vector2d animalProposedLocalisation) throws IncorrectPositionException;
+    void place(Vector2d animalProposedLocalisation, SimulationOptions simulationOptions) throws IncorrectPositionException;
 
 
     void moveAllAnimals();

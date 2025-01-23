@@ -47,8 +47,8 @@
     <bottom>
         <HBox>
         <Button fx:id="pauseButton" text="Pause" onAction="#toggleRunning"></Button>
-            <CheckBox fx:id="showLikedFieldsGrass" text="Grass Favoured Fields Visible"></CheckBox>
-            <CheckBox fx:id="showDominatingGenome" text="Dominating Genome Visible"></CheckBox>
+            <CheckBox fx:id="showLikedFieldsGrass" text="Grass Favoured Fields Visible" onMouseClicked="#updateMap"></CheckBox>
+            <CheckBox fx:id="showDominatingGenome" text="Dominating Genome Visible" onMouseClicked="#updateMap"></CheckBox>
         </HBox>
     </bottom>
 </BorderPane>

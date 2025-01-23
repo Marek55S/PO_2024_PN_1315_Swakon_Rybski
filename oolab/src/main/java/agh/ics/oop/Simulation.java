@@ -83,6 +83,7 @@ public class Simulation implements Runnable {
             dayCounter++;
             map.nextDay();
             System.out.println("Day " + dayCounter + " has ended");
+                System.out.println("working");
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

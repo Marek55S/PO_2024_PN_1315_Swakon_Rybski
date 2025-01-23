@@ -68,12 +68,12 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         if (options.mutationVariant() == MutationVariants.SMALL_CHANGE_MUTATION) {
             return new AnimalSlightMutation(
                     position,
-                    generateGenome(options.genomeLength())
+                    generateGenome(options.genomeLength()), options
             );
         }
         return new Animal(
                 position,
-                generateGenome(options.genomeLength())
+                generateGenome(options.genomeLength()), options
         );
     }
 
@@ -82,13 +82,14 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return dayCounter;
     }
 
-    public void place(Vector2d animalProposedLocalisation,SimulationOptions options) throws IncorrectPositionException {
+    public void place(Vector2d animalProposedLocalisation, SimulationOptions options) throws IncorrectPositionException {
         var animal = createAnimal(options, animalProposedLocalisation);
         if (canMoveTo(animalProposedLocalisation)) {
             if (!animals.containsKey(animalProposedLocalisation)) {
                 animals.put(animalProposedLocalisation, new LinkedList<>());
             }
             animals.get(animalProposedLocalisation).add(animal);
+            System.out.println(animal.getEnergy());
             notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
         } else {
             throw new IncorrectPositionException((animal.getPosition()));
@@ -182,18 +183,19 @@ public class DarwinSimulationMap extends AbstractWorldMap {
 
     public void reproduceAnimals(){
         for(List<Animal> animalsAtPosition : animals.values()) {
+            System.out.println("a");
             if (animalsAtPosition.size() >= 2) {
                 animalsAtPosition.sort(Comparator.comparing(Animal::getEnergy).reversed());
-                int i = 0;
-                while (i < animalsAtPosition.size() - 1) {
+                System.out.println("b");
                     Animal parent1 = animalsAtPosition.get(0);
                     Animal parent2 = animalsAtPosition.get(1);
+                System.out.println("c");
                     if (parent1.canReproduce() && parent2.canReproduce()) {
                         Animal child = parent1.reproduce(parent2);
+                        System.out.println("d");
                         animals.get(child.getPosition()).add(child);
+                        System.out.println("e");
                         notifyObservers("Animal was born at position " + child.getPosition());
-                    }
-                    i+=2;
                 }
             }
         }}
@@ -319,12 +321,19 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return animals.containsKey(position) && animals.get(position) != null && !animals.get(position).isEmpty();
     }
     public void nextDay(){
+        System.out.println("Remove dead");
         removeDeadAnimals();
+        System.out.println("Move all");
         moveAllAnimals();
+        System.out.println("Eat grass");
         eatGrass(plantEnergy);
+        System.out.println("Reproduce");
         reproduceAnimals();
+        System.out.println("Grow grass");
         growGrass(everydayPlantGrowth);
+        System.out.println("Take energy");
         takeEnergyFromAnimals(5);
+        System.out.println("Update stats");
         updateStatistics();
         dayCounter++;
 

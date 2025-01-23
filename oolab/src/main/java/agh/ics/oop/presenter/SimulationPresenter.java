@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.min;
@@ -77,6 +78,7 @@ public class SimulationPresenter implements MapChangeListener {
     private StatisticsTracker statistics = new StatisticsTracker();
     private Animal selectedAnimal = null;
     private SimulationOptionsToFile simWriter;
+    private List<List<MapCell>> mapCells = new ArrayList<>();
 
     private final Stage stage;
     private boolean saveLogs;
@@ -86,6 +88,7 @@ public class SimulationPresenter implements MapChangeListener {
         this.stage = stage;
         this.saveLogs = false;
         this.logsLoc = null;
+
     }
 
     public SimulationPresenter(Stage stage, boolean saveLogs, File logsLoc) {
@@ -115,6 +118,19 @@ public class SimulationPresenter implements MapChangeListener {
         map.addObserver(this);
         worldMap = map;
         statistics = map.getStatistics();
+        updateStoredConstraints();
+        mapInit();
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            clearGrid();
+            updateStoredConstraints();
+            mapInit();
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            clearGrid();
+            updateStoredConstraints();
+            mapInit();
+        });
     }
 
     private void updateStoredConstraints() {
@@ -131,7 +147,6 @@ public class SimulationPresenter implements MapChangeListener {
         cellHeight = min(200, Math.round((float) stage.getHeight() / (2*(height + 2))));
 
     }
-
     private void clearGrid() {
         mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
         mapGrid.getColumnConstraints().clear();
@@ -164,15 +179,23 @@ public class SimulationPresenter implements MapChangeListener {
         }
     }
 
-    private void addElementsToMap() {
+    private void mapInit() {
+        setXYLabel();
+        setLabelsOx();
+        setLabelsOy();
         int emptyFields = 0;
+        for(int i = 0; i <= height; ++i)  {
+            mapCells.add(new ArrayList<MapCell>(width));
+        }
         for (int i = 0; i <= width; ++i) {
             for (int j = 0; j <= height; ++j) {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
 //                    var label = new Label(element.toString());
 
                 if(worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)){
-                    mapGrid.add(new MapCell(cellWidth, cellHeight).turnToWater(), i + 1, height - j + 1);
+                    var mc = new MapCell(cellWidth, cellHeight).turnToWater();
+                    mapGrid.add(mc, i + 1, height - j + 1);
+                    mapCells.get(i).add(j, mc);
                     continue;
                 }
                     var mc = new MapCell(cellWidth, cellHeight);
@@ -198,7 +221,7 @@ public class SimulationPresenter implements MapChangeListener {
                     }
 
                 mapGrid.add(mc, i + 1, height - j + 1);
-
+                mapCells.get(i).add(j, mc);
 
 
                     //GridPane.setHalignment(label, HPos.CENTER);
@@ -216,14 +239,42 @@ public class SimulationPresenter implements MapChangeListener {
         simulation.toggle();
     }
 
+    public void updateMap(){
+        for (int i = 0; i <= width; ++i) {
+            for (int j = 0; j <= height; ++j) {
+                Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
+//                    var label = new Label(element.toString());
+                var currentCell = mapCells.get(i).get(j);
+                currentCell.reset();
+                if(worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)){
+                    currentCell.turnToWater();
+                }
+                if(worldMap.isAnimalAt(positionToCheck)) {
+                    Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
+                    currentCell.addAnimal(false, animal, this);
+
+
+
+                    if(showDominatingGenome.isSelected() && statistics.getMostPopularGenomes().contains(animal.getGenome())){
+                        currentCell.higlightAnimal();
+                    }
+                    if(animal == selectedAnimal){
+                        currentCell.selectAnimal();
+                    }
+                }
+                if(worldMap.isGrassAt(positionToCheck)){
+                    currentCell.addGrass();
+                }
+
+                if(showLikedFieldsGrass.isSelected() && height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)){
+                    System.out.println("highlighted");
+                    currentCell.higlightCell();
+                }
+            }
+        }
+    }
     public void drawMap(String input) {
-        clearGrid();
-        updateStoredConstraints();
-        setXYLabel();
-        setLabelsOx();
-        setLabelsOy();
-        addElementsToMap();
-        mapGrid.setPrefSize(stage.getX()/2, stage.getY()/2);
+        updateMap();
         infolabel.setText(input);
     }
 
@@ -279,10 +330,5 @@ public class SimulationPresenter implements MapChangeListener {
 
     public void setSelectedAnimal(Animal selectedAnimal) {
         this.selectedAnimal = selectedAnimal;
-    }
-
-
-    private void saveLogsToFile(){
-
     }
 }
