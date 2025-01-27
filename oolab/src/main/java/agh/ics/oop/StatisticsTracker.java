@@ -76,7 +76,7 @@ public class StatisticsTracker {
         String tmp = "[";
 
         for(Integer i : genome) {
-            tmp = tmp + i + ",";
+            tmp = tmp + i + ".";
         }
 
         tmp += "]";

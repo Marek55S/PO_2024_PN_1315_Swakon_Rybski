@@ -330,5 +330,7 @@ public class SimulationPresenter implements MapChangeListener {
 
     public void setSelectedAnimal(Animal selectedAnimal) {
         this.selectedAnimal = selectedAnimal;
+        updateSingleAnimalStatistics();
+        updateMap();
     }
 }

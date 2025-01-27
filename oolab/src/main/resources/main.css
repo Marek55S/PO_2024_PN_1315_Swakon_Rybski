@@ -1,0 +1,263 @@
+/* General settings for the root pane */
+.root {
+    -fx-font-family: 'Arial', sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f9f9f9;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-padding: 8px 16px;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #cccccc;
+}
+
+.button:pressed {
+    -fx-background-color: #eeeeee;
+    -fx-effect: none;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #555555;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 10px;
+}
+
+.text-field:focused {
+    -fx-border-color: #0078d7;
+    -fx-background-color: #ffffff;
+}
+
+/* Checkboxes */
+.check-box {
+    -fx-text-fill: #333333;
+}
+
+.check-box:selected {
+    -fx-mark-color: #0078d7;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f4f4f4;
+}
+
+/* Tabs */
+.tab-pane {
+    -fx-tab-min-width: 100px;
+    -fx-tab-max-width: 200px;
+    -fx-tab-min-height: 30px;
+    -fx-tab-close-button-visible: false;
+}
+
+.tab {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent;
+}
+
+.tab:selected {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #dddddd;
+}
+
+/* TableView */
+.table-view {
+    -fx-border-color: #dddddd;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #dddddd;
+}
+
+.table-view .cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+}
+
+.table-view .cell:selected {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: #ffffff;
+}
+
+/* ProgressBar */
+.progress-bar {
+    -fx-accent: #0078d7;
+    -fx-background-color: #e6e6e6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+/* Tooltips */
+.tooltip {
+    -fx-background-color: #333333;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 8px;
+    -fx-background-radius: 4px;
+}
+
+/* Spinners */
+.spinner {
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px;
+    -fx-background-color: #ffffff;
+}
+
+/* Spinner Arrow Buttons */
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-padding: 4px;
+    -fx-background-radius: 4px;
+}
+
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #f4f4f4;
+}
+
+.spinner .increment-arrow-button:pressed,
+.spinner .decrement-arrow-button:pressed {
+    -fx-background-color: #eeeeee;
+}
+
+/* Spinner Text Field */
+.spinner .text-field {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-border-color: transparent;
+    -fx-padding: 6px;
+    -fx-alignment: center;
+}
+/* ComboBox base styling */
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 4px;
+    -fx-pref-width: 150px; /* Adjust width as needed */
+}
+
+.combo-box:hover {
+    -fx-border-color: #cccccc;
+}
+
+.combo-box:focused {
+    -fx-border-color: #0078d7;
+    -fx-background-color: #ffffff;
+}
+
+/* ComboBox arrow button */
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+
+.combo-box .arrow-button:hover {
+    -fx-background-color: #f4f4f4;
+}
+
+.combo-box .arrow-button:pressed {
+    -fx-background-color: #eeeeee;
+}
+
+/* ComboBox popup list */
+.combo-box-popup {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+}
+
+/* ComboBox list cells (items in dropdown) */
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+    -fx-padding: 6px;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f4f4f4;
+}
+
+.combo-box .list-cell:selected {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: #ffffff;
+}
+
+/* ChoiceBox base styling */
+.choice-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 4px;
+    -fx-pref-width: 150px; /* Adjust width as needed */
+}
+
+.choice-box:hover {
+    -fx-border-color: #cccccc;
+}
+
+.choice-box:focused {
+    -fx-border-color: #0078d7;
+    -fx-background-color: #ffffff;
+}
+
+/* ChoiceBox popup list */
+.choice-box-popup {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+}
+
+/* ChoiceBox list cells (items in dropdown) */
+.choice-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+    -fx-padding: 6px;
+}
+
+.choice-box .list-cell:hover {
+    -fx-background-color: #f4f4f4;
+}
+
+.choice-box .list-cell:selected {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: #ffffff;
+}

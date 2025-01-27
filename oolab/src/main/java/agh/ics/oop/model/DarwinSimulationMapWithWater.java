@@ -56,10 +56,6 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     }
     
 
-    @Override
-    public boolean isOccupied(Vector2d position) {
-        return super.isOccupied(position);
-    }
 
     public void inflow(int inflowStep){
         drownedAnimals = new ArrayList<Animal>();

@@ -82,20 +82,6 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return dayCounter;
     }
 
-    public void place(Vector2d animalProposedLocalisation, SimulationOptions options) throws IncorrectPositionException {
-        var animal = createAnimal(options, animalProposedLocalisation);
-        if (canMoveTo(animalProposedLocalisation)) {
-            if (!animals.containsKey(animalProposedLocalisation)) {
-                animals.put(animalProposedLocalisation, new LinkedList<>());
-            }
-            animals.get(animalProposedLocalisation).add(animal);
-            System.out.println(animal.getEnergy());
-            notifyObservers(String.format("Animal was placed at %s", animalProposedLocalisation));
-        } else {
-            throw new IncorrectPositionException((animal.getPosition()));
-        }
-    }
-
 
     public void growGrass(int grassCount){
         int grassOnEquator = (int) Math.round(grassCount * 0.8);
@@ -321,19 +307,12 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return animals.containsKey(position) && animals.get(position) != null && !animals.get(position).isEmpty();
     }
     public void nextDay(){
-        System.out.println("Remove dead");
         removeDeadAnimals();
-        System.out.println("Move all");
         moveAllAnimals();
-        System.out.println("Eat grass");
         eatGrass(plantEnergy);
-        System.out.println("Reproduce");
         reproduceAnimals();
-        System.out.println("Grow grass");
         growGrass(everydayPlantGrowth);
-        System.out.println("Take energy");
         takeEnergyFromAnimals(5);
-        System.out.println("Update stats");
         updateStatistics();
         dayCounter++;
 

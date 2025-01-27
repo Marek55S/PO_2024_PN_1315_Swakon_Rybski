@@ -68,7 +68,6 @@ public class MapCell extends StackPane {
             energyColor = Color.RED;
         }
         this.animal.setOnMouseClicked(mouseEvent -> {sim.setSelectedAnimal(animal);
-            System.out.println("Someone touched meeeee");
             this.animal.setFill(Color.YELLOW);});
 
         this.animal.setVisible(true);
