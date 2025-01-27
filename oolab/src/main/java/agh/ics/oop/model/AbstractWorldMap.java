@@ -15,7 +15,7 @@ public abstract class AbstractWorldMap implements WorldMap {
     public static final Random GENERATOR = new Random();
 
 
-    public AbstractWorldMap(int width,int height,int mapId) {
+    public AbstractWorldMap(int width, int height, int mapId) {
 
         visualizer = new MapVisualizer(this);
         animals = new HashMap<>();
@@ -38,7 +38,6 @@ public abstract class AbstractWorldMap implements WorldMap {
             observer.mapChanged(this, message);
         }
     }
-
 
 
     @Override
@@ -81,7 +80,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     protected List<Integer> generateGenome(int length) {
         List<Integer> genome = new ArrayList<>();
-        for(int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             genome.add(GENERATOR.nextInt(8));
         }
         return genome;
@@ -133,7 +132,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         return animals.values().stream()
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing((Animal animal) -> animal.getPosition().getX())
-                .thenComparing(animal -> animal.getPosition().getY())).toList();
+                        .thenComparing(animal -> animal.getPosition().getY())).toList();
     }
 
     public List<Animal> getOrderedByEnergyAnimals() {

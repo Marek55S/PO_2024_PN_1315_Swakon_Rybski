@@ -1,4 +1,4 @@
-package agh.ics.oop.utils;
+package agh.ics.oop.utils;  // model?
 
 public enum MutationVariants {
     STANDARD_MUTATION,

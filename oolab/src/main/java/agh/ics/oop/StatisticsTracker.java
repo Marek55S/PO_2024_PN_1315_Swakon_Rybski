@@ -73,9 +73,9 @@ public class StatisticsTracker {
     }
 
     public String genomeToString(List<Integer> genome) {
-        String tmp = "[";
+        String tmp = "["; // tmp? String?
 
-        for(Integer i : genome) {
+        for (Integer i : genome) {
             tmp = tmp + i + ",";
         }
 

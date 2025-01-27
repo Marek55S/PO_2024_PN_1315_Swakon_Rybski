@@ -7,12 +7,12 @@ import java.util.*;
 public class Animal implements WorldElement {
     private MapDirection facingDirection;
     private Vector2d localizationOnMap;
-    private final List<Integer> genome = new ArrayList<>();
+    private final List<Integer> genome = new ArrayList<>(); // nie przydałaby się osobna klasa?
     private int currentGenomeIndex = 0;
     public static final Random RANDOM = new Random();
     private int kidsCount = 0;
     private int age = 0;
-    private final List<Animal> children = new ArrayList<>();
+    private final List<Animal> children = new ArrayList<>(); // używanie synonimów nie jest polecane: albo kids, albo children
     private final Set<Animal> descendants = new HashSet<>();
     private final Animal parent1;
     private final Animal parent2;
@@ -22,7 +22,7 @@ public class Animal implements WorldElement {
 
     // all this static values should be moved to the configuration file
     protected int newbornsEnergy = 100;
-    protected  int energyToReproduce = 100;
+    protected int energyToReproduce = 100;
     protected int genomeLength = 8;
     protected int maxMutation = 3;
     private int energy = newbornsEnergy;
@@ -44,8 +44,8 @@ public class Animal implements WorldElement {
         this.parent2 = parent2;
     }
 
-    public Animal(Vector2d localizationOnMap, List<Integer> genome, SimulationOptions options){
-        this(localizationOnMap, genome, null,null);
+    public Animal(Vector2d localizationOnMap, List<Integer> genome, SimulationOptions options) {
+        this(localizationOnMap, genome, null, null);
         this.localizationOnMap = localizationOnMap;
         this.genome.addAll(genome);
         energyToReproduce = options.reproductionEnergy();
@@ -62,39 +62,38 @@ public class Animal implements WorldElement {
         return facingDirection;
     }
 
-    private Vector2d moveOnBorders(Vector2d unitMove,AbstractWorldMap map){
+    private Vector2d moveOnBorders(Vector2d unitMove, AbstractWorldMap map) {
         var newLoc = localizationOnMap.add(unitMove);
-        if(newLoc.getX()<0){
+        if (newLoc.getX() < 0) {
             newLoc = new Vector2d(map.getCurrentBounds().upperRight().getX(), newLoc.getY());
-        }
-        else if(newLoc.getX()>map.getCurrentBounds().upperRight().getX()){
+        } else if (newLoc.getX() > map.getCurrentBounds().upperRight().getX()) {
             newLoc = new Vector2d(0, newLoc.getY());
         }
         if (!newLoc.precedes(map.getCurrentBounds().upperRight()) || !newLoc.follows(map.getCurrentBounds().lowerLeft())) {
-        this.rotateAnimal(4);
-        newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
+            this.rotateAnimal(4);
+            newLoc = new Vector2d(newLoc.getX(), localizationOnMap.getY());
         }
         return newLoc;
     }
 
-    private void rotateAnimal(int rotation){
-        for(int i = 0; i < rotation; i++){
+    private void rotateAnimal(int rotation) {
+        for (int i = 0; i < rotation; i++) {
             facingDirection = facingDirection.next();
         }
     }
 
-    private void moveForward(AbstractWorldMap validator){
+    private void moveForward(AbstractWorldMap validator) {
         var newLoc = moveOnBorders(facingDirection.toUnitVector(), validator);
         if (validator.canMoveTo(newLoc)) {
             localizationOnMap = newLoc;
         }
     }
 
-    public void moveByGenome(AbstractWorldMap validator){
+    public void moveByGenome(AbstractWorldMap validator) {
         var rotation = genome.get(currentGenomeIndex);
         rotateAnimal(rotation);
         moveForward(validator);
-        currentGenomeIndex = (currentGenomeIndex+1)% genomeLength;
+        currentGenomeIndex = (currentGenomeIndex + 1) % genomeLength;
     }
 
     @Override
@@ -136,54 +135,55 @@ public class Animal implements WorldElement {
             case NORTH_EAST -> "animal_ru.png";
             case SOUTH_WEST -> "animal_ld.png";
             case NORTH_WEST -> "animal_lu.png";
-            case SOUTH_EAST ->  "animal_rd.png";
+            case SOUTH_EAST -> "animal_rd.png";
         };
     }
 
     // method mostly for eating grass
-    public void addEnergy(int energy){
+    public void addEnergy(int energy) {
         this.energy += energy;
     }
 
-    public void subtractEnergy(int energy){
+    public void subtractEnergy(int energy) {
         this.energy -= energy;
         age++;
     }
-    public int getEnergy(){
+
+    public int getEnergy() {
         return energy;
     }
 
-    public boolean canReproduce(){
+    public boolean canReproduce() {
         return energy >= energyToReproduce;
     }
 
-    public List<Integer> getGenome(){
+    public List<Integer> getGenome() {
         return Collections.unmodifiableList(genome);
     }
 
     // method for mutation of the genome, each gene can be mutated more than once
-    protected void mutateGenome(List<Integer> genomeToMutate){
-        for (int i = 0; i < RANDOM.nextInt(maxMutation); i++){
-            if(RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(genomeLength), RANDOM.nextInt(8));
+    protected void mutateGenome(List<Integer> genomeToMutate) {
+        for (int i = 0; i < RANDOM.nextInt(maxMutation); i++) {
+            if (RANDOM.nextBoolean()) genomeToMutate.set(RANDOM.nextInt(genomeLength), RANDOM.nextInt(8));
         }
     }
 
 
-    public void addChildren(Animal child){
+    public void addChildren(Animal child) {
         kidsCount++;
         children.add(child);
         addDescendant(child);
     }
 
-    public int getChildrenCount(){
+    public int getChildrenCount() {
         return kidsCount;
     }
 
-    public int  getTotalDescendantsCount(){
+    public int getTotalDescendantsCount() {
         return descendants.size();
     }
 
-    public List<Animal> getChildren(){
+    public List<Animal> getChildren() {
         return Collections.unmodifiableList(children);
     }
 
@@ -202,16 +202,15 @@ public class Animal implements WorldElement {
 
 
     // should be another method for different types of mutations
-    public Animal reproduce(Animal partner){
+    public Animal reproduce(Animal partner) {
         List<Integer> newGenome = new ArrayList<>();
-        double energyFactor = (double) this.energy /(this.energy + partner.energy);
+        double energyFactor = (double) this.energy / (this.energy + partner.energy);
         int splitIndex = (int) Math.round(genomeLength * energyFactor);
         int reproduceEnergy = (int) Math.round(energyFactor * energyToReproduce);
-        if(RANDOM.nextInt(2) == 0){
+        if (RANDOM.nextInt(2) == 0) {
             newGenome.addAll(this.genome.subList(0, splitIndex));
             newGenome.addAll(partner.genome.subList(splitIndex, genomeLength));
-        }
-        else{
+        } else {
             newGenome.addAll(partner.genome.subList(0, splitIndex));
             newGenome.addAll(this.genome.subList(splitIndex, genomeLength));
         }
@@ -219,22 +218,22 @@ public class Animal implements WorldElement {
         partner.subtractEnergy(energyToReproduce - reproduceEnergy);
         mutateGenome(newGenome);
 
-        var child = new Animal(this.localizationOnMap, newGenome,this,partner);
+        var child = new Animal(this.localizationOnMap, newGenome, this, partner);
         addChildren(child);
         partner.addChildren(child);
 
         return child;
     }
 
-    public int getCurrentGenomeIndex(){
+    public int getCurrentGenomeIndex() {
         return currentGenomeIndex;
     }
 
-    public void setDayOfDeath(int dayOfDeath){
+    public void setDayOfDeath(int dayOfDeath) {
         this.dayOfDeath = Optional.of(dayOfDeath);
     }
 
-    public Optional<Integer> getDayOfDeath(){
+    public Optional<Integer> getDayOfDeath() {
         return dayOfDeath;
     }
 

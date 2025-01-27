@@ -1,6 +1,6 @@
 package agh.ics.oop.model;
 
-public class Water implements WorldElement{
+public class Water implements WorldElement {
     private final Vector2d position;
 
     public Water(Vector2d position) {

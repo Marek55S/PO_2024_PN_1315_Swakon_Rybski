@@ -56,5 +56,6 @@ public interface WorldMap extends agh.ics.oop.model.MoveValidator {
     StatisticsTracker getStatistics();
 
     boolean isAnimalAt(Vector2d position);
+
     boolean isGrassAt(Vector2d position);
 }

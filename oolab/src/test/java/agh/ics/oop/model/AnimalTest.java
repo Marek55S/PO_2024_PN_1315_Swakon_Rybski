@@ -11,7 +11,7 @@ public class AnimalTest {
     @Test
     void animalIsProperlyOrientedWhenCreated() {
 
-        var testAnimal = new Animal(new Vector2d(2, 2), List.of(0, 1, 2, 3, 4, 5, 6, 7),null,null,MapDirection.NORTH);
+        var testAnimal = new Animal(new Vector2d(2, 2), List.of(0, 1, 2, 3, 4, 5, 6, 7), null, null, MapDirection.NORTH);
 
         Assertions.assertEquals(MapDirection.NORTH, testAnimal.getFacingDirection());
     }
@@ -20,8 +20,8 @@ public class AnimalTest {
     @Test
     void animalTeleportsOnXAxis() {
         var startingPositionX = new Vector2d(3, 2);
-        var genome = List.of(2,4,0,0,0,0,0,0);
-        var animalX = new Animal(startingPositionX,genome,null,null,MapDirection.NORTH);
+        var genome = List.of(2, 4, 0, 0, 0, 0, 0, 0);
+        var animalX = new Animal(startingPositionX, genome, null, null, MapDirection.NORTH);
 
         animalX.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
@@ -30,24 +30,24 @@ public class AnimalTest {
     }
 
     @Test
-    void animalTeleportsAndMoves(){
+    void animalTeleportsAndMoves() {
         var startingPositionX = new Vector2d(3, 1);
-        var genome = List.of(1,4,0,0,0,0,0,0);
-        var animalX = new Animal(startingPositionX,genome,null,null,MapDirection.NORTH);
+        var genome = List.of(1, 4, 0, 0, 0, 0, 0, 0);
+        var animalX = new Animal(startingPositionX, genome, null, null, MapDirection.NORTH);
 
-        animalX.moveByGenome( validator);
+        animalX.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(0, 2), animalX.getPosition());
 
-        animalX.moveByGenome( validator);
+        animalX.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(3, 1), animalX.getPosition());
     }
 
     @Test
     void animalRotatesOnUpperYAxis() {
         var startingPositionY = new Vector2d(2, 3);
-        var genome = List.of(0,0,0,0,0,0,0,0);
-        var animalY = new Animal(startingPositionY,genome,null,null,MapDirection.NORTH);
-        animalY.moveByGenome( validator);
+        var genome = List.of(0, 0, 0, 0, 0, 0, 0, 0);
+        var animalY = new Animal(startingPositionY, genome, null, null, MapDirection.NORTH);
+        animalY.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(2, 3), animalY.getPosition());
         Assertions.assertEquals(MapDirection.SOUTH, animalY.getFacingDirection());
     }
@@ -55,17 +55,16 @@ public class AnimalTest {
     @Test
     void animalRotatesOnLowerYAxis() {
         var bottomPosition = new Vector2d(2, 0);
-        var genome = List.of(4,0,0,0,0,0,0,0);
-        var animalBottom = new Animal(bottomPosition,genome,null,null,MapDirection.NORTH);
+        var genome = List.of(4, 0, 0, 0, 0, 0, 0, 0);
+        var animalBottom = new Animal(bottomPosition, genome, null, null, MapDirection.NORTH);
         animalBottom.moveByGenome(validator);
         Assertions.assertEquals(new Vector2d(2, 0), animalBottom.getPosition());
         Assertions.assertEquals(MapDirection.NORTH, animalBottom.getFacingDirection());
     }
 
 
-
     @Test
-    void childGenomeCorrectRange(){
+    void childGenomeCorrectRange() {
         //given
         List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
         Animal parent1 = new Animal(new Vector2d(2, 2), genome);
@@ -82,7 +81,7 @@ public class AnimalTest {
 
 
     @Test
-    void reproductionEnergyAndGenomeSize(){
+    void reproductionEnergyAndGenomeSize() {
         //given
         Animal parent1 = new Animal(new Vector2d(0, 0), List.of(0, 1, 2, 3, 4, 5, 6, 7));
         Animal parent2 = new Animal(new Vector2d(0, 0), List.of(7, 6, 5, 4, 3, 2, 1, 0));
@@ -92,18 +91,18 @@ public class AnimalTest {
 
         //then
         Assertions.assertEquals(parent1.genomeLength, child.getGenome().size());
-        Assertions.assertEquals(parent1.newbornsEnergy,child.getEnergy());
+        Assertions.assertEquals(parent1.newbornsEnergy, child.getEnergy());
         Assertions.assertEquals(50, parent1.getEnergy());
         Assertions.assertEquals(50, parent2.getEnergy());
     }
 
     @Test
-    void addAndSubstractEnergy(){
+    void addAndSubstractEnergy() {
         //given
         var genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
         var position = new Vector2d(2, 2);
-        Animal testAnimal1 = new Animal(position,genome);
-        Animal testAnimal2 = new Animal(position,genome);
+        Animal testAnimal1 = new Animal(position, genome);
+        Animal testAnimal2 = new Animal(position, genome);
         //when
         testAnimal1.addEnergy(10);
         testAnimal2.subtractEnergy(10);
@@ -113,12 +112,12 @@ public class AnimalTest {
     }
 
     @Test
-    void canAnimalReproduce(){
+    void canAnimalReproduce() {
         //given
         var genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
         var position = new Vector2d(2, 2);
-        Animal testAnimal1 = new Animal(position,genome);
-        Animal testAnimal2 = new Animal(position,genome);
+        Animal testAnimal1 = new Animal(position, genome);
+        Animal testAnimal2 = new Animal(position, genome);
 
         //when
         testAnimal1.addEnergy(testAnimal1.energyToReproduce);
@@ -130,7 +129,7 @@ public class AnimalTest {
     }
 
     @Test
-    void animalMovesByGenome(){
+    void animalMovesByGenome() {
         // given
         List<Integer> genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
         Animal testAnimal = new Animal(new Vector2d(2, 2), genome, null, null, MapDirection.NORTH);
@@ -155,7 +154,7 @@ public class AnimalTest {
     }
 
     @Test
-    void rotateAnimalByGenome(){
+    void rotateAnimalByGenome() {
         var validator = new DarwinSimulationMap(10, 10, 0);
         var genome = List.of(0, 1, 2, 3, 4, 5, 6, 7);
         var testAnimal = new Animal(new Vector2d(5, 5), genome);
@@ -210,7 +209,7 @@ public class AnimalTest {
     }
 
     @Test
-    void childrenAndDescendantsCount(){
+    void childrenAndDescendantsCount() {
         var Animal1 = new Animal(new Vector2d(2, 2), List.of(0, 1, 2, 3, 4, 5, 6, 7));
         var Animal2 = new Animal(new Vector2d(2, 2), List.of(0, 1, 2, 3, 4, 5, 6, 7));
 
@@ -231,7 +230,7 @@ public class AnimalTest {
         Assertions.assertEquals(1, child1.getTotalDescendantsCount());
         Assertions.assertEquals(3, Animal1.getChildrenCount());
         Assertions.assertEquals(4, Animal1.getTotalDescendantsCount());
-        for(Animal child : Animal1.getChildren()){
+        for (Animal child : Animal1.getChildren()) {
             System.out.println(child);
         }
     }

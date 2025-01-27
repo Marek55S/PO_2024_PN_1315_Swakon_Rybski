@@ -92,9 +92,9 @@ public class SimulationPresenter implements MapChangeListener {
         this.stage = stage;
         this.saveLogs = saveLogs;
         this.logsLoc = logsLoc;
-        if(saveLogs){
+        if (saveLogs) {
             simWriter = new SimulationOptionsToFile();
-            try{
+            try {
                 simWriter.writeSimulationLogHeaderToFile(logsLoc.getPath());
             } catch (IOException e) {
                 infolabel.setText("Failed to create simulation log file");
@@ -107,6 +107,7 @@ public class SimulationPresenter implements MapChangeListener {
 
         this.simulation = simulation;
     }
+
     public void setWorldMap(AbstractWorldMap map) {
         if (worldMap != null) {
             worldMap.removeObserver(this);
@@ -127,8 +128,8 @@ public class SimulationPresenter implements MapChangeListener {
         width = maxX - minX;
         height = maxY - minY;
 
-        cellWidth = min(200,Math.round((float) stage.getWidth()/ (2*(width + 2))));
-        cellHeight = min(200, Math.round((float) stage.getHeight() / (2*(height + 2))));
+        cellWidth = min(200, Math.round((float) stage.getWidth() / (2 * (width + 2))));
+        cellHeight = min(200, Math.round((float) stage.getHeight() / (2 * (height + 2))));
 
     }
 
@@ -171,37 +172,35 @@ public class SimulationPresenter implements MapChangeListener {
                 Vector2d positionToCheck = new Vector2d(i + minX, j + minY);
 //                    var label = new Label(element.toString());
 
-                if(worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)){
+                if (worldMap instanceof DarwinSimulationMapWithWater && ((DarwinSimulationMapWithWater) worldMap).isWaterAt(positionToCheck)) {
                     mapGrid.add(new MapCell(cellWidth, cellHeight).turnToWater(), i + 1, height - j + 1);
                     continue;
                 }
-                    var mc = new MapCell(cellWidth, cellHeight);
-                    if(worldMap.isAnimalAt(positionToCheck)) {
-                        Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
-                        mc.addAnimal(false, animal, this);
+                var mc = new MapCell(cellWidth, cellHeight);
+                if (worldMap.isAnimalAt(positionToCheck)) {
+                    Animal animal = (Animal) worldMap.objectAt(positionToCheck).get();
+                    mc.addAnimal(false, animal, this);
 
 
-
-                        if(showDominatingGenome.isSelected() && statistics.getMostPopularGenomes().contains(animal.getGenome())){
-                            mc.higlightAnimal();
-                        }
-                        if(animal == selectedAnimal){
-                            mc.selectAnimal();
-                        }
+                    if (showDominatingGenome.isSelected() && statistics.getMostPopularGenomes().contains(animal.getGenome())) {
+                        mc.higlightAnimal();
                     }
-                    if(worldMap.isGrassAt(positionToCheck)){
-                        mc.addGrass();
+                    if (animal == selectedAnimal) {
+                        mc.selectAnimal();
                     }
+                }
+                if (worldMap.isGrassAt(positionToCheck)) {
+                    mc.addGrass();
+                }
 
-                    if(showLikedFieldsGrass.isSelected() && height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)){
-                        mc.higlightCell();
-                    }
+                if (showLikedFieldsGrass.isSelected() && height / 2 - (int) (0.1 * height) <= j && j <= height / 2 + (int) (0.1 * height)) {
+                    mc.higlightCell();
+                }
 
                 mapGrid.add(mc, i + 1, height - j + 1);
 
 
-
-                    //GridPane.setHalignment(label, HPos.CENTER);
+                //GridPane.setHalignment(label, HPos.CENTER);
 
             }
         }
@@ -209,10 +208,9 @@ public class SimulationPresenter implements MapChangeListener {
         statistics.setEmptyFieldsCount(emptyFields);
 
 
-
     }
 
-    public void toggleRunning(ActionEvent actionEvent){
+    public void toggleRunning(ActionEvent actionEvent) {
         simulation.toggle();
     }
 
@@ -223,16 +221,16 @@ public class SimulationPresenter implements MapChangeListener {
         setLabelsOx();
         setLabelsOy();
         addElementsToMap();
-        mapGrid.setPrefSize(stage.getX()/2, stage.getY()/2);
+        mapGrid.setPrefSize(stage.getX() / 2, stage.getY() / 2);
         infolabel.setText(input);
     }
 
-    public void updateStatistics(){
+    public void updateStatistics() {
         animalsCountLabel.setText(String.format("Animals count: %d", statistics.getAnimalsCount()));
         plantsCountLabel.setText(String.format("Plants count: %d", statistics.getGrassCount()));
         freeFieldsCount.setText(String.format("Free Fields: %d", statistics.getEmptyFieldsCount()));
         String genotypes = "";
-        for(var genotype : statistics.getMostPopularGenomes()){
+        for (var genotype : statistics.getMostPopularGenomes()) {
             genotypes += statistics.genomeToString(genotype) + "\n";
         }
         mostPopularGenotypes.setText("Most popular genotypes: " + genotypes);
@@ -240,7 +238,7 @@ public class SimulationPresenter implements MapChangeListener {
         averageLifespan.setText(" ");
         averageKidsAmount.setText(" ");
 
-        if(saveLogs){
+        if (saveLogs) {
             try {
                 simWriter.writeSimulationLogToFile(statistics.getDay(), statistics, logsLoc.getPath());
             } catch (IOException e) {
@@ -249,15 +247,15 @@ public class SimulationPresenter implements MapChangeListener {
         }
     }
 
-    public void updateSingleAnimalStatistics(){
-        if(selectedAnimal != null){
+    public void updateSingleAnimalStatistics() {
+        if (selectedAnimal != null) {
             singleAnimal.setVisible(true);
             animalEnergy.setText(String.format("Animals energy: %d", selectedAnimal.getEnergy()));
             animalGenom.setText(String.format("Animals genome: %s", statistics.genomeToString(selectedAnimal.getGenome())));
             animalGenomActivated.setText(String.format("Animals activated gene: %d", selectedAnimal.getCurrentGenomeIndex()));
             animalChildrenCount.setText(String.format("Animals childrens: %d", selectedAnimal.getChildrenCount()));
             animalDescendants.setText(String.format("Animals descendants: %d", selectedAnimal.getTotalDescendantsCount()));
-            if(selectedAnimal.getDayOfDeath().isPresent()){
+            if (selectedAnimal.getDayOfDeath().isPresent()) {
                 animalDaysAlive.setText(String.format("Animal death: %d", selectedAnimal.getDayOfDeath().get()));
             } else {
                 animalDaysAlive.setText(String.format("Animal is alive for: %d", selectedAnimal.getAge()));
@@ -282,7 +280,7 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
 
-    private void saveLogsToFile(){
-
+    private void saveLogsToFile() {
+        // pusto tu
     }
 }

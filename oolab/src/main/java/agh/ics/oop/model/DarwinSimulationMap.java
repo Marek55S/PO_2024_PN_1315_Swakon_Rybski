@@ -22,7 +22,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     protected int plantEnergy = 15;
     private int everydayPlantGrowth = 5;
 
-    public DarwinSimulationMap( int width,int height,int mapId) {
+    public DarwinSimulationMap(int width, int height, int mapId) {
         super(width, height, mapId);
         grasses = new HashMap<>();
         animals = new HashMap<>();
@@ -31,7 +31,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         // not exacly 20% of the map
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)) {
+                if (height / 2 - (int) (0.1 * height) <= j && j <= height / 2 + (int) (0.1 * height)) {
                     equatorFreePositions.add(new Vector2d(i, j));
                 } else {
                     otherFreePositions.add(new Vector2d(i, j));
@@ -41,7 +41,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         this.growGrass(10);
     }
 
-    public DarwinSimulationMap( SimulationOptions options,int mapId) {
+    public DarwinSimulationMap(SimulationOptions options, int mapId) {
         super(options.simulationWidth(), options.simulationHeigth(), mapId);
         int width = options.simulationWidth();
         int height = options.simulationHeigth();
@@ -54,7 +54,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         // not exacly 20% of the map
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (height / 2 - (int)(0.1*height) <= j && j <= height / 2 + (int)(0.1*height)) {
+                if (height / 2 - (int) (0.1 * height) <= j && j <= height / 2 + (int) (0.1 * height)) {
                     equatorFreePositions.add(new Vector2d(i, j));
                 } else {
                     otherFreePositions.add(new Vector2d(i, j));
@@ -78,11 +78,11 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     }
 
 
-    public int getDayCounter(){
+    public int getDayCounter() {
         return dayCounter;
     }
 
-    public void place(Vector2d animalProposedLocalisation,SimulationOptions options) throws IncorrectPositionException {
+    public void place(Vector2d animalProposedLocalisation, SimulationOptions options) throws IncorrectPositionException {
         var animal = createAnimal(options, animalProposedLocalisation);
         if (canMoveTo(animalProposedLocalisation)) {
             if (!animals.containsKey(animalProposedLocalisation)) {
@@ -96,7 +96,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     }
 
 
-    public void growGrass(int grassCount){
+    public void growGrass(int grassCount) {
         int grassOnEquator = (int) Math.round(grassCount * 0.8);
         int grassOffEquator = grassCount - grassOnEquator;
 
@@ -148,7 +148,7 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     }
 
 
-    public void removeDeadAnimals(){
+    public void removeDeadAnimals() {
         List<Animal> deadAnimals = animals.values().stream()
                 .flatMap(Collection::stream)
                 .filter(animal -> animal.getEnergy() <= 0)
@@ -169,9 +169,9 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         });
     }
 
-    public void eatGrass(int grassEnergy){
-        for(Animal animal: super.getOrderedByEnergyAnimals()){
-            if(grasses.containsKey(animal.getPosition())){
+    public void eatGrass(int grassEnergy) {
+        for (Animal animal : super.getOrderedByEnergyAnimals()) {
+            if (grasses.containsKey(animal.getPosition())) {
                 animal.addEnergy(grassEnergy);
                 grasses.remove(animal.getPosition());
                 super.notifyObservers("Animal ate grass at position " + animal.getPosition());
@@ -180,8 +180,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
     }
 
 
-    public void reproduceAnimals(){
-        for(List<Animal> animalsAtPosition : animals.values()) {
+    public void reproduceAnimals() {
+        for (List<Animal> animalsAtPosition : animals.values()) {
             if (animalsAtPosition.size() >= 2) {
                 animalsAtPosition.sort(Comparator.comparing(Animal::getEnergy).reversed());
                 int i = 0;
@@ -193,27 +193,28 @@ public class DarwinSimulationMap extends AbstractWorldMap {
                         animals.get(child.getPosition()).add(child);
                         notifyObservers("Animal was born at position " + child.getPosition());
                     }
-                    i+=2;
+                    i += 2;
                 }
             }
-        }}
+        }
+    }
 
-    public void takeEnergyFromAnimals(int energy){
+    public void takeEnergyFromAnimals(int energy) {
         for (Animal animal : getOrderedByEnergyAnimals()) {
             animal.subtractEnergy(energy);
         }
     }
 
 
-    private List<List<Integer>> getMostPopularGenoms(){
+    private List<List<Integer>> getMostPopularGenoms() {
         Map<List<Integer>, Integer> genomCount = new HashMap<>();
 
         var maxGenomeCount = 0;
-        for(var animalList : animals.values()){
-            for(var animal : animalList){
-                if(!genomCount.containsKey(animal.getPosition())){
+        for (var animalList : animals.values()) {
+            for (var animal : animalList) {
+                if (!genomCount.containsKey(animal.getPosition())) {
                     genomCount.put(animal.getGenome(), 0);
-                }else{
+                } else {
                     var newCount = genomCount.get(animal.getPosition()) + 1;
                     genomCount.put(animal.getGenome(), newCount);
                     if (newCount > maxGenomeCount) {
@@ -225,8 +226,8 @@ public class DarwinSimulationMap extends AbstractWorldMap {
 
         List<List<Integer>> maxGenomes = new ArrayList<>();
 
-        for(var genome : genomCount.keySet()){
-            if(genomCount.get(genome).equals(maxGenomeCount)){
+        for (var genome : genomCount.keySet()) {
+            if (genomCount.get(genome).equals(maxGenomeCount)) {
                 maxGenomes.add(genome);
             }
         }
@@ -234,66 +235,66 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         return maxGenomes;
     }
 
-    private int getAnimalsCount(){
+    private int getAnimalsCount() {
         int animalsCount = 0;
-        for(var animalList : animals.values()){
-            for(var animal : animalList){
+        for (var animalList : animals.values()) {
+            for (var animal : animalList) {
                 animalsCount++;
             }
         }
         return animalsCount;
     }
 
-    private int getAverageEnergyLevel(){
+    private int getAverageEnergyLevel() {
         int energySum = 0;
         int animalsCount = 0;
-        for(var animalList : animals.values()){
-            for(var animal : animalList){
+        for (var animalList : animals.values()) {
+            for (var animal : animalList) {
                 animalsCount++;
                 energySum += animal.getEnergy();
             }
         }
 
-        return animalsCount>0 ? energySum / animalsCount:0;
+        return animalsCount > 0 ? energySum / animalsCount : 0;
     }
 
 
-    private int getAverageChildrenAmount(){
+    private int getAverageChildrenAmount() {
         int childrenAmount = 0;
         int animalsCount = 0;
-        for(var animalList : animals.values()){
-            for(var animal : animalList){
+        for (var animalList : animals.values()) {
+            for (var animal : animalList) {
                 animalsCount++;
                 childrenAmount += animal.getChildrenCount();
             }
         }
 
-        return animalsCount>0 ? childrenAmount / animalsCount: 0;
+        return animalsCount > 0 ? childrenAmount / animalsCount : 0;
     }
 
 
-    private int getEmptyFieldsCount(){
+    private int getEmptyFieldsCount() {
         int nonEmptyFieldsCount = 0;
-        for(int i = 0; i < super.mapBounds.upperRight().getX(); ++i){
-            for(int j = 0; j < super.mapBounds.upperRight().getY(); ++j){
-                if(isOccupied(new Vector2d(i,j))){
+        for (int i = 0; i < super.mapBounds.upperRight().getX(); ++i) {
+            for (int j = 0; j < super.mapBounds.upperRight().getY(); ++j) {
+                if (isOccupied(new Vector2d(i, j))) {
                     nonEmptyFieldsCount++;
                 }
             }
         }
 
-        return super.mapBounds.upperRight().getX()*super.mapBounds.upperRight().getY() - nonEmptyFieldsCount;
+        return super.mapBounds.upperRight().getX() * super.mapBounds.upperRight().getY() - nonEmptyFieldsCount;
     }
 
-    private int getAverageLifespan(){
-        if(deadAnimalsCount > 0){
-            return deadAnimalsLivesLengthSum/deadAnimalsCount;
-        } else{
+    private int getAverageLifespan() {
+        if (deadAnimalsCount > 0) {
+            return deadAnimalsLivesLengthSum / deadAnimalsCount;
+        } else {
             return 0;
         }
     }
 
-    public StatisticsTracker getStatistics(){
+    public StatisticsTracker getStatistics() {
         return this.statisticsTracker;
     }
 
@@ -308,17 +309,19 @@ public class DarwinSimulationMap extends AbstractWorldMap {
         statisticsTracker.setDay(dayCounter);
     }
 
-    public void removeGrass(Vector2d position){
+    public void removeGrass(Vector2d position) {
         grasses.remove(position);
     }
 
-    public boolean isGrassAt(Vector2d position){
+    public boolean isGrassAt(Vector2d position) {
         return grasses.containsKey(position);
     }
-    public boolean isAnimalAt(Vector2d position){
+
+    public boolean isAnimalAt(Vector2d position) {
         return animals.containsKey(position) && animals.get(position) != null && !animals.get(position).isEmpty();
     }
-    public void nextDay(){
+
+    public void nextDay() {
         removeDeadAnimals();
         moveAllAnimals();
         eatGrass(plantEnergy);

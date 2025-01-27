@@ -8,8 +8,7 @@ public enum MapDirection {
     SOUTH(new Vector2d(0, -1)),
     SOUTH_WEST(new Vector2d(-1, -1)),
     WEST(new Vector2d(-1, 0)),
-    NORTH_WEST(new Vector2d(-1, 1))
-    ;
+    NORTH_WEST(new Vector2d(-1, 1));
 
     final Vector2d vector2d;
 

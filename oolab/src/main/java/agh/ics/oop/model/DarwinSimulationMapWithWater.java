@@ -18,9 +18,9 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     public static final int WATER_CYCLE_DURATION = 20;
     public static final int WATER_STEP_DURATION = 5;
 
-    public DarwinSimulationMapWithWater(int width,int height, int mapId) {
-        super(width,height, mapId);
-        var tmpWater = new Water(new Vector2d(1,1));
+    public DarwinSimulationMapWithWater(int width, int height, int mapId) {
+        super(width, height, mapId);
+        var tmpWater = new Water(new Vector2d(1, 1));
         waters = new HashMap<>();
         waters.put(tmpWater.getPosition(), tmpWater);
         inflowedWaters = new HashMap<>();
@@ -28,7 +28,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
 
     public DarwinSimulationMapWithWater(SimulationOptions options, int mapId) {
         super(options, mapId);
-        var tmpWater = new Water(new Vector2d(1,1));
+        var tmpWater = new Water(new Vector2d(1, 1));
         waters = new HashMap<>();
         waters.put(tmpWater.getPosition(), tmpWater);
         inflowedWaters = new HashMap<>();
@@ -38,8 +38,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     public Optional<WorldElement> objectAt(Vector2d position) {
         if (waters.containsKey(position)) {
             return Optional.of(waters.get(position));
-        }
-        else if(inflowedWaters.containsKey(position)){
+        } else if (inflowedWaters.containsKey(position)) {
             return Optional.of(inflowedWaters.get(position));
         }
         return super.objectAt(position);
@@ -52,7 +51,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return super.canMoveTo(position) && !waters.containsKey(position)&& !inflowedWaters.containsKey(position);
+        return super.canMoveTo(position) && !waters.containsKey(position) && !inflowedWaters.containsKey(position);
     }
 
     @Override
@@ -65,27 +64,27 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
         return super.isOccupied(position);
     }
 
-    public void inflow(int inflowStep){
+    public void inflow(int inflowStep) {
         drownedAnimals = new ArrayList<Animal>();
         var allWater = getAllWaters();
-        for(var water : allWater){
-            for(var direction : MapDirection.values()){
+        for (var water : allWater) {
+            for (var direction : MapDirection.values()) {
                 var newPosition = water.getPosition().add(direction.toUnitVector());
-                if(objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Grass){
+                if (objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Grass) {
                     super.removeGrass(newPosition);
-                } else if(objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Animal){
+                } else if (objectAt(newPosition).isPresent() && objectAt(newPosition).get() instanceof Animal) {
                     drownedAnimals.addAll(animals.get(newPosition));
                 }
-                if(canMoveTo(newPosition)){
-                    inflowedWaters.put(newPosition,new WaterInflowed(newPosition, inflowStep));}
+                if (canMoveTo(newPosition)) {
+                    inflowedWaters.put(newPosition, new WaterInflowed(newPosition, inflowStep));
+                }
             }
 
         }
     }
 
 
-
-    public void outflow(int outflowStep){
+    public void outflow(int outflowStep) {
         var waterToRemove = inflowedWaters.values().stream()
                 .filter(water -> water.getInflowStep() == outflowStep)
                 .toList();
@@ -95,7 +94,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
 
 
     @Override
-    public void removeDeadAnimals(){
+    public void removeDeadAnimals() {
         super.removeDeadAnimals();
         drownedAnimals.forEach(animal -> {
             List<Animal> animalsAtPosition = animals.get(animal.getPosition());
@@ -110,13 +109,12 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
     }
 
     @Override
-    public void nextDay(){
+    public void nextDay() {
         if (dayCounter % WATER_STEP_DURATION == 0) {
-            if(dayCounter%WATER_CYCLE_DURATION < WATER_CYCLE_DURATION/2){
+            if (dayCounter % WATER_CYCLE_DURATION < WATER_CYCLE_DURATION / 2) {
                 currentCycleStep++;
                 inflow(currentCycleStep);
-            }
-            else{
+            } else {
                 outflow(currentCycleStep);
                 currentCycleStep--;
             }
@@ -129,7 +127,7 @@ public class DarwinSimulationMapWithWater extends DarwinSimulationMap {
                 .stream()).toList();
     }
 
-    public boolean isWaterAt(Vector2d position){
+    public boolean isWaterAt(Vector2d position) {
         return waters.containsKey(position) || inflowedWaters.containsKey(position);
     }
 }

@@ -46,7 +46,7 @@
     </right>
     <bottom>
         <HBox>
-        <Button fx:id="pauseButton" text="Pause" onAction="#toggleRunning"></Button>
+            <Button fx:id="pauseButton" text="Pause" onAction="#toggleRunning"></Button>
             <CheckBox fx:id="showLikedFieldsGrass" text="Grass Favoured Fields Visible"></CheckBox>
             <CheckBox fx:id="showDominatingGenome" text="Dominating Genome Visible"></CheckBox>
         </HBox>

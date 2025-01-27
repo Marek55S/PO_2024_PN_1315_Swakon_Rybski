@@ -75,67 +75,65 @@ public class MainWindowPresenter {
         mapVariantCB.getItems().addAll(MapTypes.values());
         mutationVariant.getItems().addAll(MutationVariants.values());
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
-        try{
-        SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
-        setInterfaceValues(options);
-        }
-        catch (CsvValidationException | IOException e) {
+        try {
+            SimulationOptions options = simulationOptionsToFile.readOptionsFromFile("default.csv");
+            setInterfaceValues(options);
+        } catch (CsvValidationException | IOException e) {
             displayError(ErrorMessages.DEFAULTS_LOADING);
         }
     }
 
-    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException{
+    public void onSimulationStartClicked(ActionEvent actionEvent) throws IOException {
 
         simulationOptions = generateSimulationOptions();
         //here some validation could be done
         if (true) {
-                Stage newStage = new Stage();
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-                loader.setControllerFactory(param -> {
-                    if (param == SimulationPresenter.class) {
-                        if(shouldSaveLogs.isSelected()) {
-                            return new SimulationPresenter(newStage, true, logsSavingLoc); // Pass Stage to the constructor
-                        } else {
-                            return new SimulationPresenter(newStage);
-                        }
+            Stage newStage = new Stage();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+            loader.setControllerFactory(param -> {
+                if (param == SimulationPresenter.class) {
+                    if (shouldSaveLogs.isSelected()) {
+                        return new SimulationPresenter(newStage, true, logsSavingLoc); // Pass Stage to the constructor
                     } else {
-                        try {
-                            return param.getDeclaredConstructor().newInstance();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
+                        return new SimulationPresenter(newStage);
                     }
-                });
-                BorderPane viewRoot = loader.load();
-                SimulationPresenter presenter = loader.getController();
-
-
-
-                configureStage(newStage, viewRoot);
-                newStage.show();
-                DarwinSimulationMap simulationMap;
-                if(simulationOptions.mapType() == MapTypes.NORMAL_MAP){
-                     simulationMap = new DarwinSimulationMap(simulationOptions.simulationWidth(),simulationOptions.simulationHeigth(), ids);
-                } else{
-                    simulationMap = new DarwinSimulationMapWithWater(simulationOptions.simulationWidth(),simulationOptions.simulationHeigth(), ids);
+                } else {
+                    try {
+                        return param.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) { // catch co?
+                        throw new RuntimeException(e);
+                    }
                 }
+            });
+            BorderPane viewRoot = loader.load();
+            SimulationPresenter presenter = loader.getController();
 
 
-                ids += 1;
+            configureStage(newStage, viewRoot);
+            newStage.show();
+            DarwinSimulationMap simulationMap;
+            if (simulationOptions.mapType() == MapTypes.NORMAL_MAP) {
+                simulationMap = new DarwinSimulationMap(simulationOptions.simulationWidth(), simulationOptions.simulationHeigth(), ids);
+            } else {
+                simulationMap = new DarwinSimulationMapWithWater(simulationOptions.simulationWidth(), simulationOptions.simulationHeigth(), ids);
+            }
 
 
-                //add randomness
-                var positions = List.of(new Vector2d(4,4), new Vector2d(5,5), new Vector2d(9, 9));
+            ids += 1;
+
+
+            //add randomness
+            var positions = List.of(new Vector2d(4, 4), new Vector2d(5, 5), new Vector2d(9, 9));
 //                var simulation = new Simulation(positions, simulationMap);
             var simulation = new Simulation(simulationOptions, ids);
-                presenter.setWorldMap(simulation.getMap());
-                presenter.setSimulation(simulation);
-                simulations.add(simulation);
-                simulationEngine.addToThreadPool(simulation);
+            presenter.setWorldMap(simulation.getMap());
+            presenter.setSimulation(simulation);
+            simulations.add(simulation);
+            simulationEngine.addToThreadPool(simulation);
             newStage.setOnCloseRequest(event -> {
                 simulation.stop();
-                });
+            });
 
         } else {
             displayError(ErrorMessages.WRONG_VALUES);
@@ -143,7 +141,7 @@ public class MainWindowPresenter {
 
     }
 
-    private void setInterfaceValues(SimulationOptions options){
+    private void setInterfaceValues(SimulationOptions options) {
         widthSpinner.getValueFactory().setValue(options.simulationWidth());
         heightSpinner.getValueFactory().setValue(options.simulationHeigth());
         mapVariantCB.setValue(options.mapType());
@@ -159,7 +157,7 @@ public class MainWindowPresenter {
         mutationVariant.setValue(options.mutationVariant());
     }
 
-    private SimulationOptions generateSimulationOptions(){
+    private SimulationOptions generateSimulationOptions() {
         try {
             return new SimulationOptions(widthSpinner.getValue(),
                     heightSpinner.getValue(), mapVariantCB.getValue(),
@@ -168,13 +166,13 @@ public class MainWindowPresenter {
                     initialAnimalsCount.getValue(), animalFullEnergy.getValue(),
                     reproductionEnergy.getValue(), mutationsCount.getValue(),
                     genomeLength.getValue(), mutationVariant.getValue());
-        } catch (Exception e) {
+        } catch (Exception e) { // catch co?
             displayError(ErrorMessages.OPTION_PARSE_ERROR);
             return null;
         }
     }
 
-    public void onSaveConfigClicked(){
+    public void onSaveConfigClicked() {
         File file = chooseFileForSaveCSV("settings.csv");
         String path = "default.csv";
         if (file != null) {
@@ -182,15 +180,15 @@ public class MainWindowPresenter {
         }
 
         SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
-        try{
-        simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
+        try {
+            simulationOptionsToFile.writeOptionsToFile(generateSimulationOptions(), path);
         } catch (IOException e) {
             displayError(ErrorMessages.FILE_WRITE_ERROR);
         }
 
     }
 
-    private File chooseFileForSaveCSV(String initialName){
+    private File chooseFileForSaveCSV(String initialName) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName(initialName);
         FileChooser.ExtensionFilter extFilter =
@@ -211,32 +209,31 @@ public class MainWindowPresenter {
         if (file != null) {
             String path = file.getAbsolutePath();
             SimulationOptionsToFile simulationOptionsToFile = new SimulationOptionsToFile();
-            try{
+            try {
                 SimulationOptions options = simulationOptionsToFile.readOptionsFromFile(path);
                 setInterfaceValues(options);
             } catch (IOException | CsvValidationException e) {
                 displayError(ErrorMessages.FILE_READ_ERROR);
             }
-        } else{
+        } else {
             displayError(ErrorMessages.FILE_READ_ERROR);
         }
 
 
-
     }
 
-    public void toggleSavingLogs(){
+    public void toggleSavingLogs() {
         logsLoc.setVisible(!logsLoc.isVisible());
     }
 
-    public void onSelectLogsSaveClicked(){
+    public void onSelectLogsSaveClicked() {
         File file = chooseFileForSaveCSV("logs.csv");
-        if(file != null){
+        if (file != null) {
             logsSavingLoc = file;
         }
     }
 
-    public void displayError(ErrorMessages errorType){
+    public void displayError(ErrorMessages errorType) {
         infolabel.setText(errorType.toString());
     }
 
@@ -244,6 +241,7 @@ public class MainWindowPresenter {
     public void close() throws InterruptedException {
         simulationEngine.awaitSimulationEnd();
     }
+
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {
         var scene = new Scene(viewRoot);
         primaryStage.setScene(scene);

@@ -97,7 +97,7 @@ class DarwinSimulationMapTest {
         var testMap = new DarwinSimulationMap(10, 10, 0);
 
         try {
-            testMap.place(new Vector2d(1,1));
+            testMap.place(new Vector2d(1, 1));
 
         } catch (IncorrectPositionException e) {
             Assertions.fail("Exception was thrown " + e.getMessage());

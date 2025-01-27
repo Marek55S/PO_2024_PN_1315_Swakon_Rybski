@@ -27,18 +27,18 @@ class DarwinSimulationMapWithWaterTest {
 
         map.inflow(1);
 
-        for(var direction: MapDirection.values()){
+        for (var direction : MapDirection.values()) {
             var newPosition = waterPosition.add(direction.toUnitVector());
             assertTrue(map.objectAt(newPosition).isPresent());
         }
     }
 
     @Test
-    void testInflowDrownAnimal(){
+    void testInflowDrownAnimal() {
         var map = new DarwinSimulationMapWithWater(10, 10, 1);
-        try{
+        try {
             map.place(new Vector2d(1, 2));
-        } catch (IncorrectPositionException e){
+        } catch (IncorrectPositionException e) {
             fail("Should not throw exception");
         }
         assertEquals(1, map.getOrderedAnimals().size());
@@ -64,9 +64,9 @@ class DarwinSimulationMapWithWaterTest {
     @Test
     void testNextDayInflow() {
         var map = new DarwinSimulationMapWithWater(10, 10, 1);
-        try{
+        try {
             map.place(new Vector2d(1, 2));
-        } catch (IncorrectPositionException e){
+        } catch (IncorrectPositionException e) {
             fail("Should not throw exception");
         }
 
@@ -82,9 +82,9 @@ class DarwinSimulationMapWithWaterTest {
     @Test
     void testNextDayOutflow() {
         var map = new DarwinSimulationMapWithWater(10, 10, 1);
-        try{
+        try {
             map.place(new Vector2d(1, 2));
-        } catch (IncorrectPositionException e){
+        } catch (IncorrectPositionException e) {
             fail("Should not throw exception");
         }
         for (int i = 0; i < DarwinSimulationMapWithWater.WATER_CYCLE_DURATION / 2; i++) {
@@ -102,7 +102,6 @@ class DarwinSimulationMapWithWaterTest {
         assertFalse(map.objectAt(new Vector2d(3, 3)).isPresent());
         assertEquals(9, map.getAllWaters().size());
     }
-
 
 
 }

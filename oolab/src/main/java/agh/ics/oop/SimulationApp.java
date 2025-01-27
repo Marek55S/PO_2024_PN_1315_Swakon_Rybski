@@ -20,7 +20,7 @@ public class SimulationApp extends Application {
             } else {
                 try {
                     return param.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
+                } catch (Exception e) { // catch co?
                     throw new RuntimeException(e);
                 }
             }
@@ -34,7 +34,7 @@ public class SimulationApp extends Application {
             try {
                 presenter.close();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e); // czy to dobry wybór?
             }
             // Save file
         });

@@ -22,7 +22,7 @@ public class Simulation implements Runnable {
         for (var animalPosition : startingPositions) {
             try {
                 map.place(animalPosition, options);
-            } catch (IncorrectPositionException ex) {
+            } catch (IncorrectPositionException ex) { // może się zdarzyć?
                 System.out.println(ex.getMessage());
             }
         }
@@ -30,8 +30,10 @@ public class Simulation implements Runnable {
 
     public Simulation(List<Vector2d> startingPositions, SimulationOptions options, int simulationId) {
         this.options = options;
-        if(options.mapType() == MapTypes.WATER_MAP){this.map = new DarwinSimulationMapWithWater(options,simulationId);}
-        else{this.map = new DarwinSimulationMap(options,simulationId);
+        if (options.mapType() == MapTypes.WATER_MAP) {
+            this.map = new DarwinSimulationMapWithWater(options, simulationId);
+        } else {
+            this.map = new DarwinSimulationMap(options, simulationId);
         }
         for (var animalPosition : startingPositions) {
             try {
@@ -41,11 +43,14 @@ public class Simulation implements Runnable {
             }
         }
     }
+
     public Simulation(SimulationOptions options, int simulationId) {
         this.options = options;
         var startingPositions = generateStartingPositions(options.initialAnimalsCount());
-        if(options.mapType() == MapTypes.WATER_MAP){this.map = new DarwinSimulationMapWithWater(options,simulationId);}
-        else{this.map = new DarwinSimulationMap(options,simulationId);
+        if (options.mapType() == MapTypes.WATER_MAP) {
+            this.map = new DarwinSimulationMapWithWater(options, simulationId);
+        } else {
+            this.map = new DarwinSimulationMap(options, simulationId);
         }
         for (var animalPosition : startingPositions) {
             try {
@@ -74,26 +79,30 @@ public class Simulation implements Runnable {
     public void toggle() {
         running = !running;
     }
-    public void stop() {stopped = true;}
-// grass energy and day energy consumption will be set in by user
+
+    public void stop() {
+        stopped = true;
+    }
+
+    // grass energy and day energy consumption will be set in by user
     public void run() {
         int dayCounter = 0;
-        while(!map.getOrderedAnimals().isEmpty() && !stopped) {
-            if(running){
-            dayCounter++;
-            map.nextDay();
-            System.out.println("Day " + dayCounter + " has ended");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        while (!map.getOrderedAnimals().isEmpty() && !stopped) {
+            if (running) {
+                dayCounter++;
+                map.nextDay();
+                System.out.println("Day " + dayCounter + " has ended");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
         }
 
     }
 
-    public AbstractWorldMap getMap(){
+    public AbstractWorldMap getMap() {
         return map;
     }
 }

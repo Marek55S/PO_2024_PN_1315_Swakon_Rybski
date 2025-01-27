@@ -5,7 +5,7 @@ import agh.ics.oop.model.util.ConsoleMapDisplay;
 
 import java.util.List;
 
-public class World {
+public class World { // czy to jest używane?
     public static void main(String[] args) {
 //        DarwinSimulationMap map = new DarwinSimulationMap(10, 10, 1);
 //        map.addObserver(new ConsoleMapDisplay());

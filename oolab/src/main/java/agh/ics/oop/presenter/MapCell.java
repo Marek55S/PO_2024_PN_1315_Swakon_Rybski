@@ -17,6 +17,7 @@ public class MapCell extends StackPane {
     private Rectangle bg;
     private Circle animal;
     private Rectangle grass;
+
     public MapCell(int width, int heigth) {
         this.width = width;
         this.height = heigth;
@@ -27,36 +28,36 @@ public class MapCell extends StackPane {
         this.getChildren().add(bg);
 
 
-
-
     }
 
-    public MapCell turnToWater(){
+    public MapCell turnToWater() {
         this.bg.setFill(Color.BLUE);
         return this;
     }
 
-    public MapCell addGrass(){
+    public MapCell addGrass() {
         grass = new Rectangle(width / 2.0, height / 2.0, Color.DARKGREEN);
         this.getChildren().add(grass);
         return this;
     }
 
-    public MapCell addAnimal(boolean higlightAnimal, Animal animal, SimulationPresenter sim){
+    public MapCell addAnimal(boolean higlightAnimal, Animal animal, SimulationPresenter sim) {
         Color animalColor = higlightAnimal ? Color.YELLOW : Color.BROWN;
         this.animal = new Circle(width / 5.0, animalColor);
-        this.animal.setOnMouseClicked(mouseEvent -> {sim.setSelectedAnimal(animal);
+        this.animal.setOnMouseClicked(mouseEvent -> {
+            sim.setSelectedAnimal(animal);
             System.out.println("Someone touched meeeee");
-            this.animal.setFill(Color.YELLOW);});
+            this.animal.setFill(Color.YELLOW);
+        });
         this.getChildren().add(this.animal);
 
         Color energyColor = Color.GREEN;
 
-        if(animal.getEnergy() < animal.getNewbornsEnergy()){
+        if (animal.getEnergy() < animal.getNewbornsEnergy()) {
             energyColor = Color.YELLOW;
         }
 
-        if(animal.getEnergy() < animal.getNewbornsEnergy()/2){
+        if (animal.getEnergy() < animal.getNewbornsEnergy() / 2) {
             energyColor = Color.RED;
         }
 
@@ -70,17 +71,17 @@ public class MapCell extends StackPane {
         return this;
     }
 
-    public MapCell selectAnimal(){
+    public MapCell selectAnimal() {
         animal.setFill(Color.YELLOW);
         return this;
     }
 
-    public MapCell higlightAnimal(){
+    public MapCell higlightAnimal() {
         animal.setFill(Color.RED);
         return this;
     }
 
-    public MapCell higlightCell(){
+    public MapCell higlightCell() {
         bg.setFill(Color.LIGHTCORAL);
         return this;
     }

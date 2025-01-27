@@ -27,6 +27,7 @@ public class MapDirectionTest {
         Assertions.assertEquals(MapDirection.SOUTH_EAST, MapDirection.SOUTH.previous());
         Assertions.assertEquals(MapDirection.EAST, MapDirection.SOUTH_EAST.previous());
     }
+
     @Test
     public void directionReturnsProperMovement() {
 //        Assertions.assertEquals();

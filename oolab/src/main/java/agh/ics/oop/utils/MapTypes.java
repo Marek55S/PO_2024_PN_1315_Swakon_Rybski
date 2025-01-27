@@ -1,4 +1,4 @@
-package agh.ics.oop.utils;
+package agh.ics.oop.utils; // czemu to nie jest w modelu?
 
 public enum MapTypes {
     NORMAL_MAP,

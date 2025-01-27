@@ -6,9 +6,11 @@ public enum ErrorMessages {
     OPTION_PARSE_ERROR("Option parse error occured"),
     INTERNAL_ERROR("Internal error occured"),
     WRONG_VALUES("Please provide valid values"),
-    DEFAULTS_LOADING("Default settings could not be loaded"),;
+    DEFAULTS_LOADING("Default settings could not be loaded"),
+    ;
 
     String message;
+
     ErrorMessages(String message) {
         this.message = message;
     }

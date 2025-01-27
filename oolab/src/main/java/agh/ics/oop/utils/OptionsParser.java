@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 
-public class OptionsParser {
+public class OptionsParser { // czy to jest używane?
     public static List<MoveDirection> parseOptions(String[] options) {
 //        var validMoves = 0;
 //        for (var option : options) {
